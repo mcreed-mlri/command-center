@@ -15,7 +15,6 @@
   <meta name="twitter:description" content="One place for every tool the MLRI Training Unit uses." />
   <meta name="twitter:image" content="https://trainingunit.pages.dev/icon.svg" />
   <meta name="theme-color" content="#f7f3ec" />
-  <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="icon.svg" />
 
@@ -1136,9 +1135,13 @@
       if (t) t.textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
     })();
 
-    /* ---- service worker ------------------------------------------- */
+    /* ---- service worker cleanup ----------------------------------- */
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.getRegistrations()
+          .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+          .catch(() => {});
+      });
     }
   </script>
 </body>
