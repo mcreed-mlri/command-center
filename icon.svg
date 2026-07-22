@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Training Unit">
+  <rect width="512" height="512" rx="112" fill="#b4531f"/>
+  <text x="50%" y="52%" text-anchor="middle" dominant-baseline="central"
+        font-family="Iowan Old Style, Palatino, Georgia, serif" font-weight="700"
+        font-size="230" fill="#f7f3ec">TU</text>
+</svg>

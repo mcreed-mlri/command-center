@@ -1,0 +1,6 @@
+# Local Claude Code permissions — personal to your machine, not needed in the repo
+.claude/settings.local.json
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db

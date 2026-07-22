@@ -1,0 +1,9 @@
+<svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Otter.ai">
+  <rect width="40" height="40" rx="10" fill="#4b57e8"/>
+  <g fill="#ffffff">
+    <rect x="10" y="17" width="3.2" height="6"  rx="1.6"/>
+    <rect x="15.4" y="13" width="3.2" height="14" rx="1.6"/>
+    <rect x="20.8" y="10" width="3.2" height="20" rx="1.6"/>
+    <rect x="26.2" y="15" width="3.2" height="10" rx="1.6"/>
+  </g>
+</svg>
