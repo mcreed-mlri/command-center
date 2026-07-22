@@ -28,7 +28,7 @@
       --line:       #e7e0d3;
       --ink:        #1c1a17;
       --muted:      #6b6459;
-      --faint:      #8a8272;
+      --faint:      #6f675c;
       --terracotta: #b4531f;
       --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
       --sans:  ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -109,6 +109,23 @@
       padding: max(20px, env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
     }
     .wrap { max-width: 1160px; margin: 0 auto; }
+
+    /* ---- accessibility --------------------------------------------- */
+    .skip-link {
+      position: absolute; left: 16px; top: -100%;
+      z-index: 100; padding: 10px 14px; border-radius: var(--radius);
+      background: var(--card); color: var(--ink); font-weight: 650;
+      border: 1px solid var(--line); box-shadow: var(--shadow);
+      text-decoration: none;
+    }
+    .skip-link:focus {
+      position: fixed; top: max(16px, env(safe-area-inset-top)); left: 16px;
+      outline: none;
+    }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
 
     /* ---- header ---------------------------------------------------- */
     header.hero-band {
@@ -232,7 +249,11 @@
     .grid { display: grid; gap: 10px; grid-template-columns: 1fr; }
     .grid--tools { gap: 12px; }
 
-    .doc-list { display: flex; flex-direction: column; gap: 8px; }
+    .doc-list {
+      list-style: none; margin: 0; padding: 0;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .doc-list > li { min-width: 0; }
     .doc-row {
       display: flex; align-items: center; gap: 12px;
       padding: 11px 12px; border-radius: var(--radius);
@@ -256,6 +277,7 @@
     .doc-row .tile-desc { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .doc-row .tile-arrow { margin-left: 0; font-size: 15px; opacity: .75; color: var(--muted); }
     .doc-row:hover .tile-arrow, .doc-row:focus-visible .tile-arrow { opacity: 1; color: var(--accent, var(--terracotta)); }
+    .doc-divider-item { list-style: none; }
     .doc-divider {
       border: 0; border-top: 1px solid var(--line);
       margin: 4px 0; height: 0;
@@ -269,6 +291,8 @@
     @media (max-width: 520px) {
       .dash-panel[data-section="LMS"] .doc-list { grid-template-columns: 1fr; }
     }
+    .dash-panel[data-section="LMS"] .doc-list > li:not(.doc-divider-item) { display: contents; }
+    .dash-panel[data-section="LMS"] .doc-divider-item { grid-column: 1 / -1; }
     .dash-panel[data-section="LMS"] .doc-row {
       background: var(--paper-2);
       border-color: var(--line);
@@ -279,7 +303,12 @@
       border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 45%, var(--line));
     }
 
-    .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .app-grid {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    }
+    .app-grid > li { min-width: 0; display: flex; }
+    .app-grid .app-tile { flex: 1; width: 100%; }
     @media (max-width: 400px) { .app-grid { grid-template-columns: repeat(2, 1fr); } }
     .app-tile {
       display: flex; flex-direction: column; align-items: center; gap: 8px;
@@ -406,9 +435,13 @@
     .tile-accordion[open] .acc-chev { transform: rotate(90deg); color: var(--accent, var(--terracotta)); }
 
     /* one folder per line, indented so they read as children of the tile */
-    .sublinks { border-top: 1px solid var(--line); padding: 6px 6px 6px 14px; display: grid; gap: 2px; }
-    .sublinks > .sublink, .sublinks > .subfolder { margin-left: 12px; }
-    .sublinks > .sublink-lead { margin-left: 0; }
+    .sublinks {
+      list-style: none; margin: 0;
+      border-top: 1px solid var(--line); padding: 6px 6px 6px 14px; display: grid; gap: 2px;
+    }
+    .sublinks > li { margin-left: 12px; }
+    .sublinks > li:has(.sublink-lead) { margin-left: 0; }
+    .sublinks > li.subfolder-item { grid-column: 1 / -1; }
     .sublink {
       display: flex; align-items: center; gap: 10px; padding: 10px 12px;
       border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 15px;
@@ -431,10 +464,12 @@
     .subfolder[open] > .sublink-parent { color: var(--accent, var(--terracotta)); }
     .subfolder[open] > .sublink-parent .subfolder-chev { transform: rotate(90deg); color: var(--accent, var(--terracotta)); }
     .subsublinks {
+      list-style: none; margin: 0;
       display: grid; gap: 2px;
       margin: 2px 0 6px 9px; padding: 2px 0 2px 12px;
       border-left: 2px solid var(--line);
     }
+    .subsublinks > li { min-width: 0; }
     @media (min-width: 560px) { .subsublinks { grid-template-columns: 1fr 1fr; } }
     .subsublink { font-size: 14.5px; }
     .subsublink .sublink-tick { width: 5px; height: 5px; opacity: .55; }
@@ -513,6 +548,7 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#board">Skip to tools</a>
   <div class="wrap">
     <div id="announce"></div>
     <header class="hero-band">
@@ -527,11 +563,11 @@
         </div>
         <div class="top-actions">
           <div class="search-wrap">
-            <button class="icon-btn" id="searchToggle" type="button" title="Search tools" aria-label="Search tools" aria-expanded="false" aria-controls="searchPanel">
+            <button class="icon-btn" id="searchToggle" type="button" title="Search tools (press /)" aria-label="Search tools, press slash" aria-keyshortcuts="/" aria-expanded="false" aria-controls="searchPanel">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             </button>
-            <div class="search-panel" id="searchPanel">
-              <input id="q" type="search" placeholder="Search tools…" autocomplete="off" aria-label="Filter tools" />
+            <div class="search-panel" id="searchPanel" inert>
+              <input id="q" type="search" placeholder="Search tools… (press /)" autocomplete="off" aria-label="Filter tools" tabindex="-1" />
             </div>
           </div>
           <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch color theme"></button>
@@ -539,11 +575,11 @@
       </div>
     </header>
 
-    <div id="board"></div>
-    <p class="empty" id="empty">No tool matches that. Try a different word.</p>
+    <main id="board" aria-label="Training Unit tools"></main>
+    <p class="empty" id="empty" role="status" aria-live="polite">No tool matches that. Try a different word.</p>
 
     <footer>
-      Missing or outdated link? Contact <a href="mailto:mcreed@mlri.org">Marlie</a>.
+      Missing or outdated link? <a href="mailto:mcreed@mlri.org">Contact Marlie by email</a>.
     </footer>
   </div>
 
@@ -696,6 +732,13 @@
       "Quick Links": { layout: "apps" },
     };
 
+    const SR_NEW_TAB = '<span class="sr-only"> (opens in new tab)</span>';
+    const SR_SOON = '<span class="sr-only">, coming soon</span>';
+
+    function sectionId(name) {
+      return "sec-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
     /* Lucide icon paths (MIT) — https://lucide.dev */
     const LUCIDE = {
       "file-text": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
@@ -746,22 +789,25 @@
       if (item.count) sum.querySelector(".acc-count").textContent = item.count;
       d.appendChild(sum);
 
-      const box = document.createElement("div");
+      const box = document.createElement("ul");
       box.className = "sublinks";
 
       // One plain link row (a leaf folder, or the "Open whole folder" shortcut).
       const makeLeaf = (name, url, cls, extra) => {
+        const li = document.createElement("li");
         const a = document.createElement("a");
         a.className = cls;
         a.href = url;
-        if (url && url !== "#") { a.target = "_blank"; a.rel = "noopener"; }
+        if (url && url !== "#") { a.target = "_blank"; a.rel = "noopener noreferrer"; }
         a.dataset.search = (name + " " + (extra || "") + " " + item.name).toLowerCase();
         a.innerHTML =
           '<span class="sublink-tick" aria-hidden="true"></span>' +
           '<span class="sublink-name"></span>' +
-          '<span class="sublink-arrow" aria-hidden="true">↗</span>';
+          '<span class="sublink-arrow" aria-hidden="true">↗</span>' +
+          (url && url !== "#" ? SR_NEW_TAB : "");
         a.querySelector(".sublink-name").textContent = name;
-        return a;
+        li.appendChild(a);
+        return li;
       };
 
       for (const c of item.children) {
@@ -784,14 +830,18 @@
           ss.querySelector(".subfolder-count").textContent = c.children.length;
           sf.appendChild(ss);
 
-          const inner = document.createElement("div");
+          const inner = document.createElement("ul");
           inner.className = "subsublinks";
           if (c.url && c.url !== "#") {
             inner.appendChild(makeLeaf(item.openLabel || "Open whole folder", c.url, "sublink subsublink subsublink-open", c.name));
           }
           for (const g of c.children) inner.appendChild(makeLeaf(g.name, g.url, "sublink subsublink", c.name));
           sf.appendChild(inner);
-          box.appendChild(sf);
+
+          const sfLi = document.createElement("li");
+          sfLi.className = "subfolder-item";
+          sfLi.appendChild(sf);
+          box.appendChild(sfLi);
         } else {
           let cls = "sublink";
           if (c.lead) cls += " sublink-lead";
@@ -809,8 +859,11 @@
       const soon = item.soon || !item.url || item.url === "#";
       const el = document.createElement(soon ? "span" : "a");
       el.className = soon ? "tile is-soon" : "tile";
-      if (soon) { el.setAttribute("aria-disabled", "true"); }
-      else { el.href = item.url; el.target = "_blank"; el.rel = "noopener"; }
+      if (soon) {
+        el.setAttribute("aria-disabled", "true");
+        el.setAttribute("role", "group");
+        el.setAttribute("aria-label", item.name + ". " + item.desc + ". Coming soon.");
+      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
       el.innerHTML =
@@ -819,8 +872,8 @@
           '<div class="tile-name"></div>' +
           '<div class="tile-desc"></div>' +
         '</span>' +
-        (soon ? '<span class="soon-tag">soon</span>'
-              : '<span class="tile-arrow" aria-hidden="true">→</span>');
+        (soon ? '<span class="soon-tag">soon</span>' + SR_SOON
+              : '<span class="tile-arrow" aria-hidden="true">→</span>' + SR_NEW_TAB);
       el.querySelector(".tile-name").textContent = item.name;
       el.querySelector(".tile-desc").textContent = item.desc;
       grid.appendChild(el);
@@ -830,8 +883,11 @@
       const soon = item.soon || !item.url || item.url === "#";
       const el = document.createElement(soon ? "span" : "a");
       el.className = soon ? "doc-row is-soon" : "doc-row";
-      if (soon) { el.setAttribute("aria-disabled", "true"); }
-      else { el.href = item.url; el.target = "_blank"; el.rel = "noopener"; }
+      if (soon) {
+        el.setAttribute("aria-disabled", "true");
+        el.setAttribute("role", "group");
+        el.setAttribute("aria-label", item.name + ". " + item.desc + ". Coming soon.");
+      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
       el.innerHTML =
@@ -840,15 +896,21 @@
           '<div class="tile-name"></div>' +
           '<div class="tile-desc"></div>' +
         '</span>' +
-        (soon ? '<span class="soon-tag">soon</span>' : '<span class="tile-arrow" aria-hidden="true">↗</span>');
+        (soon ? '<span class="soon-tag">soon</span>' + SR_SOON
+              : '<span class="tile-arrow" aria-hidden="true">↗</span>' + SR_NEW_TAB);
       el.querySelector(".tile-name").textContent = item.name;
       el.querySelector(".tile-desc").textContent = item.desc;
-      list.appendChild(el);
+      const li = document.createElement("li");
+      li.appendChild(el);
+      list.appendChild(li);
       if (item.dividerAfter) {
+        const divLi = document.createElement("li");
+        divLi.className = "doc-divider-item";
+        divLi.setAttribute("aria-hidden", "true");
         const hr = document.createElement("hr");
         hr.className = "doc-divider";
-        hr.setAttribute("aria-hidden", "true");
-        list.appendChild(hr);
+        divLi.appendChild(hr);
+        list.appendChild(divLi);
       }
     }
 
@@ -856,13 +918,19 @@
       const soon = item.soon || !item.url || item.url === "#";
       const el = document.createElement(soon ? "span" : "a");
       el.className = soon ? "app-tile is-soon" : "app-tile";
-      if (soon) { el.setAttribute("aria-disabled", "true"); }
-      else { el.href = item.url; el.target = "_blank"; el.rel = "noopener"; }
+      if (soon) {
+        el.setAttribute("aria-disabled", "true");
+        el.setAttribute("role", "group");
+        el.setAttribute("aria-label", item.name + ". Coming soon.");
+      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
-      el.innerHTML = monoHtml(item) + '<span class="app-label"></span>' + (soon ? '<span class="soon-tag">soon</span>' : '');
+      el.innerHTML = monoHtml(item) + '<span class="app-label"></span>' +
+        (soon ? '<span class="soon-tag">soon</span>' + SR_SOON : SR_NEW_TAB);
       el.querySelector(".app-label").textContent = item.name.replace("Brightspace (D2L)", "Brightspace");
-      grid.appendChild(el);
+      const li = document.createElement("li");
+      li.appendChild(el);
+      grid.appendChild(li);
     }
 
     /* ---- render ---------------------------------------------------- */
@@ -886,10 +954,14 @@
       s.className = "dash-panel" + (cfg.layout === "tools" ? " dash-panel--work" : "");
       s.dataset.section = sec;
 
+      const sid = sectionId(sec);
+      s.setAttribute("aria-labelledby", sid);
+
       const head = document.createElement("div");
       head.className = "panel-head";
       const label = document.createElement("h2");
       label.className = "panel-title";
+      label.id = sid;
       label.textContent = sec;
       head.appendChild(label);
       s.appendChild(head);
@@ -898,12 +970,12 @@
       body.className = "panel-body";
 
       if (cfg.layout === "docs") {
-        const list = document.createElement("div");
+        const list = document.createElement("ul");
         list.className = "doc-list";
         for (const item of items) renderDocRow(item, sec, list);
         body.appendChild(list);
       } else if (cfg.layout === "apps") {
-        const grid = document.createElement("div");
+        const grid = document.createElement("ul");
         grid.className = "app-grid";
         for (const item of items) renderAppTile(item, sec, grid);
         body.appendChild(grid);
@@ -935,16 +1007,17 @@
 
       const el = document.createElement("div");
       el.className = "announce";
-      el.setAttribute("role", "status");
+      el.setAttribute("role", "region");
+      el.setAttribute("aria-label", "Team announcement");
 
       const dot = document.createElement("span");
       dot.className = "announce-dot"; dot.setAttribute("aria-hidden", "true");
 
       const body = document.createElement(a.url ? "a" : "span");
       body.className = "announce-body";
-      if (a.url) { body.href = a.url; body.target = "_blank"; body.rel = "noopener"; }
+      if (a.url) { body.href = a.url; body.target = "_blank"; body.rel = "noopener noreferrer"; }
       body.innerHTML = '<span class="announce-text"></span>' +
-        (a.url ? '<span class="announce-more">Open →</span>' : '');
+        (a.url ? '<span class="announce-more">Open<span class="sr-only"> (opens in new tab)</span> →</span>' : '');
       body.querySelector(".announce-text").textContent = a.text;
 
       const x = document.createElement("button");
@@ -969,13 +1042,21 @@
     function setSearchOpen(open) {
       searchPanel.classList.toggle("is-open", open);
       searchToggle.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) q.focus();
-      else q.blur();
+      if (open) {
+        searchPanel.removeAttribute("inert");
+        q.tabIndex = 0;
+        q.focus();
+      } else {
+        searchPanel.setAttribute("inert", "");
+        q.tabIndex = -1;
+        q.blur();
+      }
     }
 
     function applyFilter() {
       const term = q.value.trim().toLowerCase();
       board.classList.toggle("is-searching", !!term);
+      board.setAttribute("aria-label", term ? "Search results" : "Training Unit tools");
       let anyVisible = false;
       for (const sec of board.querySelectorAll(".dash-panel")) {
         let secVisible = false;
@@ -1008,7 +1089,11 @@
     });
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "/" && document.activeElement !== q) { e.preventDefault(); setSearchOpen(true); }
+      if (e.key === "/" && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        const active = document.activeElement;
+        if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+        e.preventDefault(); setSearchOpen(true);
+      }
       if (e.key === "Escape" && (document.activeElement === q || searchPanel.classList.contains("is-open"))) {
         q.value = ""; applyFilter(); setSearchOpen(false);
       }
@@ -1018,8 +1103,8 @@
     const root = document.documentElement;
     const toggle = document.getElementById("themeToggle");
     const themeMeta = document.querySelector('meta[name="theme-color"]');
-    const SUN  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
-    const MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+    const SUN  = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+    const MOON = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
     const isDark = () => (root.dataset.theme ? root.dataset.theme === "dark" : prefersDark.matches);
 
