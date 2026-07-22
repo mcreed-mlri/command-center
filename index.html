@@ -201,44 +201,6 @@
       text-transform: uppercase; color: var(--muted); margin: 0;
     }
 
-    .cal-today { min-height: 0; }
-    .cal-date {
-      font-size: 12px; color: var(--muted); margin: 0 0 10px;
-    }
-    .cal-events {
-      list-style: none; margin: 0; padding: 0;
-      display: flex; flex-direction: column; gap: 6px;
-    }
-    .cal-event {
-      display: flex; align-items: baseline; gap: 10px;
-      padding: 10px 12px; border-radius: var(--radius);
-      background: var(--paper-2); border: 1px solid var(--line);
-      font-size: 14px;
-    }
-    .cal-time {
-      flex: none; width: 72px; font-size: 12px; font-weight: 600;
-      color: var(--terracotta); font-variant-numeric: tabular-nums;
-    }
-    .cal-title { min-width: 0; font-weight: 600; line-height: 1.35; }
-    .cal-empty, .cal-loading, .cal-error {
-      margin: 0; padding: 14px 12px; border-radius: var(--radius);
-      background: var(--paper-2); border: 1px solid var(--line);
-      font-size: 13px; color: var(--muted); text-align: center;
-    }
-    .cal-open {
-      display: inline-block; margin-top: 10px;
-      font-size: 12px; font-weight: 600; color: var(--terracotta); text-decoration: none;
-    }
-    .cal-open:hover { text-decoration: underline; }
-    .cal-agenda {
-      border-radius: var(--radius); overflow: hidden;
-      border: 1px solid var(--line); background: var(--paper-2);
-    }
-    .cal-agenda iframe {
-      display: block; width: 100%; height: 170px; border: 0;
-    }
-    .dash-panel--calendar .panel-body { padding-top: 0; }
-    .dash-panel--calendar .panel-head { margin-bottom: 12px; }
 
     /* ---- layouts --------------------------------------------------- */
     .grid { display: grid; gap: 10px; grid-template-columns: 1fr; }
@@ -562,22 +524,6 @@
       url:  "",   // optional link the banner opens (new tab); "" for none
     };
 
-    const CALENDAR = {
-      title: "Training Unit Calendar",
-      calendarId: "c_a03387b3d278ec6cca7f881b6ca65357f410c3275ab231afbd80ba2d1815b87b@group.calendar.google.com",
-      embed: "https://calendar.google.com/calendar/embed?src=c_a03387b3d278ec6cca7f881b6ca65357f410c3275ab231afbd80ba2d1815b87b%40group.calendar.google.com&ctz=America%2FNew_York",
-      tz: "America/New_York",
-      apiKey: "",   // optional — Google Calendar API key (Calendar API enabled)
-      icalUrl: "",  // optional — "Public address in iCal format" (see note below)
-      keywords: "training unit calendar schedule events meetings google cal",
-      /* Group/shared calendars don't have a "secret" iCal link — that's normal.
-         To get a native event list instead of the compact agenda fallback:
-         1. Calendar settings → Access permissions → check "Make available to public"
-         2. Integrate calendar → scroll down → copy "Public address in iCal format" → icalUrl
-         OR add a Google Cloud API key with Calendar API enabled → apiKey
-         (use the Calendar ID shown on the Integrate calendar page) */
-    };
-
     const LINKS = [
       { section: "Work", name: "Google Drive", desc: "Shared files & folders", icon: "icons/google-drive.svg", accent: "#2f855a",
         count: "7 folders", group: "work-acc",
@@ -633,22 +579,38 @@
           { name: "External Collaboration", color: "#9aa0a6", divider: true, url: "https://drive.google.com/drive/folders/0AKgEti2nIL4SUk9PVA" },
         ] },
       { section: "Work", name: "Monday.com", desc: "Boards, tasks & the unit's work", icon: "icons/monday.svg", accent: "#ff3d57",
-        count: "9 boards", group: "work-acc",
-        keywords: "monday project management boards lace training unit basic benefits access counsel",
+        count: "4 workspaces", group: "work-acc", openLabel: "Open workspace",
+        keywords: "monday project management boards workspaces lace training unit basic benefits access counsel",
         children: [
-          { name: "Operations", url: "https://training-unit-hq.monday.com/boards/18418833001" },
-          { name: "Content Design", url: "https://training-unit-hq.monday.com/boards/18420946283" },
-          { name: "Data & Evaluation", url: "https://training-unit-hq.monday.com/boards/18421082069" },
-          { name: "LMS", url: "https://training-unit-hq.monday.com/boards/18421080121" },
-          { name: "Communications & Branding", url: "https://training-unit-hq.monday.com/boards/18421083526" },
-          { name: "Meeting Notes from Otter", url: "https://training-unit-hq.monday.com/boards/18419007109" },
-          { name: "Internal MLRI Trainings", url: "https://training-unit-hq.monday.com/boards/18421126170" },
-          { name: "Current Trainings", url: "https://training-unit-hq.monday.com/boards/18421123182" },
-          { name: "LACE Project Archive", url: "https://training-unit-hq.monday.com/boards/18422595899" },
+          /* Parent workspaces (colors match the Drive folders). A workspace with
+             boards drills down; one with no boards is just a link to the workspace. */
+          { name: "Open Monday", lead: true, url: "https://training-unit-hq.monday.com/" },
+          { name: "Access to Counsel", color: "#37b26b", url: "https://training-unit-hq.monday.com/workspaces/15744754" },
+          { name: "Basic Benefits Trainings", color: "#f4c344", url: "https://training-unit-hq.monday.com/workspaces/16174611",
+            children: [
+              { name: "Current Trainings", url: "https://training-unit-hq.monday.com/boards/18421123182" },
+            ] },
+          { name: "LACE Project", color: "#ea6a63", url: "https://training-unit-hq.monday.com/workspaces/16174604",
+            children: [
+              { name: "Operations", url: "https://training-unit-hq.monday.com/boards/18418833001" },
+              { name: "Content Design", url: "https://training-unit-hq.monday.com/boards/18420946283" },
+              { name: "Data & Evaluation", url: "https://training-unit-hq.monday.com/boards/18421082069" },
+              { name: "LMS", url: "https://training-unit-hq.monday.com/boards/18421080121" },
+              { name: "Communications & Branding", url: "https://training-unit-hq.monday.com/boards/18421083526" },
+              { name: "LACE Project Archive", url: "https://training-unit-hq.monday.com/boards/18422595899" },
+            ] },
+          { name: "Training Unit", color: "#5b9bd5", url: "https://training-unit-hq.monday.com/workspaces/15455154",
+            children: [
+              { name: "Meeting Notes from Otter", url: "https://training-unit-hq.monday.com/boards/18419007109" },
+              { name: "Internal MLRI Trainings", url: "https://training-unit-hq.monday.com/boards/18421126170" },
+            ] },
         ] },
       { section: "Important Documents", name: "LACE Project Planning", desc: "Living project plan & roadmap",
         url: "https://docs.google.com/document/d/1R1CGTrNL_GeQfHejfeVJF-7f2FdrvYyKOsEzAUt9ASM/edit?tab=t.0",
         mono: "L", accent: "#4285f4", keywords: "lace project planning doc google document roadmap plan" },
+      { section: "Important Documents", name: "Training Unit Weekly Meetings", desc: "Weekly meetings folder",
+        url: "https://drive.google.com/drive/folders/1dMn9QSL7w00XIJee-wP9yVDX_l_HRg0w",
+        mono: "W", accent: "#e0a52e", keywords: "training unit weekly meetings folder agenda notes drive lace" },
       { section: "Important Documents", name: "Faculty Database", desc: "Trainer & faculty roster",
         url: "https://docs.google.com/spreadsheets/d/1RTR03mzKTT3nSD6SMJxBW8B1gu45BBAMEYDWGd5ls4g/edit",
         mono: "F", accent: "#0f9d58", keywords: "faculty database spreadsheet trainers roster google sheets" },
@@ -669,13 +631,12 @@
         url: "https://mlri.brightspace.com/d2l/home", icon: "icons/brightspace.png", mono: "B", accent: "#c2410c", keywords: "brightspace d2l lms login courses mlri" },
     ];
 
-    const SECTION_ORDER = ["Work", "LMS", "Training Unit Calendar", "Important Documents", "Quick Links"];
+    const SECTION_ORDER = ["Work", "LMS", "Important Documents", "Quick Links"];
     const LEFT_SECTIONS = new Set(["Work", "LMS"]);
 
     const SECTION_META = {
       "Work": { layout: "tools" },
       "LMS": { layout: "docs" },
-      "Training Unit Calendar": { layout: "calendar" },
       "Important Documents": { layout: "docs" },
       "Quick Links": { layout: "apps" },
     };
@@ -758,7 +719,7 @@
           const inner = document.createElement("div");
           inner.className = "subsublinks";
           if (c.url && c.url !== "#") {
-            inner.appendChild(makeLeaf("Open whole folder", c.url, "sublink subsublink subsublink-open", c.name));
+            inner.appendChild(makeLeaf(item.openLabel || "Open whole folder", c.url, "sublink subsublink subsublink-open", c.name));
           }
           for (const g of c.children) inner.appendChild(makeLeaf(g.name, g.url, "sublink subsublink", c.name));
           sf.appendChild(inner);
@@ -817,258 +778,6 @@
       list.appendChild(el);
     }
 
-    function calendarTz() {
-      return CALENDAR.tz || "America/New_York";
-    }
-
-    function ymdInTz(date, tz) {
-      const p = new Intl.DateTimeFormat("en-US", {
-        timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit",
-      }).formatToParts(date);
-      const g = (t) => p.find((x) => x.type === t).value;
-      return g("year") + g("month") + g("day");
-    }
-
-    function todayBounds(tz) {
-      const startDay = ymdInTz(new Date(), tz);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const endDay = ymdInTz(tomorrow, tz);
-      return {
-        timeMin: startDay.slice(0, 4) + "-" + startDay.slice(4, 6) + "-" + startDay.slice(6, 8) + "T00:00:00",
-        timeMax: endDay.slice(0, 4) + "-" + endDay.slice(4, 6) + "-" + endDay.slice(6, 8) + "T00:00:00",
-        label: new Date().toLocaleDateString(undefined, {
-          weekday: "long", month: "long", day: "numeric", timeZone: tz,
-        }),
-      };
-    }
-
-    function calendarAgendaEmbedUrl() {
-      const tz = calendarTz();
-      const { timeMin, timeMax } = todayBounds(tz);
-      const start = timeMin.slice(0, 10).replace(/-/g, "");
-      const end = timeMax.slice(0, 10).replace(/-/g, "");
-      const url = new URL(CALENDAR.embed);
-      url.searchParams.set("mode", "AGENDA");
-      url.searchParams.set("showTitle", "0");
-      url.searchParams.set("showNav", "0");
-      url.searchParams.set("showPrint", "0");
-      url.searchParams.set("showTabs", "0");
-      url.searchParams.set("showCalendars", "0");
-      url.searchParams.set("dates", start + "/" + end);
-      return url.toString();
-    }
-
-    function renderAgendaFallback(container) {
-      const tz = calendarTz();
-      const bounds = todayBounds(tz);
-      container.innerHTML = "";
-
-      const date = document.createElement("p");
-      date.className = "cal-date";
-      date.textContent = bounds.label;
-      container.appendChild(date);
-
-      const wrap = document.createElement("div");
-      wrap.className = "cal-agenda";
-      const frame = document.createElement("iframe");
-      frame.src = calendarAgendaEmbedUrl();
-      frame.title = CALENDAR.title;
-      frame.loading = "lazy";
-      wrap.appendChild(frame);
-      container.appendChild(wrap);
-
-      const open = document.createElement("a");
-      open.className = "cal-open";
-      open.href = calendarOpenUrl();
-      open.target = "_blank";
-      open.rel = "noopener";
-      open.textContent = "Open full calendar →";
-      container.appendChild(open);
-    }
-
-    function calendarOpenUrl() {
-      const tz = calendarTz();
-      const { timeMin, timeMax } = todayBounds(tz);
-      const start = timeMin.slice(0, 10).replace(/-/g, "");
-      const end = timeMax.slice(0, 10).replace(/-/g, "");
-      const url = new URL(CALENDAR.embed);
-      url.searchParams.set("mode", "AGENDA");
-      url.searchParams.set("dates", start + "/" + end);
-      return url.toString();
-    }
-
-    async function fetchTodayEventsFromApi() {
-      if (!CALENDAR.apiKey) return null;
-      const tz = calendarTz();
-      const id = CALENDAR.calendarId || new URL(CALENDAR.embed).searchParams.get("src");
-      const { timeMin, timeMax } = todayBounds(tz);
-      const url = new URL("https://www.googleapis.com/calendar/v3/calendars/" + encodeURIComponent(id) + "/events");
-      url.searchParams.set("key", CALENDAR.apiKey);
-      url.searchParams.set("timeMin", timeMin);
-      url.searchParams.set("timeMax", timeMax);
-      url.searchParams.set("singleEvents", "true");
-      url.searchParams.set("orderBy", "startTime");
-      url.searchParams.set("timeZone", tz);
-      url.searchParams.set("maxResults", "25");
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("calendar api failed");
-      const data = await res.json();
-      return (data.items || []).map((event) => ({
-        summary: event.summary || "(No title)",
-        allDay: !!event.start.date,
-        start: event.start.date || event.start.dateTime,
-      }));
-    }
-
-    function unfoldIcs(text) {
-      return text.replace(/\r\n/g, "\n").replace(/\n[ \t]/g, "");
-    }
-
-    function parseIcsEvents(text) {
-      const events = [];
-      const src = unfoldIcs(text);
-      const chunks = src.split("BEGIN:VEVENT");
-      for (let i = 1; i < chunks.length; i++) {
-        const block = chunks[i].split("END:VEVENT")[0];
-        const read = (key) => {
-          const m = block.match(new RegExp("^" + key + "(?:;[^\\r\\n:]*)?:([^\\r\\n]+)", "m"));
-          return m ? m[1].trim() : "";
-        };
-        const summary = read("SUMMARY").replace(/\\n/g, " ").replace(/\\,/g, ",");
-        const start = read("DTSTART");
-        if (!start) continue;
-        events.push({
-          summary: summary || "(No title)",
-          allDay: /^\d{8}$/.test(start),
-          start,
-        });
-      }
-      return events;
-    }
-
-    function icsInstant(icsValue, tz) {
-      if (/^\d{8}$/.test(icsValue)) {
-        const y = icsValue.slice(0, 4), m = icsValue.slice(4, 6), d = icsValue.slice(6, 8);
-        return new Date(y + "-" + m + "-" + d + "T12:00:00");
-      }
-      const clean = icsValue.replace(/^DTSTART[^:]*:/, "");
-      if (/^\d{8}T\d{6}Z$/.test(clean)) {
-        const y = clean.slice(0, 4), mo = clean.slice(4, 6), d = clean.slice(6, 8);
-        const hh = clean.slice(9, 11), mm = clean.slice(11, 13), ss = clean.slice(13, 15);
-        return new Date(Date.UTC(+y, +mo - 1, +d, +hh, +mm, +ss));
-      }
-      if (/^\d{8}T\d{6}$/.test(clean)) {
-        const y = clean.slice(0, 4), mo = clean.slice(4, 6), d = clean.slice(6, 8);
-        const hh = clean.slice(9, 11), mm = clean.slice(11, 13);
-        return new Date(y + "-" + mo + "-" + d + "T" + hh + ":" + mm + ":00");
-      }
-      return new Date(clean);
-    }
-
-    function eventsToday(events, tz) {
-      const today = ymdInTz(new Date(), tz);
-      return events
-        .filter((event) => ymdInTz(icsInstant(event.start, tz), tz) === today)
-        .sort((a, b) => +icsInstant(a.start, tz) - +icsInstant(b.start, tz));
-    }
-
-    async function fetchTodayEventsFromIcal() {
-      const feed = CALENDAR.icalUrl ||
-        "https://calendar.google.com/calendar/ical/" +
-        encodeURIComponent(CALENDAR.calendarId) + "/public/basic.ics";
-      const url = new URL("cal-feed", location.href);
-      if (CALENDAR.icalUrl) url.searchParams.set("src", CALENDAR.icalUrl);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("calendar ical failed");
-      const text = await res.text();
-      return eventsToday(parseIcsEvents(text), calendarTz());
-    }
-
-    async function fetchTodayEvents() {
-      if (CALENDAR.apiKey) {
-        try { return await fetchTodayEventsFromApi(); }
-        catch (e) { /* fall through */ }
-      }
-      if (CALENDAR.icalUrl) {
-        return fetchTodayEventsFromIcal();
-      }
-      return null;
-    }
-
-    function formatEventTime(event, tz) {
-      if (event.allDay) return "All day";
-      const dt = typeof event.start === "string" && event.start.includes("T")
-        ? icsInstant(event.start, tz)
-        : new Date(event.start);
-      return dt.toLocaleTimeString(undefined, {
-        hour: "numeric", minute: "2-digit", timeZone: tz,
-      });
-    }
-
-    function renderTodayEvents(container, events) {
-      const tz = calendarTz();
-      const bounds = todayBounds(tz);
-      container.innerHTML = "";
-
-      const date = document.createElement("p");
-      date.className = "cal-date";
-      date.textContent = bounds.label;
-      container.appendChild(date);
-
-      if (!events.length) {
-        const empty = document.createElement("p");
-        empty.className = "cal-empty";
-        empty.textContent = "Nothing on the calendar today.";
-        container.appendChild(empty);
-      } else {
-        const list = document.createElement("ul");
-        list.className = "cal-events";
-        for (const event of events) {
-          const li = document.createElement("li");
-          li.className = "cal-event";
-          li.dataset.search = (event.summary + " " + CALENDAR.keywords).toLowerCase();
-          li.innerHTML =
-            '<span class="cal-time"></span><span class="cal-title"></span>';
-          li.querySelector(".cal-time").textContent = formatEventTime(event, tz);
-          li.querySelector(".cal-title").textContent = event.summary;
-          list.appendChild(li);
-        }
-        container.appendChild(list);
-      }
-
-      const open = document.createElement("a");
-      open.className = "cal-open";
-      open.href = calendarOpenUrl();
-      open.target = "_blank";
-      open.rel = "noopener";
-      open.textContent = "Open full calendar →";
-      container.appendChild(open);
-    }
-
-    async function loadCalendarPanel(container) {
-      container.innerHTML = '<p class="cal-loading">Loading today\u2019s events\u2026</p>';
-
-      try {
-        const events = await fetchTodayEvents();
-        if (events === null) {
-          renderAgendaFallback(container);
-          return;
-        }
-        renderTodayEvents(container, events);
-      } catch (e) {
-        renderAgendaFallback(container);
-      }
-    }
-
-    function renderCalendarPanel(sec, body) {
-      const wrap = document.createElement("div");
-      wrap.className = "cal-today";
-      wrap.dataset.search = (CALENDAR.title + " " + CALENDAR.keywords + " " + sec).toLowerCase();
-      body.appendChild(wrap);
-      loadCalendarPanel(wrap);
-    }
-
     function renderAppTile(item, sec, grid) {
       const soon = item.soon || !item.url || item.url === "#";
       const el = document.createElement(soon ? "span" : "a");
@@ -1098,30 +807,6 @@
 
     for (const sec of order) {
       const cfg = SECTION_META[sec] || { layout: "tools" };
-
-      if (cfg.layout === "calendar") {
-        if (!CALENDAR?.embed) continue;
-
-        const s = document.createElement("section");
-        s.className = "dash-panel dash-panel--calendar";
-        s.dataset.section = sec;
-
-        const head = document.createElement("div");
-        head.className = "panel-head";
-        const label = document.createElement("h2");
-        label.className = "panel-title";
-        label.textContent = CALENDAR.title || sec;
-        head.appendChild(label);
-        s.appendChild(head);
-
-        const body = document.createElement("div");
-        body.className = "panel-body";
-        renderCalendarPanel(sec, body);
-        s.appendChild(body);
-
-        rightCol.appendChild(s);
-        continue;
-      }
 
       if (!groups[sec]) continue;
       const items = groups[sec];
