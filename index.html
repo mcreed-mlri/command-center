@@ -440,7 +440,7 @@
       border-top: 1px solid var(--line); padding: 6px 6px 6px 14px; display: grid; gap: 2px;
     }
     .sublinks > li { margin-left: 12px; }
-    .sublinks > li:has(.sublink-lead) { margin-left: 0; }
+    .sublinks > li:has(.sublink-lead) { margin-left: 0; grid-column: 1 / -1; }
     .sublinks > li.subfolder-item { grid-column: 1 / -1; }
     .sublink {
       display: flex; align-items: center; gap: 10px; padding: 10px 12px;
@@ -464,7 +464,7 @@
     .subfolder[open] > .sublink-parent { color: var(--accent, var(--terracotta)); }
     .subfolder[open] > .sublink-parent .subfolder-chev { transform: rotate(90deg); color: var(--accent, var(--terracotta)); }
     .subsublinks {
-      list-style: none; margin: 0;
+      list-style: none;
       display: grid; gap: 2px;
       margin: 2px 0 6px 9px; padding: 2px 0 2px 12px;
       border-left: 2px solid var(--line);
