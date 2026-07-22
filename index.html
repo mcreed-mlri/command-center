@@ -52,10 +52,10 @@
       display: flex; align-items: center; gap: 8px; flex-shrink: 0;
     }
     .icon-btn {
-      width: 42px; height: 42px; display: grid; place-items: center;
+      width: 44px; height: 44px; display: grid; place-items: center;
       background: var(--card); border: 1px solid var(--line); border-radius: 999px;
       color: var(--ink); cursor: pointer; box-shadow: var(--shadow);
-      transition: transform .14s ease, border-color .14s ease;
+      transition: transform .17s ease, border-color .17s ease, background .17s ease;
     }
     .icon-btn:hover { transform: translateY(-1px); border-color: color-mix(in srgb, var(--terracotta) 45%, var(--line)); }
     .icon-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--terracotta) 35%, transparent), var(--shadow); }
@@ -122,7 +122,9 @@
     }
     .head-meta {
       text-align: right;
-      padding: 10px 16px;
+      min-height: 44px;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 8px 16px;
       background: var(--card);
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
@@ -142,7 +144,7 @@
     @media (min-width: 960px) {
       #board {
         display: grid;
-        grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+        grid-template-columns: minmax(0, 62fr) minmax(300px, 38fr);
         gap: 16px;
         align-items: start;
       }
@@ -206,51 +208,72 @@
     .grid { display: grid; gap: 10px; grid-template-columns: 1fr; }
     .grid--tools { gap: 12px; }
 
-    .doc-list { display: flex; flex-direction: column; gap: 6px; }
+    .doc-list { display: flex; flex-direction: column; gap: 8px; }
     .doc-row {
       display: flex; align-items: center; gap: 12px;
       padding: 11px 12px; border-radius: var(--radius);
       text-decoration: none; color: inherit;
       border: 1px solid transparent;
-      transition: background .14s ease, border-color .14s ease;
+      transition: background .17s ease, border-color .17s ease, transform .17s ease;
     }
-    .doc-row:hover, .doc-row:focus-visible {
+    .doc-row:hover {
       background: var(--paper-2);
-      border-color: var(--line);
-      outline: none;
+      border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 30%, var(--line));
+      transform: translateX(2px);
     }
     .doc-row:focus-visible {
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--terracotta)) 30%, transparent);
+      background: var(--paper-2);
+      border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 30%, var(--line));
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--terracotta)) 35%, transparent);
     }
-    .doc-row .mono { width: 36px; height: 36px; font-size: 15px; border-radius: 8px; }
     .doc-row .tile-body { flex: 1; min-width: 0; }
     .doc-row .tile-name { font-size: 14px; font-weight: 600; }
     .doc-row .tile-desc { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .doc-row .tile-arrow { margin-left: 0; font-size: 14px; opacity: .5; }
-    .doc-row:hover .tile-arrow { opacity: 1; color: var(--accent, var(--terracotta)); }
+    .doc-row .tile-arrow { margin-left: 0; font-size: 14px; opacity: .75; color: var(--muted); }
+    .doc-row:hover .tile-arrow, .doc-row:focus-visible .tile-arrow { opacity: 1; color: var(--accent, var(--terracotta)); }
+    .doc-divider {
+      border: 0; border-top: 1px solid var(--line);
+      margin: 4px 0; height: 0;
+    }
+
+    /* LMS rows get a subtle resting surface so they read as clickable
+       as the larger Planning & Collaboration tiles, laid out 2×2. */
+    .dash-panel[data-section="LMS"] .doc-list {
+      display: grid; gap: 8px; grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width: 520px) {
+      .dash-panel[data-section="LMS"] .doc-list { grid-template-columns: 1fr; }
+    }
+    .dash-panel[data-section="LMS"] .doc-row {
+      background: var(--paper-2);
+      border-color: var(--line);
+    }
+    .dash-panel[data-section="LMS"] .doc-row:hover,
+    .dash-panel[data-section="LMS"] .doc-row:focus-visible {
+      background: var(--card);
+      border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 45%, var(--line));
+    }
 
     .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     @media (max-width: 400px) { .app-grid { grid-template-columns: repeat(2, 1fr); } }
     .app-tile {
-      display: flex; flex-direction: column; align-items: center; gap: 7px;
-      padding: 12px 6px; border-radius: var(--radius);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 14px 6px; border-radius: var(--radius);
       text-decoration: none; color: inherit; text-align: center;
       background: var(--paper-2); border: 1px solid var(--line);
-      transition: transform .14s ease, border-color .14s ease;
+      transition: transform .17s ease, border-color .17s ease, background .17s ease;
     }
-    .app-tile:hover, .app-tile:focus-visible {
+    .app-tile:hover {
       transform: translateY(-1px);
+      background: var(--card);
       border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 45%, var(--line));
-      outline: none;
     }
-    .app-tile .mono, .app-tile img { width: 32px; height: 32px; border-radius: 8px; }
-    .app-tile img { display: block; object-fit: contain; }
-    .app-tile .app-mono {
-      width: 32px; height: 32px; border-radius: 8px;
-      display: grid; place-items: center;
-      font-family: var(--serif); font-weight: 700; font-size: 14px;
-      color: var(--accent, var(--terracotta));
-      background: color-mix(in srgb, var(--accent, var(--terracotta)) 14%, var(--card));
+    .app-tile:focus-visible {
+      outline: none;
+      background: var(--card);
+      border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 45%, var(--line));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--terracotta)) 35%, transparent);
     }
     .app-label {
       font-size: 11px; font-weight: 600; line-height: 1.25;
@@ -289,30 +312,45 @@
       display: flex; align-items: center; gap: 14px; text-decoration: none;
       color: inherit; background: var(--paper-2); border: 1px solid var(--line);
       border-radius: var(--radius); padding: 14px 16px;
-      transition: transform .14s ease, border-color .14s ease, box-shadow .14s ease;
+      transition: transform .17s ease, border-color .17s ease, background .17s ease, box-shadow .17s ease;
     }
-    .tile:hover, .tile:focus-visible {
+    .tile:hover {
       transform: translateY(-2px);
+      background: var(--card);
+      border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 55%, var(--line));
+    }
+    .tile:focus-visible {
+      transform: translateY(-2px);
+      background: var(--card);
       border-color: color-mix(in srgb, var(--accent, var(--terracotta)) 55%, var(--line));
       outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--terracotta)) 35%, transparent), var(--shadow);
     }
-    .tile:focus-visible { box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--terracotta)) 35%, transparent), var(--shadow); }
+    /* ---- shared application-icon chip (all app logos + letter tiles) ---- */
     .mono {
-      flex: none; width: 44px; height: 44px; border-radius: 10px;
+      flex: none; width: 40px; height: 40px; border-radius: 10px;
       display: grid; place-items: center; font-family: var(--serif);
-      font-weight: 700; font-size: 20px;
+      font-weight: 700; font-size: 18px;
       color: var(--accent, var(--terracotta));
       background: color-mix(in srgb, var(--accent, var(--terracotta)) 12%, var(--card));
     }
     .mono--logo { background: var(--paper-2); }
-    .mono--logo img { width: 26px; height: 26px; display: block; }
+    .mono--logo img { width: 24px; height: 24px; display: block; object-fit: contain; }
+    /* Learning Hub's logo reads heavier than the Brightspace marks; trim it back. */
+    .mono--logo img[src*="learning-hub"] { width: 22px; height: 22px; }
+    /* D2L Academy mark is a circle with extra padding — scale up to match neighbors. */
+    .mono--logo img[src*="D2L-Symbol"] { width: 32px; height: 32px; }
+    .mono--icon svg {
+      width: 20px; height: 20px; display: block;
+      stroke: currentColor; fill: none;
+    }
     .tile-body { min-width: 0; }
     .tile-name { font-weight: 650; font-size: 15.5px; letter-spacing: -.005em; }
     .tile-desc {
       color: var(--muted); font-size: 13px; margin-top: 2px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .tile-arrow { margin-left: auto; color: var(--faint); flex: none; transition: transform .14s, color .14s; }
+    .tile-arrow { margin-left: auto; color: var(--muted); flex: none; transition: transform .17s, color .17s; }
     .tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent, var(--terracotta)); transform: translateX(3px); }
 
     /* ---- accordion tile (Drive, Monday) --------------------------- */
@@ -473,7 +511,7 @@
         </div>
         <div class="top-actions">
           <div class="search-wrap">
-            <button class="icon-btn" id="searchToggle" type="button" aria-label="Search tools" aria-expanded="false" aria-controls="searchPanel">
+            <button class="icon-btn" id="searchToggle" type="button" title="Search tools" aria-label="Search tools" aria-expanded="false" aria-controls="searchPanel">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             </button>
             <div class="search-panel" id="searchPanel">
@@ -494,8 +532,7 @@
     </div>
 
     <footer>
-      Something missing or broken?
-      Ping Marlie and it gets added.
+      Missing or outdated link? Contact <b>Marlie</b>.
     </footer>
   </div>
 
@@ -525,7 +562,7 @@
     };
 
     const LINKS = [
-      { section: "Work", name: "Google Drive", desc: "Shared files & folders", icon: "icons/google-drive.svg", accent: "#2f855a",
+      { section: "Planning & Collaboration", name: "Google Drive", desc: "Shared files and folders", icon: "icons/google-drive.svg", accent: "#2f855a",
         count: "7 folders", group: "work-acc",
         keywords: "google drive docs sheets files storage folders",
         children: [
@@ -578,7 +615,7 @@
             ] },
           { name: "External Collaboration", color: "#9aa0a6", divider: true, url: "https://drive.google.com/drive/folders/0AKgEti2nIL4SUk9PVA" },
         ] },
-      { section: "Work", name: "Monday.com", desc: "Boards, tasks & the unit's work", icon: "icons/monday.svg", accent: "#ff3d57",
+      { section: "Planning & Collaboration", name: "Monday.com", desc: "Project boards, tasks, and workflows", icon: "icons/monday.svg", accent: "#ff3d57",
         count: "4 workspaces", group: "work-acc", openLabel: "Open workspace",
         keywords: "monday project management boards workspaces lace training unit basic benefits access counsel",
         children: [
@@ -605,46 +642,66 @@
               { name: "Internal MLRI Trainings", url: "https://training-unit-hq.monday.com/boards/18421126170" },
             ] },
         ] },
-      { section: "Important Documents", name: "LACE Project Planning", desc: "Living project plan & roadmap",
+      { section: "Important Documents", name: "LACE Project Planning", desc: "Project plan and roadmap",
         url: "https://docs.google.com/document/d/1R1CGTrNL_GeQfHejfeVJF-7f2FdrvYyKOsEzAUt9ASM/edit?tab=t.0",
-        mono: "L", accent: "#4285f4", keywords: "lace project planning doc google document roadmap plan" },
-      { section: "Important Documents", name: "Training Unit Weekly Meetings", desc: "Weekly meetings folder",
+        lucide: "file-text", accent: "#4285f4", dividerAfter: true, keywords: "lace project planning doc google document roadmap plan" },
+      { section: "Important Documents", name: "Training Unit Weekly Meetings", desc: "Weekly meeting materials",
         url: "https://drive.google.com/drive/folders/1dMn9QSL7w00XIJee-wP9yVDX_l_HRg0w",
-        mono: "W", accent: "#e0a52e", keywords: "training unit weekly meetings folder agenda notes drive lace" },
-      { section: "Important Documents", name: "Faculty Database", desc: "Trainer & faculty roster",
+        lucide: "folder", accent: "#e0a52e", keywords: "training unit weekly meetings folder agenda notes drive lace" },
+      { section: "Important Documents", name: "Weekly Meeting Agenda", desc: "Enter weekly meeting agenda items here",
+        url: "https://trainingunitgroup.slack.com/docs/T0B97V7R0LB/F0BFHBVVA81",
+        lucide: "list-checks", accent: "#d1495b", dividerAfter: true, keywords: "weekly meeting agenda items slack doc canvas training unit notes" },
+      { section: "Important Documents", name: "Faculty Database", desc: "Trainer and faculty roster",
         url: "https://docs.google.com/spreadsheets/d/1RTR03mzKTT3nSD6SMJxBW8B1gu45BBAMEYDWGd5ls4g/edit",
-        mono: "F", accent: "#0f9d58", keywords: "faculty database spreadsheet trainers roster google sheets" },
-      { section: "Important Documents", name: "Curriculum Map", desc: "Course structure in Brightspace Manager",
+        lucide: "users", accent: "#0f9d58", keywords: "faculty database spreadsheet trainers roster google sheets" },
+      { section: "Important Documents", name: "Curriculum Map", desc: "Course structure and planning",
         url: "https://brightspace-manager.vercel.app/curriculum-map/",
-        mono: "C", accent: "#6b4f9e", keywords: "curriculum map courses lace brightspace manager bsm" },
+        lucide: "map", accent: "#6b4f9e", keywords: "curriculum map courses lace brightspace manager bsm" },
 
       { section: "Quick Links", name: "Slack", desc: "Team chat & channels", quick: true,
         url: "https://trainingunitgroup.slack.com/archives/C0B9C8KHHML", icon: "icons/slack.svg", mono: "S", accent: "#4a154b", keywords: "slack chat messages channels dm" },
       { section: "Quick Links", name: "Otter.ai", desc: "Meeting transcripts & notes", quick: true,
         url: "https://otter.ai/home", icon: "icons/otter.svg", mono: "O", accent: "#4b57e8", keywords: "otter transcription recording notes" },
+      { section: "Quick Links", name: "Claude", desc: "AI assistant", quick: true,
+        url: "https://claude.ai/", icon: "icons/claude.svg", mono: "C", accent: "#c15f3c", keywords: "claude ai anthropic assistant chat llm nonprofit writing" },
 
-      { section: "LMS", name: "Learning Hub", desc: "The learner front door",
+      { section: "LMS", name: "Learning Hub", desc: "Learner-facing course portal",
         url: "https://lms-discovery.vercel.app/", icon: "icons/learning-hub.png", mono: "L", accent: "#3f6b4f", keywords: "lace learning hub courses learners brightspace lms discovery" },
-      { section: "LMS", name: "Brightspace Manager", desc: "Staff / admin command center",
+      { section: "LMS", name: "Brightspace Manager", desc: "Staff administration and course management",
         url: "https://brightspace-manager.vercel.app/", icon: "icons/brightspacemanager.svg", mono: "B", accent: "#6b4f9e", keywords: "lace brightspace manager admin staff sync bsm" },
-      { section: "LMS", name: "Brightspace (D2L)", desc: "The live LMS",
+      { section: "LMS", name: "Brightspace (D2L)", desc: "Learning management system",
         url: "https://mlri.brightspace.com/d2l/home", icon: "icons/brightspace.png", mono: "B", accent: "#c2410c", keywords: "brightspace d2l lms login courses mlri" },
+      { section: "LMS", name: "D2L Academy", desc: "Certificate training and courses",
+        url: "https://community.desire2learn.com/d2l/home", icon: "icons/D2L-Symbol.png", mono: "A", accent: "#0a7285", keywords: "d2l academy certificate training courses brightspace community desire2learn professional development" },
     ];
 
-    const SECTION_ORDER = ["Work", "LMS", "Important Documents", "Quick Links"];
-    const LEFT_SECTIONS = new Set(["Work", "LMS"]);
+    const SECTION_ORDER = ["Planning & Collaboration", "LMS", "Important Documents", "Quick Links"];
+    const LEFT_SECTIONS = new Set(["Planning & Collaboration", "LMS"]);
 
     const SECTION_META = {
-      "Work": { layout: "tools" },
+      "Planning & Collaboration": { layout: "tools" },
       "LMS": { layout: "docs" },
       "Important Documents": { layout: "docs" },
       "Quick Links": { layout: "apps" },
     };
 
+    /* Lucide icon paths (MIT) — https://lucide.dev */
+    const LUCIDE = {
+      "file-text": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>',
+      "folder": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>',
+      "list-checks": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>',
+      "users": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+      "map": '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z"/><path d="M15 5.764v15"/><path d="M9 3.236v15"/></svg>',
+    };
+
     function monoHtml(item) {
-      return item.icon
-        ? '<span class="mono mono--logo" aria-hidden="true"><img src="' + item.icon + '" alt=""></span>'
-        : '<span class="mono" aria-hidden="true">' + (item.mono || "") + '</span>';
+      if (item.icon) {
+        return '<span class="mono mono--logo" aria-hidden="true"><img src="' + item.icon + '" alt=""></span>';
+      }
+      if (item.lucide && LUCIDE[item.lucide]) {
+        return '<span class="mono mono--icon" aria-hidden="true">' + LUCIDE[item.lucide] + '</span>';
+      }
+      return '<span class="mono" aria-hidden="true">' + (item.mono || "") + '</span>';
     }
 
     function searchKey(item, sec, extra) {
@@ -776,6 +833,12 @@
       el.querySelector(".tile-name").textContent = item.name;
       el.querySelector(".tile-desc").textContent = item.desc;
       list.appendChild(el);
+      if (item.dividerAfter) {
+        const hr = document.createElement("hr");
+        hr.className = "doc-divider";
+        hr.setAttribute("aria-hidden", "true");
+        list.appendChild(hr);
+      }
     }
 
     function renderAppTile(item, sec, grid) {
@@ -786,10 +849,7 @@
       else { el.href = item.url; el.target = "_blank"; el.rel = "noopener"; }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
-      const ic = item.icon
-        ? '<img src="' + item.icon + '" alt="" aria-hidden="true">'
-        : '<span class="app-mono" aria-hidden="true">' + (item.mono || "") + '</span>';
-      el.innerHTML = ic + '<span class="app-label"></span>' + (soon ? '<span class="soon-tag">soon</span>' : '');
+      el.innerHTML = monoHtml(item) + '<span class="app-label"></span>' + (soon ? '<span class="soon-tag">soon</span>' : '');
       el.querySelector(".app-label").textContent = item.name.replace("Brightspace (D2L)", "Brightspace");
       grid.appendChild(el);
     }
@@ -966,7 +1026,9 @@
     function paintTheme() {
       const dark = isDark();
       toggle.innerHTML = dark ? SUN : MOON;                 // show where the click takes you
-      toggle.setAttribute("aria-label", dark ? "Switch to light mode" : "Switch to dark mode");
+      const themeLabel = dark ? "Switch to light mode" : "Switch to dark mode";
+      toggle.setAttribute("aria-label", themeLabel);
+      toggle.setAttribute("title", themeLabel);
       if (themeMeta) themeMeta.content = dark ? "#17150f" : "#f7f3ec";
     }
     toggle.addEventListener("click", () => {
