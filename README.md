@@ -5,7 +5,7 @@ One place for every tool the MLRI Training Unit uses. A single-page launcher
 App, so you can install it to your home screen / taskbar and it works offline
 after the first visit.
 
-**Live site:** _add the Cloudflare Pages URL here once deployed_
+**Live site:** https://trainingunit.pages.dev
 
 Built for Ashley, Carolina, Olivia & Marlie. Maintained by Marlie.
 

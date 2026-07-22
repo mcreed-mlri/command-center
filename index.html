@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Training Unit — Command Center</title>
   <meta name="description" content="One place for every tool the MLRI Training Unit uses." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://trainingunit.pages.dev/" />
+  <meta property="og:title" content="Training Unit — Command Center" />
+  <meta property="og:description" content="One place for every tool the MLRI Training Unit uses." />
+  <meta property="og:image" content="https://trainingunit.pages.dev/icon.svg" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Training Unit — Command Center" />
+  <meta name="twitter:description" content="One place for every tool the MLRI Training Unit uses." />
+  <meta name="twitter:image" content="https://trainingunit.pages.dev/icon.svg" />
   <meta name="theme-color" content="#f7f3ec" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="icon.svg" type="image/svg+xml" />
@@ -353,6 +362,8 @@
     .mono--logo img { width: 24px; height: 24px; display: block; object-fit: contain; }
     /* Learning Hub's logo reads heavier than the Brightspace marks; trim it back. */
     .mono--logo img[src*="learning-hub"] { width: 22px; height: 22px; }
+    /* Brightspace (D2L) mark has extra padding in the PNG — scale up to match neighbors. */
+    .mono--logo img[src*="brightspace.png"] { width: 28px; height: 28px; }
     /* D2L Academy mark is a circle with extra padding — scale up to match neighbors. */
     .mono--logo img[src*="D2L-Symbol"] { width: 32px; height: 32px; }
     .mono--icon svg {
@@ -452,7 +463,8 @@
       margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line);
       color: var(--muted); font-size: 13px; text-align: center;
     }
-    footer b { color: var(--ink); font-weight: 650; }
+    footer a { color: var(--ink); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; }
+    footer a:hover { color: var(--terracotta); }
 
     /* ---- announcement banner -------------------------------------- */
     .announce {
@@ -531,7 +543,7 @@
     <p class="empty" id="empty">No tool matches that. Try a different word.</p>
 
     <footer>
-      Missing or outdated link? Contact <b>Marlie</b>.
+      Missing or outdated link? Contact <a href="mailto:mcreed@mlri.org">Marlie</a>.
     </footer>
   </div>
 
