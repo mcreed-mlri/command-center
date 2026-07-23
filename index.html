@@ -664,6 +664,28 @@
       border-radius: var(--radius-lg); margin-top: 16px;
     }
 
+    .results-bar {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 16px; padding: 10px 10px 10px 16px;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow);
+    }
+    .results-bar[hidden] { display: none; }
+    .results-bar-text { font-size: 14.5px; color: var(--muted); }
+    .results-bar-text strong { color: var(--ink); font-weight: 600; }
+    .results-bar-clear {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
+      font: inherit; font-size: 14px; font-weight: 600; cursor: pointer;
+      color: var(--ink); background: var(--paper-2);
+      border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px;
+      transition: transform .14s ease, border-color .14s ease;
+    }
+    .results-bar-clear:hover, .results-bar-clear:focus-visible {
+      transform: translateY(-1px); outline: none;
+      border-color: color-mix(in srgb, var(--terracotta) 55%, var(--line));
+    }
+    .results-bar-clear .rb-x { font-size: 15px; line-height: 1; color: var(--faint); }
+
     /* ---- footer ---------------------------------------------------- */
     footer {
       margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line);
@@ -750,6 +772,12 @@
       </div>
     </header>
 
+    <div class="results-bar" id="resultsBar" hidden>
+      <span class="results-bar-text" id="resultsBarText"></span>
+      <button class="results-bar-clear" id="resultsBarClear" type="button">
+        Clear search <span class="rb-x" aria-hidden="true">✕</span>
+      </button>
+    </div>
     <main id="board" aria-label="Training Unit tools"></main>
     <p class="empty" id="empty" role="status" aria-live="polite">No tool matches that. Try a different word.</p>
 
@@ -1215,6 +1243,9 @@
     const searchField = document.getElementById("searchField");
     const searchClear = document.getElementById("searchClear");
     const searchCount = document.getElementById("searchCount");
+    const resultsBar = document.getElementById("resultsBar");
+    const resultsBarText = document.getElementById("resultsBarText");
+    const resultsBarClear = document.getElementById("resultsBarClear");
 
     function escapeHtml(s) {
       return s.replace(/[&<>]/g, c => (c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;"));
@@ -1292,12 +1323,24 @@
       } else {
         searchCount.textContent = count + (count === 1 ? " tool matches" : " tools match");
       }
+      // Results bar: a visible, always-present way back to all tools while
+      // searching (the search panel may be closed but the filter still active).
+      resultsBar.hidden = !term;
+      if (term) {
+        const n = anyVisible ? count : 0;
+        resultsBarText.innerHTML = anyVisible
+          ? "Showing <strong>" + n + "</strong> result" + (n === 1 ? "" : "s") + " for “<strong>" + escapeHtml(term) + "</strong>”"
+          : "No results for “<strong>" + escapeHtml(term) + "</strong>”";
+      }
     }
     q.addEventListener("input", applyFilter);
 
-    searchClear.addEventListener("click", () => {
-      q.value = ""; applyFilter(); q.focus();
-    });
+    function clearSearch(focusEl) {
+      q.value = ""; applyFilter();
+      if (focusEl) focusEl.focus();
+    }
+    searchClear.addEventListener("click", () => clearSearch(q));
+    resultsBarClear.addEventListener("click", () => { clearSearch(); setSearchOpen(false); searchToggle.focus(); });
 
     searchToggle.addEventListener("click", () => {
       setSearchOpen(!searchPanel.classList.contains("is-open"));
