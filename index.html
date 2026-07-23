@@ -96,6 +96,7 @@
 
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
+    html, body { overflow-x: hidden; }
     body {
       margin: 0;
       font-family: var(--sans);
@@ -152,7 +153,7 @@
     h1 {
       font-family: var(--serif); font-weight: 700;
       font-size: clamp(28px, 5vw, 40px); line-height: 1.05;
-      letter-spacing: -.02em; margin: 0;
+      letter-spacing: 0; margin: 0;
     }
     .head-meta {
       text-align: right;
@@ -167,9 +168,45 @@
     .greeting { font-size: 15px; font-weight: 600; color: var(--ink); line-height: 1.2; }
     .today { font-size: 13px; color: var(--muted); margin-top: 2px; }
     @media (max-width: 640px) {
-      header.hero-band { grid-template-columns: 1fr; }
-      .head-right { flex-wrap: wrap; justify-content: space-between; width: 100%; }
-      .head-meta { text-align: left; flex: 1; }
+      body {
+        padding: max(12px, env(safe-area-inset-top)) 12px calc(28px + env(safe-area-inset-bottom));
+      }
+      header.hero-band {
+        grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 16px;
+        margin-bottom: 12px;
+      }
+      .head-right {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: stretch;
+        gap: 10px;
+        width: 100%;
+      }
+      .head-meta {
+        min-height: 44px;
+        min-width: 0;
+        text-align: left;
+        padding: 8px 12px;
+        border-radius: var(--radius);
+      }
+      .top-actions { gap: 6px; }
+      .icon-btn {
+        width: 42px;
+        height: 42px;
+        box-shadow: none;
+      }
+      .search-wrap { position: static; }
+      .search-panel {
+        position: fixed;
+        top: max(12px, env(safe-area-inset-top));
+        left: 12px;
+        right: 12px;
+        width: auto;
+        z-index: 50;
+      }
+      h1 { font-size: clamp(30px, 12vw, 40px); }
     }
 
     /* ---- dashboard grid -------------------------------------------- */
@@ -329,13 +366,122 @@
     }
     .app-label {
       font-size: 14px; font-weight: 650; line-height: 1.3;
-      letter-spacing: -.01em; color: var(--ink);
+      letter-spacing: 0; color: var(--ink);
       width: 100%; text-align: center;
     }
     .app-tile.is-soon { opacity: .55; cursor: default; }
     .app-tile.is-soon:hover { transform: none; border-color: var(--line); }
     .app-tile .soon-tag {
       margin: 0; font-size: 9px; padding: 1px 5px;
+    }
+
+    @media (max-width: 640px) {
+      .dash-panel {
+        padding: 14px 12px 12px;
+        border-radius: var(--radius);
+      }
+      .dash-panel--work { padding: 14px 12px 12px; }
+      .panel-head {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+      }
+      .tile,
+      .acc-summary,
+      .doc-row {
+        gap: 10px;
+        padding: 12px;
+      }
+      .tile,
+      .doc-row,
+      .acc-summary,
+      .sublink {
+        min-height: 48px;
+      }
+      .mono {
+        width: 36px;
+        height: 36px;
+        border-radius: 9px;
+        font-size: 16px;
+      }
+      .tile-name { font-size: 15.5px; }
+      .tile-desc,
+      .doc-row .tile-desc {
+        white-space: normal;
+        overflow: visible;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+      }
+      .tile-arrow {
+        align-self: center;
+        transform: none !important;
+      }
+      .acc-count,
+      .subfolder-count {
+        font-size: 12px;
+        padding-inline: 7px;
+      }
+      .sublinks {
+        padding: 6px;
+      }
+      .sublinks > li { margin-left: 0; }
+      .sublink {
+        gap: 8px;
+        padding: 10px;
+      }
+      .sublink-arrow { opacity: .75; }
+      .subsublinks {
+        margin-left: 7px;
+        padding-left: 9px;
+      }
+      .app-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+      .app-tile {
+        min-height: 94px;
+        padding: 12px 6px;
+        gap: 8px;
+      }
+      .app-label {
+        font-size: 13px;
+        overflow-wrap: anywhere;
+      }
+      .announce {
+        align-items: flex-start;
+        margin-top: 12px;
+        padding: 11px 12px;
+      }
+      footer {
+        margin-top: 24px;
+        padding-top: 16px;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .head-right {
+        grid-template-columns: 1fr;
+      }
+      .top-actions {
+        justify-content: flex-end;
+      }
+      .app-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .acc-count,
+      .subfolder-count {
+        display: none;
+      }
+    }
+
+    @media (hover: none) {
+      .icon-btn:hover,
+      .doc-row:hover,
+      .app-tile:hover,
+      .quick:hover,
+      .tile:hover {
+        transform: none;
+      }
     }
 
     /* legacy quick styles (search results fallback) */
@@ -399,7 +545,7 @@
       stroke: currentColor; fill: none;
     }
     .tile-body { min-width: 0; }
-    .tile-name { font-weight: 650; font-size: 16.5px; letter-spacing: -.005em; }
+    .tile-name { font-weight: 650; font-size: 16.5px; letter-spacing: 0; }
     .tile-desc {
       color: var(--muted); font-size: 14px; margin-top: 2px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -689,7 +835,7 @@
         ] },
       { section: "Important Documents", name: "LACE Project Planning", desc: "Project plan and roadmap",
         url: "https://docs.google.com/document/d/1R1CGTrNL_GeQfHejfeVJF-7f2FdrvYyKOsEzAUt9ASM/edit?tab=t.0",
-        lucide: "file-text", accent: "#4285f4", dividerAfter: true, keywords: "lace project planning doc google document roadmap plan" },
+        lucide: "map", accent: "#4285f4", dividerAfter: true, keywords: "lace project planning doc google document roadmap plan map" },
       { section: "Important Documents", name: "Meeting Notes", desc: "Monday notes from Otter",
         url: "https://training-unit-hq.monday.com/boards/18419007109",
         lucide: "file-text", accent: "#e0a52e", keywords: "meeting notes otter monday training unit weekly meetings" },
