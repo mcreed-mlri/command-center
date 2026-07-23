@@ -1,7 +1,7 @@
 /* Training Unit — Command Center
    Caches the app shell so the launcher opens instantly and works offline.
    Bump CACHE when you change the files below. */
-const CACHE = "tu-shell-v25";
+const CACHE = "tu-shell-v26";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "icon.svg", "icon-180.png", "icon-192.png", "icon-512.png",
   "icons/slack.svg", "icons/monday.svg", "icons/otter.svg", "icons/google-drive.svg",
