@@ -97,6 +97,28 @@
     }
     .search-panel input::placeholder { color: var(--faint); }
     .search-panel input:focus { outline: none; border-color: var(--terracotta); }
+    .search-field { position: relative; }
+    .search-field input { padding-right: 38px; }
+    .search-clear {
+      position: absolute; top: 50%; right: 8px; transform: translateY(-50%);
+      display: none; align-items: center; justify-content: center;
+      width: 24px; height: 24px; padding: 0; border: 0; border-radius: 999px;
+      background: transparent; color: var(--faint); cursor: pointer; font-size: 18px;
+      line-height: 1; transition: color .14s ease, background .14s ease;
+    }
+    .search-clear:hover, .search-clear:focus-visible {
+      outline: none; color: var(--ink);
+      background: color-mix(in srgb, var(--terracotta) 14%, transparent);
+    }
+    .search-field.has-text .search-clear { display: inline-flex; }
+    .search-count {
+      margin: 0 2px; font-size: 12.5px; color: var(--faint);
+    }
+    .search-count:not(:empty) { margin-top: 7px; }
+    mark.hl {
+      background: color-mix(in srgb, var(--terracotta) 26%, transparent);
+      color: inherit; border-radius: 3px; padding: 0 1px;
+    }
 
     * { box-sizing: border-box; }
     html { -webkit-text-size-adjust: 100%; }
@@ -716,7 +738,11 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
             </button>
             <div class="search-panel" id="searchPanel" inert>
-              <input id="q" type="search" placeholder="Search tools… (press /)" autocomplete="off" aria-label="Filter tools" tabindex="-1" />
+              <div class="search-field" id="searchField">
+                <input id="q" type="search" placeholder="Search tools… (press /)" autocomplete="off" aria-label="Filter tools" tabindex="-1" />
+                <button class="search-clear" id="searchClear" type="button" tabindex="-1" aria-label="Clear search" title="Clear search">×</button>
+              </div>
+              <p class="search-count" id="searchCount" role="status" aria-live="polite"></p>
             </div>
           </div>
           <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch color theme"></button>
@@ -1186,6 +1212,27 @@
     const empty = document.getElementById("empty");
     const searchToggle = document.getElementById("searchToggle");
     const searchPanel = document.getElementById("searchPanel");
+    const searchField = document.getElementById("searchField");
+    const searchClear = document.getElementById("searchClear");
+    const searchCount = document.getElementById("searchCount");
+
+    function escapeHtml(s) {
+      return s.replace(/[&<>]/g, c => (c === "&" ? "&amp;" : c === "<" ? "&lt;" : "&gt;"));
+    }
+
+    // Wrap each matching token in the element's visible text with <mark>.
+    // Stores the pristine text in dataset.raw so it can be restored when cleared.
+    function highlight(el, tokens) {
+      if (el.dataset.raw === undefined) el.dataset.raw = el.textContent;
+      const raw = el.dataset.raw;
+      if (!tokens.length) {
+        if (el.innerHTML !== raw) el.textContent = raw;
+        return;
+      }
+      const escaped = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).filter(Boolean);
+      const re = new RegExp("(" + escaped.join("|") + ")", "gi");
+      el.innerHTML = escapeHtml(raw).replace(re, '<mark class="hl">$1</mark>');
+    }
 
     function setSearchOpen(open) {
       searchPanel.classList.toggle("is-open", open);
@@ -1203,15 +1250,23 @@
 
     function applyFilter() {
       const term = q.value.trim().toLowerCase();
+      const tokens = term.split(/\s+/).filter(Boolean);
+      const matches = (hay) => tokens.every(t => hay.includes(t));
       board.classList.toggle("is-searching", !!term);
       board.setAttribute("aria-label", term ? "Search results" : "Training Unit tools");
+      searchField.classList.toggle("has-text", !!q.value);
       let anyVisible = false;
+      let count = 0;
       for (const sec of board.querySelectorAll(".dash-panel")) {
         let secVisible = false;
         for (const el of sec.querySelectorAll("[data-search]")) {
-          const match = !term || el.dataset.search.includes(term);
+          const match = !term || matches(el.dataset.search);
           el.style.display = match ? "" : "none";
-          if (match) { secVisible = true; anyVisible = true; }
+          if (match) {
+            secVisible = true; anyVisible = true;
+            // Count only top-level tiles/cards, not their nested sublinks.
+            if (term && !el.parentElement.closest("[data-search]")) count++;
+          }
           if (el.classList.contains("tile-accordion")) {
             el.open = term ? match : el.dataset.default === "open";
           }
@@ -1221,10 +1276,21 @@
         }
         sec.style.display = secVisible ? "" : "none";
       }
+      for (const t of board.querySelectorAll(".tile-name, .sublink-name, .app-label")) highlight(t, tokens);
       empty.style.display = anyVisible ? "none" : "block";
       searchToggle.classList.toggle("is-active", !!term);
+      // #searchCount is a polite live region; the #empty message covers the zero case.
+      if (!term || !anyVisible) {
+        searchCount.textContent = "";
+      } else {
+        searchCount.textContent = count + (count === 1 ? " tool matches" : " tools match");
+      }
     }
     q.addEventListener("input", applyFilter);
+
+    searchClear.addEventListener("click", () => {
+      q.value = ""; applyFilter(); q.focus();
+    });
 
     searchToggle.addEventListener("click", () => {
       setSearchOpen(!searchPanel.classList.contains("is-open"));
@@ -1243,7 +1309,8 @@
         e.preventDefault(); setSearchOpen(true);
       }
       if (e.key === "Escape" && (document.activeElement === q || searchPanel.classList.contains("is-open"))) {
-        q.value = ""; applyFilter(); setSearchOpen(false);
+        if (q.value) { q.value = ""; applyFilter(); q.focus(); }  // first Esc clears
+        else { setSearchOpen(false); }                           // then closes
       }
     });
 
