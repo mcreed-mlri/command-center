@@ -941,7 +941,7 @@
       const d = document.createElement("details");
       d.className = "tile-accordion";
       d.style.setProperty("--accent", item.accent);
-      if (item.group) d.setAttribute("name", item.group);
+      if (item.group) { d.setAttribute("name", item.group); d.dataset.group = item.group; }
       if (item.open) { d.open = true; d.dataset.default = "open"; }
       const childText = item.children
         .flatMap(c => [c.name, ...(c.children ? c.children.map(g => g.name) : [])])
@@ -1268,6 +1268,13 @@
             if (term && !el.parentElement.closest("[data-search]")) count++;
           }
           if (el.classList.contains("tile-accordion")) {
+            // While searching, drop the exclusive <details name> grouping so
+            // several matching accordions (e.g. Google + Monday) can stay open
+            // at once; restore it when the search clears.
+            if (el.dataset.group) {
+              if (term) el.removeAttribute("name");
+              else el.setAttribute("name", el.dataset.group);
+            }
             el.open = term ? match : el.dataset.default === "open";
           }
           if (el.classList.contains("subfolder")) {
