@@ -161,6 +161,77 @@
     .vbtn[aria-pressed="true"] { background:var(--terracotta); color:#fff; }
     @media (max-width:520px){ .head-tools { width:100%; justify-content:space-between; } .vbtn { padding:5px 10px; font-size:12px; } }
 
+    /* ---- week view (focused: just this week) ----------------------- */
+    .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+    .wk-titles { min-width:0; }
+    .wk-range { font-family:var(--serif); font-size:18px; font-weight:700; line-height:1.2; }
+    .wk-rel { font-size:12.5px; color:var(--faint); margin-top:2px; }
+    .wk-rel b { color:var(--terracotta); font-weight:650; }
+    .wk-nav { margin-left:auto; display:flex; gap:6px; flex:none; }
+    .wk-nav button {
+      font:inherit; font-size:18px; line-height:1; width:34px; height:34px; cursor:pointer;
+      background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
+      color:var(--ink); display:grid; place-items:center; transition:border-color .15s, transform .15s;
+    }
+    .wk-nav button:hover { border-color:color-mix(in srgb,var(--terracotta) 45%,var(--line)); transform:translateY(-1px); }
+    .wk-nav button.wk-now { width:auto; padding:0 12px; font-size:13px; font-weight:650; }
+
+    .wk-group { margin-bottom:16px; }
+    .wk-group:last-child { margin-bottom:0; }
+    .wk-day-head {
+      display:flex; align-items:center; gap:8px; padding:0 2px 7px; margin-bottom:8px;
+      border-bottom:1px solid var(--line);
+    }
+    .wk-dow { font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .wk-date { font-size:12px; color:var(--faint); }
+    .wk-day-n { margin-left:auto; font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
+    .wk-group.is-today .wk-dow { color:var(--terracotta); }
+    .wk-group.is-today .wk-day-head { border-bottom-color:color-mix(in srgb,var(--terracotta) 45%,var(--line)); }
+    .wk-group.is-overdue .wk-dow { color:#d64545; }
+
+    .wk-list { display:flex; flex-direction:column; gap:6px; }
+    .wk-task {
+      display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit;
+      background:var(--paper-2); border:1px solid var(--line); border-left:3px solid var(--accent,var(--line));
+      border-radius:10px; padding:10px 13px;
+      transition:transform .13s, border-color .13s, box-shadow .13s;
+    }
+    .wk-task:hover {
+      transform:translateX(2px); box-shadow:var(--shadow);
+      border-color:color-mix(in srgb,var(--terracotta) 40%,var(--line));
+      border-left-color:var(--accent,var(--line));
+    }
+    .wk-main { min-width:0; flex:1; }
+    .wk-name { display:block; font-size:14.5px; font-weight:600; line-height:1.35; }
+    .wk-meta { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+    .wk-right { flex:none; text-align:right; }
+    .wk-due { display:block; font-size:12px; color:var(--faint); margin-top:3px; font-variant-numeric:tabular-nums; }
+    .wk-due.od { color:#d64545; font-weight:650; }
+
+    .wk-ongoing { margin-top:18px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--paper-2); }
+    .wk-ongoing > summary {
+      list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
+      padding:11px 14px; font-weight:650; font-size:14px;
+    }
+    .wk-ongoing > summary::-webkit-details-marker { display:none; }
+    .wk-ongoing[open] .bucket-chev { transform:rotate(90deg); }
+    .wk-ongoing .wk-list { padding:0 8px 8px; }
+    .wk-ongoing .wk-task { background:var(--card); }
+
+    .wk-empty { text-align:center; padding:26px 12px; border:1px dashed var(--line); border-radius:var(--radius); background:var(--paper-2); }
+    .wk-empty p { margin:0; color:var(--muted); font-size:14.5px; }
+    .wk-empty .wk-jump {
+      font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
+      background:var(--card); border:1px solid color-mix(in srgb,var(--terracotta) 35%,var(--line));
+      color:var(--terracotta); border-radius:999px; padding:7px 15px; transition:transform .14s, background .14s;
+    }
+    .wk-empty .wk-jump:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--terracotta) 10%,var(--card)); }
+    @media (max-width:560px){
+      .wk-task { align-items:flex-start; flex-direction:column; gap:6px; }
+      .wk-right { text-align:left; }
+      .wk-due { display:inline; margin:0 0 0 10px; }
+    }
+
     /* ---- kanban board (read-only visual) --------------------------- */
     .kanban { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
     @media (max-width:720px){ .kanban { grid-template-columns:1fr; } }
@@ -316,7 +387,8 @@
             <h2 class="panel-title">My Monday Tasks</h2>
             <div class="head-tools">
               <div class="view-toggle" role="group" aria-label="View mode">
-                <button class="vbtn" type="button" data-view="list" aria-pressed="true">List</button>
+                <button class="vbtn" type="button" data-view="week" aria-pressed="true">Week</button>
+                <button class="vbtn" type="button" data-view="list" aria-pressed="false">List</button>
                 <button class="vbtn" type="button" data-view="board" aria-pressed="false">Board</button>
                 <button class="vbtn" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
               </div>
@@ -335,7 +407,8 @@
               </label>
             </div>
           </div>
-          <div id="buckets"></div>
+          <div id="week"></div>
+          <div id="buckets" hidden></div>
           <div id="kanban" hidden></div>
           <div id="calendar" hidden></div>
         </section>
@@ -479,6 +552,14 @@
       return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
     }
     const STATUS_COLOR = { work:"#e0a52e", wait:"var(--wait)", idle:"var(--idle)" };
+    const TODAY_ISO = toIso(today);
+    function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
+    // Weeks run Monday → Sunday.
+    function startOfWeek(d){ return addDays(d, -((d.getDay() + 6) % 7)); }
+    const THIS_WEEK = startOfWeek(today);
+    function weekIndexOf(iso){
+      return Math.round((startOfWeek(parseDue(iso)) - THIS_WEEK) / (7 * MS_DAY));
+    }
 
     /* ---- buckets by time horizon ----------------------------------- */
     const BUCKETS = [
@@ -489,12 +570,18 @@
       { key:"none",    cls:"b-none",    label:"No due date",open:false, test:n => n===null },
     ];
 
+    const VIEWS = ["week", "list", "board", "calendar"];
     let activeStatus = "all";
     let activeArea = "all";
-    let view = "list";
+    let view = "week";
     let calMonth = today.getMonth();
     let calYear = today.getFullYear();
-    try { view = localStorage.getItem("marlie-view") || "list"; } catch(e){}
+    let weekOffset = 0;               // 0 = this week, 1 = next week, …
+    try {
+      const saved = localStorage.getItem("marlie-view-v2");
+      if (VIEWS.includes(saved)) view = saved;
+    } catch(e){}
+    const weekEl = document.getElementById("week");
     const bucketsEl = document.getElementById("buckets");
     const kanbanEl = document.getElementById("kanban");
     const calendarEl = document.getElementById("calendar");
@@ -529,7 +616,12 @@
 
     function refreshTasks(){
       renderFilters();
-      if (view === "board") renderKanban();
+      renderView();
+    }
+
+    function renderView(){
+      if (view === "week") renderWeek();
+      else if (view === "board") renderKanban();
       else if (view === "calendar") renderCalendar();
       else renderBuckets();
     }
@@ -625,6 +717,161 @@
       }
       if (!shown){
         bucketsEl.innerHTML = '<p class="list-empty">Nothing in this filter. 🎉</p>';
+      }
+    }
+
+    /* ---- week view (focused: just what's due this week) ------------ */
+    function relWeekLabel(n){
+      if (n === 0) return "This week";
+      if (n === 1) return "Next week";
+      if (n === -1) return "Last week";
+      return n > 0 ? "In " + n + " weeks" : Math.abs(n) + " weeks ago";
+    }
+    function fmtDayLabel(d){
+      const iso = toIso(d);
+      if (iso === TODAY_ISO) return "Today";
+      if (iso === toIso(addDays(today, 1))) return "Tomorrow";
+      return d.toLocaleDateString(undefined, { weekday:"long" });
+    }
+    function weekTaskRow(t, opts){
+      const st = STATUS[t.s];
+      const n = daysOut(t.due);
+      const a = document.createElement("a");
+      a.className = "wk-task";
+      a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.style.setProperty("--accent", STATUS_COLOR[t.s]);
+      a.innerHTML =
+        '<span class="wk-main"><span class="wk-name"></span><span class="wk-meta"></span></span>' +
+        '<span class="wk-right"><span class="status-pill ' + st.cls + '">' +
+        '<span class="sd" aria-hidden="true"></span>' + st.label + '</span>' +
+        (opts && opts.showDue ? '<span class="wk-due' + (n !== null && n < 0 ? ' od' : '') + '"></span>' : '') +
+        '</span>';
+      a.querySelector(".wk-name").textContent = t.n;
+      a.querySelector(".wk-meta").textContent =
+        t.cat + " · " + BOARDS[t.b].label + (t.shared ? " · shared" : "");
+      if (opts && opts.showDue) a.querySelector(".wk-due").textContent = fmtDue(t.due);
+      return a;
+    }
+    function weekGroup(cls, label, sub, items, opts){
+      const g = document.createElement("section");
+      g.className = "wk-group " + cls;
+      const head = document.createElement("div");
+      head.className = "wk-day-head";
+      head.innerHTML = '<span class="wk-dow"></span><span class="wk-date"></span>' +
+        '<span class="wk-day-n">' + items.length + '</span>';
+      head.querySelector(".wk-dow").textContent = label;
+      head.querySelector(".wk-date").textContent = sub || "";
+      g.appendChild(head);
+      const list = document.createElement("div");
+      list.className = "wk-list";
+      items.forEach(t => list.appendChild(weekTaskRow(t, opts)));
+      g.appendChild(list);
+      return g;
+    }
+
+    function renderWeek(){
+      weekEl.innerHTML = "";
+      const start = addDays(THIS_WEEK, weekOffset * 7);
+      const end = addDays(start, 6);
+      const startIso = toIso(start), endIso = toIso(end);
+      const isCurrent = weekOffset === 0;
+      const tasks = visibleTasks();
+
+      // On the current week, anything already past (including earlier this
+      // week) rolls up into one Overdue group so the days stay forward-looking.
+      const cutoff = isCurrent ? TODAY_ISO : startIso;
+      const overdue = isCurrent ? tasks.filter(t => t.due && t.due < TODAY_ISO).sort(byDue) : [];
+      const inWeek = tasks.filter(t => t.due && t.due >= cutoff && t.due <= endIso);
+      const ongoing = isCurrent ? tasks.filter(t => !t.due && t.s === "work").sort((a,b) => a.n.localeCompare(b.n)) : [];
+
+      /* header */
+      const head = document.createElement("div");
+      head.className = "wk-head";
+      const titles = document.createElement("div");
+      titles.className = "wk-titles";
+      const sameMonth = start.getMonth() === end.getMonth();
+      const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " – " +
+        end.toLocaleDateString(undefined, sameMonth ? { day:"numeric" } : { month:"short", day:"numeric" });
+      const count = overdue.length + inWeek.length;
+      titles.innerHTML = '<div class="wk-range"></div><div class="wk-rel"></div>';
+      titles.querySelector(".wk-range").textContent = range;
+      titles.querySelector(".wk-rel").innerHTML =
+        '<b>' + relWeekLabel(weekOffset) + '</b> · ' +
+        (count ? count + (count === 1 ? " task" : " tasks") + (isCurrent ? " to do" : " due") : "nothing due");
+      const nav = document.createElement("div");
+      nav.className = "wk-nav";
+      if (!isCurrent){
+        const nowBtn = document.createElement("button");
+        nowBtn.type = "button"; nowBtn.className = "wk-now"; nowBtn.textContent = "This week";
+        nowBtn.addEventListener("click", () => { weekOffset = 0; renderWeek(); });
+        nav.appendChild(nowBtn);
+      }
+      const prev = document.createElement("button");
+      prev.type = "button"; prev.setAttribute("aria-label", "Previous week"); prev.textContent = "‹";
+      prev.addEventListener("click", () => { weekOffset--; renderWeek(); });
+      const next = document.createElement("button");
+      next.type = "button"; next.setAttribute("aria-label", "Next week"); next.textContent = "›";
+      next.addEventListener("click", () => { weekOffset++; renderWeek(); });
+      nav.append(prev, next);
+      head.append(titles, nav);
+      weekEl.appendChild(head);
+
+      /* overdue carry-over */
+      if (overdue.length){
+        weekEl.appendChild(weekGroup("is-overdue", "Overdue", "still open", overdue, { showDue:true }));
+      }
+
+      /* one group per day that has something */
+      const byDate = {};
+      inWeek.forEach(t => { (byDate[t.due] = byDate[t.due] || []).push(t); });
+      for (let i = 0; i < 7; i++){
+        const d = addDays(start, i);
+        const iso = toIso(d);
+        const items = (byDate[iso] || []).sort((a,b) => a.n.localeCompare(b.n));
+        if (!items.length) continue;
+        weekEl.appendChild(weekGroup(
+          iso === TODAY_ISO ? "is-today" : "",
+          fmtDayLabel(d),
+          d.toLocaleDateString(undefined, { month:"short", day:"numeric" }),
+          items
+        ));
+      }
+
+      /* empty state — offer a jump to the next week that has anything */
+      if (!overdue.length && !inWeek.length){
+        const empty = document.createElement("div");
+        empty.className = "wk-empty";
+        const p = document.createElement("p");
+        p.textContent = weekOffset < 0 ? "Nothing was due this week." : "Nothing due this week. 🎉";
+        empty.appendChild(p);
+        const upcoming = tasks.filter(t => t.due && t.due > endIso).sort(byDue)[0];
+        if (upcoming){
+          const jump = document.createElement("button");
+          jump.type = "button"; jump.className = "wk-jump";
+          const target = weekIndexOf(upcoming.due);
+          jump.textContent = "Next up: " + parseDue(upcoming.due)
+            .toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " →";
+          jump.addEventListener("click", () => { weekOffset = target; renderWeek(); });
+          empty.appendChild(jump);
+        }
+        weekEl.appendChild(empty);
+      }
+
+      /* things in flight with no date — current week only */
+      if (ongoing.length){
+        const det = document.createElement("details");
+        det.className = "wk-ongoing";
+        det.open = false;
+        const sum = document.createElement("summary");
+        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span>' +
+          '<span>In progress · no due date</span>' +
+          '<span class="bucket-count">' + ongoing.length + '</span>';
+        det.appendChild(sum);
+        const list = document.createElement("div");
+        list.className = "wk-list";
+        ongoing.forEach(t => list.appendChild(weekTaskRow(t)));
+        det.appendChild(list);
+        weekEl.appendChild(det);
       }
     }
 
@@ -791,19 +1038,18 @@
       calendarEl.appendChild(wrap);
     }
 
-    /* ---- view toggle (List / Board / Calendar) --------------------- */
+    /* ---- view toggle (Week / List / Board / Calendar) -------------- */
     function setView(v){
       view = v;
-      try { localStorage.setItem("marlie-view", v); } catch(e){}
+      try { localStorage.setItem("marlie-view-v2", v); } catch(e){}
       document.querySelectorAll(".vbtn").forEach(b =>
         b.setAttribute("aria-pressed", b.dataset.view===v ? "true" : "false"));
+      weekEl.hidden = v !== "week";
       bucketsEl.hidden = v !== "list";
       kanbanEl.hidden = v !== "board";
       calendarEl.hidden = v !== "calendar";
       statusFilterGroup.style.display = v === "board" ? "none" : "";
-      if (v === "board") renderKanban();
-      else if (v === "calendar") renderCalendar();
-      else renderBuckets();
+      renderView();
     }
     document.querySelectorAll(".vbtn").forEach(b =>
       b.addEventListener("click", () => setView(b.dataset.view)));
