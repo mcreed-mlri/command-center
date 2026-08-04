@@ -72,7 +72,7 @@ const BOARDS = [
 ];
 
 /* Monday status label -> the page's three states. Unset counts as not started.
-   Anything in DONE drops off the page entirely. */
+   Done tasks stay in the snapshot and show in the week view's "Done this week". */
 const STATUS_MAP = {
   "working on it": "work",
   "waiting/paused": "wait",
@@ -221,8 +221,8 @@ function toTask(rec, board, userId, unmapped) {
   if (!rec.people.includes(userId)) return null;
 
   const label = (rec.status || "").trim();
-  if (DONE.has(label.toLowerCase())) return null;
-  let s = STATUS_MAP[label.toLowerCase()];
+  const isDone = DONE.has(label.toLowerCase());
+  let s = isDone ? "done" : STATUS_MAP[label.toLowerCase()];
   if (!s) { unmapped.add(`${board.heading}: "${label}"`); s = "idle"; }
 
   const date = (rec.date || "").trim();
