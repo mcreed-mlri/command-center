@@ -1,9 +1,14 @@
 name: Refresh Monday snapshot
 
-# Regenerates the task list baked into marlie/index.html from the live LACE
-# boards and commits it, so /marlie stays current without anyone re-pulling by
-# hand. Needs the repo secret MONDAY_API_TOKEN (Monday → avatar → Developers →
-# My access tokens).
+# Regenerates the task lists baked into each team focus page from the live LACE
+# boards and commits them, so /marlie, /olivia, /carolina, and /ashley stay
+# current without anyone re-pulling by hand. Needs the repo secret
+# MONDAY_API_TOKEN (Monday → avatar → Developers → My access tokens).
+#
+# Every page is wired up — the Monday user ids are baked into the script, so
+# these secrets are optional overrides, only needed if someone's id changes:
+#   MONDAY_USER_ID_MARLIE, MONDAY_USER_ID_OLIVIA, MONDAY_USER_ID_CAROLINA,
+#   MONDAY_USER_ID_ASHLEY
 
 on:
   schedule:
@@ -29,10 +34,14 @@ jobs:
         with:
           node-version: "20"
 
-      - name: Regenerate the snapshot
+      - name: Regenerate snapshots
         shell: bash
         env:
           MONDAY_API_TOKEN: ${{ secrets.MONDAY_API_TOKEN }}
+          MONDAY_USER_ID_MARLIE: ${{ secrets.MONDAY_USER_ID_MARLIE }}
+          MONDAY_USER_ID_OLIVIA: ${{ secrets.MONDAY_USER_ID_OLIVIA }}
+          MONDAY_USER_ID_CAROLINA: ${{ secrets.MONDAY_USER_ID_CAROLINA }}
+          MONDAY_USER_ID_ASHLEY: ${{ secrets.MONDAY_USER_ID_ASHLEY }}
         run: |
           set -o pipefail
           node scripts/refresh-tasks.mjs | tee /tmp/refresh.log
@@ -44,15 +53,16 @@ jobs:
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Commit the refreshed page
+      - name: Commit refreshed pages
         shell: bash
         run: |
-          if git diff --quiet -- marlie/index.html; then
+          changed=$(git diff --name-only -- marlie/index.html olivia/index.html carolina/index.html ashley/index.html || true)
+          if [ -z "$changed" ]; then
             echo "Nothing changed — no commit."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add marlie/index.html
-          git commit -m "Refresh Marlie's Monday task snapshot"
+          git add marlie/index.html olivia/index.html carolina/index.html ashley/index.html
+          git commit -m "Refresh team Monday task snapshots"
           git push

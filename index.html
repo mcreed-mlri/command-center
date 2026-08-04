@@ -415,6 +415,52 @@
       margin: 0; font-size: 9px; padding: 1px 5px;
     }
 
+    /* ---- focus page menu -------------------------------------------- */
+    /* A quiet pill under the hero. Collapsed by default so the page opens on
+       the team's tools, not on a roster of who else you could go look at. */
+    .focus-nav { display: flex; justify-content: flex-end; margin: 0 0 14px; }
+    .focus-menu { position: relative; }
+    .focus-menu > summary {
+      list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12.5px; font-weight: 600; color: var(--muted);
+      background: var(--paper-2); border: 1px solid var(--line); border-radius: 999px;
+      padding: 6px 13px; transition: color .15s, border-color .15s, background .15s;
+    }
+    .focus-menu > summary::-webkit-details-marker { display: none; }
+    .focus-menu > summary:hover,
+    .focus-menu[open] > summary {
+      color: var(--ink); background: var(--card);
+      border-color: color-mix(in srgb, var(--terracotta) 40%, var(--line));
+    }
+    .focus-menu > summary:focus-visible {
+      outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--terracotta) 30%, transparent);
+    }
+    .fm-person { width: 14px; height: 14px; flex: none; }
+    .fm-chev { font-size: 9px; transition: transform .16s; }
+    .focus-menu[open] .fm-chev { transform: rotate(180deg); }
+    .focus-list {
+      position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
+      min-width: 186px; list-style: none; margin: 0; padding: 6px;
+      background: var(--card); border: 1px solid var(--line);
+      border-radius: var(--radius); box-shadow: var(--shadow-lg);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .focus-list a {
+      display: flex; align-items: center; gap: 9px; padding: 7px 9px;
+      border-radius: 8px; text-decoration: none; color: inherit;
+      font-size: 13.5px; font-weight: 600;
+    }
+    .focus-list a:hover, .focus-list a:focus-visible { outline: none; background: var(--paper-2); }
+    .fm-mono {
+      width: 24px; height: 24px; border-radius: 50%; flex: none;
+      display: grid; place-items: center; font-family: var(--serif);
+      font-weight: 700; font-size: 12px; color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 14%, var(--card));
+    }
+    @media (max-width: 640px) { .focus-nav { justify-content: stretch; } .focus-menu { width: 100%; }
+      .focus-menu > summary { width: 100%; justify-content: center; }
+      .focus-list { left: 0; right: 0; } }
+
     @media (max-width: 640px) {
       .dash-col,
       .panel-body,
@@ -809,6 +855,17 @@
       </div>
     </header>
 
+    <div class="focus-nav">
+      <details class="focus-menu" id="focusMenu">
+        <summary>
+          <svg class="fm-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Go to your focus page</span>
+          <span class="fm-chev" aria-hidden="true">▾</span>
+        </summary>
+        <ul class="focus-list" id="focusList"></ul>
+      </details>
+    </div>
+
     <div class="results-bar" id="resultsBar" hidden>
       <span class="results-bar-text" id="resultsBarText"></span>
       <button class="results-bar-clear" id="resultsBarClear" type="button">
@@ -841,6 +898,8 @@
        - keywords: extra words that make it findable in search
        - soon: true  → shows the tile dimmed with a "soon" tag and no
          link, for tools that aren't live yet (no dead clicks).
+       - internal: true → the url is a page on this site, so it opens in
+         the same tab instead of a new one (see the Team Pages section).
        ================================================================ */
     const ANNOUNCEMENT = {
       id:   "",   // bump this whenever you change `text` (e.g. "2026-07-21")
@@ -973,6 +1032,16 @@
       "Quick Links": { layout: "apps" },
     };
 
+    /* The personal focus pages. Deliberately behind a collapsed menu rather
+       than on the board: the point is a quick door to your own page, not a
+       directory of everyone else's. */
+    const FOCUS_PAGES = [
+      { name: "Ashley",   url: "ashley/",   mono: "A", accent: "#7d4f9e" },
+      { name: "Carolina", url: "carolina/", mono: "C", accent: "#4f8a5c" },
+      { name: "Olivia",   url: "olivia/",   mono: "O", accent: "#a8553d" },
+      { name: "Marlie",   url: "marlie/",   mono: "M", accent: "#3d6ea8" },
+    ];
+
     const SR_NEW_TAB = '<span class="sr-only"> (opens in new tab)</span>';
     const SR_SOON = '<span class="sr-only">, coming soon</span>';
 
@@ -1104,7 +1173,7 @@
         el.setAttribute("aria-disabled", "true");
         el.setAttribute("role", "group");
         el.setAttribute("aria-label", item.name + ". " + item.desc + ". Coming soon.");
-      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+      } else { el.href = item.url; if (!item.internal) { el.target = "_blank"; el.rel = "noopener noreferrer"; } }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
       el.innerHTML =
@@ -1114,7 +1183,7 @@
           '<div class="tile-desc"></div>' +
         '</span>' +
         (soon ? '<span class="soon-tag">soon</span>' + SR_SOON
-              : '<span class="tile-arrow" aria-hidden="true">→</span>' + SR_NEW_TAB);
+              : '<span class="tile-arrow" aria-hidden="true">→</span>' + (item.internal ? "" : SR_NEW_TAB));
       el.querySelector(".tile-name").textContent = item.name;
       el.querySelector(".tile-desc").textContent = item.desc;
       grid.appendChild(el);
@@ -1128,7 +1197,7 @@
         el.setAttribute("aria-disabled", "true");
         el.setAttribute("role", "group");
         el.setAttribute("aria-label", item.name + ". " + item.desc + ". Coming soon.");
-      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+      } else { el.href = item.url; if (!item.internal) { el.target = "_blank"; el.rel = "noopener noreferrer"; } }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
       el.innerHTML =
@@ -1138,7 +1207,8 @@
           '<div class="tile-desc"></div>' +
         '</span>' +
         (soon ? '<span class="soon-tag">soon</span>' + SR_SOON
-              : '<span class="tile-arrow" aria-hidden="true">↗</span>' + SR_NEW_TAB);
+              : '<span class="tile-arrow" aria-hidden="true">' + (item.internal ? "→" : "↗") + '</span>' +
+                (item.internal ? "" : SR_NEW_TAB));
       el.querySelector(".tile-name").textContent = item.name;
       el.querySelector(".tile-desc").textContent = item.desc;
       const li = document.createElement("li");
@@ -1163,11 +1233,11 @@
         el.setAttribute("aria-disabled", "true");
         el.setAttribute("role", "group");
         el.setAttribute("aria-label", item.name + ". Coming soon.");
-      } else { el.href = item.url; el.target = "_blank"; el.rel = "noopener noreferrer"; }
+      } else { el.href = item.url; if (!item.internal) { el.target = "_blank"; el.rel = "noopener noreferrer"; } }
       el.style.setProperty("--accent", item.accent);
       el.dataset.search = searchKey(item, sec);
       el.innerHTML = monoHtml(item) + '<span class="app-label"></span>' +
-        (soon ? '<span class="soon-tag">soon</span>' + SR_SOON : SR_NEW_TAB);
+        (soon ? '<span class="soon-tag">soon</span>' + SR_SOON : item.internal ? "" : SR_NEW_TAB);
       el.querySelector(".app-label").textContent = item.name.replace("Brightspace (D2L)", "Brightspace");
       const li = document.createElement("li");
       li.appendChild(el);
@@ -1235,6 +1305,39 @@
     }
 
     board.append(leftCol, rightCol);
+
+    /* ---- focus page menu ------------------------------------------- */
+    (function renderFocusMenu() {
+      const menu = document.getElementById("focusMenu");
+      const list = document.getElementById("focusList");
+
+      for (const p of FOCUS_PAGES) {
+        const a = document.createElement("a");
+        a.href = p.url;                       // same-site, so same tab
+        a.style.setProperty("--accent", p.accent);
+        const mono = document.createElement("span");
+        mono.className = "fm-mono";
+        mono.setAttribute("aria-hidden", "true");
+        mono.textContent = p.mono;
+        const name = document.createElement("span");
+        name.textContent = p.name;
+        a.append(mono, name);
+        const li = document.createElement("li");
+        li.appendChild(a);
+        list.appendChild(li);
+      }
+
+      // <details> has no built-in dismiss, so wire up the two people expect.
+      document.addEventListener("click", (e) => {
+        if (menu.open && !menu.contains(e.target)) menu.open = false;
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && menu.open) {
+          menu.open = false;
+          menu.querySelector("summary").focus();
+        }
+      });
+    })();
 
     /* ---- announcement --------------------------------------------- */
     /* Shows the banner unless its `id` was already dismissed on this device.
