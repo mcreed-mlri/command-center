@@ -655,12 +655,15 @@
     areaSelect.addEventListener("change", () => { activeArea = areaSelect.value; refreshTasks(); });
 
     // Sort by soonest due date; undated tasks fall to the end.
+    // Ties break on status then name, so what's in progress leads its day and
+    // the order never depends on how the generated TASKS array happens to sit.
+    const S_RANK = { work:0, wait:1, idle:2 };
     function byDue(a, b){
       const da = daysOut(a.due), db = daysOut(b.due);
-      if (da===null && db===null) return 0;
-      if (da===null) return 1;
-      if (db===null) return -1;
-      return da - db;
+      if (da !== null && db !== null && da !== db) return da - db;
+      if (da === null && db !== null) return 1;
+      if (db === null && da !== null) return -1;
+      return S_RANK[a.s] - S_RANK[b.s] || a.n.localeCompare(b.n);
     }
 
     function renderBuckets(){
