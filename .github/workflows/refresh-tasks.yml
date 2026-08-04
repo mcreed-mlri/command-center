@@ -1,0 +1,58 @@
+name: Refresh Monday snapshot
+
+# Regenerates the task list baked into marlie/index.html from the live LACE
+# boards and commits it, so /marlie stays current without anyone re-pulling by
+# hand. Needs the repo secret MONDAY_API_TOKEN (Monday → avatar → Developers →
+# My access tokens).
+
+on:
+  schedule:
+    # 07:17 UTC — 3:17am in Boston on EDT, 2:17am on EST. Off the hour on
+    # purpose: :00 is the busiest minute on GitHub's scheduler.
+    - cron: "17 7 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-tasks
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Regenerate the snapshot
+        shell: bash
+        env:
+          MONDAY_API_TOKEN: ${{ secrets.MONDAY_API_TOKEN }}
+        run: |
+          set -o pipefail
+          node scripts/refresh-tasks.mjs | tee /tmp/refresh.log
+          {
+            echo "### Monday refresh"
+            echo
+            echo '```'
+            cat /tmp/refresh.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Commit the refreshed page
+        shell: bash
+        run: |
+          if git diff --quiet -- marlie/index.html; then
+            echo "Nothing changed — no commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add marlie/index.html
+          git commit -m "Refresh Marlie's Monday task snapshot"
+          git push
