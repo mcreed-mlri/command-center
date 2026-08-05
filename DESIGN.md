@@ -202,7 +202,8 @@ Shared tokens live in [`tokens.css`](tokens.css), synced with LACE
 
 **Key Characteristics:**
 
-- Warm cream paper field with layered canvas wash — blue aloft, rust and olive at the sides
+- Salt-washed neutral paper under a Cape Cod sunrise — the warmth is held entirely in the sky (apricot core off the top-right, peach across the top, a cool layer aloft on the far side), with sea glass rising from the bottom-left. Viewport-anchored, so the light stays put as the page scrolls
+- Warm sky over cool ground, never warm over warm: the neutral ladder stays off-yellow on purpose, because saturated peach over cream paper is what turns resting surfaces khaki
 - Per-item `--accent` inheritance into four fixed slots: monogram tint, hover border, arrow, focus ring
 - A three-surface tonal ladder — page → resting object → raised object — that inverts on hover
 - Hairline `1px` borders as the primary structural device; shadow is atmosphere, not hierarchy
@@ -387,7 +388,7 @@ slides — and disappears entirely under `prefers-reduced-motion`.
 
 ### Shadow Vocabulary
 
-- **Ambient** (`box-shadow: 0 1px 2px rgba(28,26,23,.04), 0 6px 20px -6px rgba(28,26,23,.10)`): Panels, the header band, the head-meta chip, the results bar, the announcement banner. Present at rest, unnoticed.
+- **Ambient** (`--shadow: 0 1px 2px rgba(38,54,63,.055), 0 9px 28px -9px rgba(38,54,63,.14)`): Panels, the header band, the head-meta chip, the results bar, the announcement banner. Present at rest, unnoticed. The tint is cool slate, not brown — a warm shadow over the sunrise reads as grime, a cool one as shade.
 - **Ambient, dark** (`box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -8px rgba(0,0,0,.5)`): The same role, much stronger alphas, because a dark ground swallows a 4% shadow.
 - **Overlay** (`box-shadow: 0 2px 4px rgba(28,26,23,.05), 0 14px 36px -10px rgba(28,26,23,.14)`): Defined once and used once — the focus-page dropdown on the launcher. It is the only element in the product that genuinely floats.
 - **Accent bloom** (`box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--link-accent) 35%, transparent)`): Pin and quick-link rows on hover only. A tinted glow in the item's own pigment, not a neutral shadow.

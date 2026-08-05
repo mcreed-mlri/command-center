@@ -1,21 +1,29 @@
 /* ============================================================================
    Training Unit Command Center — shared design tokens
-   Studio & Halcyon Palette: Warm paper field, luminous golden-peach studio bloom,
-   steel blue interactive signal, terracotta rust place marks.
-   Synced with LACE Learning Hub app/globals.css.
+   Cape Cod Palette: Salt-washed neutral paper, a sunrise held to the sky —
+   apricot off the top-right corner, sea glass rising from the bottom-left.
+   Steel blue interactive signal, terracotta rust place marks.
+
+   The light neutrals INTENTIONALLY diverge from LACE Learning Hub
+   app/globals.css, which still runs the warm cream ladder. Re-syncing this file
+   wholesale will put the mud back: a yellow paper ladder under a peach bloom
+   turns every resting surface khaki. Port the dark block freely; port the light
+   neutrals only with this in mind.
    ========================================================================= */
 :root {
-  /* Neutrals — warm studio paper ladder */
-  --paper: #f7f5ef;
-  --paper-deep: #eae5da;
-  --paper-2: #efebe2;
-  --hover-tint: #f8f6f0;
+  /* Neutrals — salt-washed paper ladder. Cooled off the old cream: a yellow
+     ladder under a peach bloom turned every resting surface khaki. Holding the
+     surfaces neutral is what lets the sunrise stay the only warm thing here. */
+  --paper: #f5f5f1;
+  --paper-deep: #e4e6e0;
+  --paper-2: #ebece7;
+  --hover-tint: #f2f3ef;
   --card: #ffffff;
-  --line: #ded8cd;
-  --line-soft: #e8e2d7;
-  --ink: #171511;
-  --muted: #544e45;
-  --faint: #6e675d;
+  --line: #d9dbd4;
+  --line-soft: #e4e6e0;
+  --ink: #151719;
+  --muted: #4f575c;
+  --faint: #6b747a;
 
   /* Brand — steel blue (interactive signal ONLY: focus, links, toggles, primary buttons) */
   --brand: #1a5aa0;
@@ -49,13 +57,24 @@
   --hue-8: #b84d32;
   --hue-8-tint: #f9ebe6;
 
-  /* Page canvas — Halcyon golden-peach bloom top-right, steel blue wash aloft, sage hint left */
+  /* Page canvas — Halcyon sunrise: one light source off the top-right corner.
+     Radii are absolute so the bloom stays concentrated at the fold instead of
+     stretching (and diluting) down a long page. Each layer is `fixed no-repeat`
+     so the light source is anchored to the window: scrolling the body box would
+     otherwise tile a second sunrise below a long page, or clip the wash flat on
+     a short one. */
   --canvas-bg:
-    radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #f2d2be 38%, transparent), transparent),
-    radial-gradient(ellipse 70% 40% at 45% -5%, color-mix(in srgb, var(--brand) 6%, transparent), transparent),
-    radial-gradient(ellipse 45% 35% at 5% 12%, color-mix(in srgb, var(--hue-3) 5%, transparent), transparent),
+    /* sun core — apricot, just off the top-right corner */
+    radial-gradient(760px 400px at 92% -70px, color-mix(in srgb, #f2a875 56%, transparent), transparent 70%) fixed no-repeat,
+    /* sky — peach across the top, kept high in lightness so it glows not muddies */
+    radial-gradient(1700px 780px at 60% -260px, color-mix(in srgb, #f6c8a2 72%, transparent), transparent 74%) fixed no-repeat,
+    /* cool aloft — the far side of the sky, still holding night */
+    radial-gradient(1000px 500px at 0% -150px, color-mix(in srgb, #7ba0bb 15%, transparent), transparent 72%) fixed no-repeat,
+    /* sea glass — silvery blue rising from the bottom-left, where the gold mud was */
+    radial-gradient(1240px 900px at -10% 92%, color-mix(in srgb, #93b8cc 24%, transparent), transparent 72%) fixed no-repeat,
     var(--paper);
-  --hero-bg: var(--card);
+  /* Hero band catches the bloom on its sunward corner; the rest stays paper-white */
+  --hero-bg: linear-gradient(112deg, var(--card) 42%, color-mix(in srgb, #f6c39c 26%, var(--card)) 100%);
 
   /* Status — lifecycle / Monday task states */
   --ok: #179a72;
@@ -71,8 +90,11 @@
   /* Layout */
   --radius: 12px;
   --radius-lg: 16px;
-  --shadow: 0 1px 3px rgba(28, 24, 18, 0.03), 0 8px 28px -6px rgba(28, 24, 18, 0.07);
-  --shadow-lg: 0 4px 16px rgba(28, 24, 18, 0.05), 0 20px 42px -10px rgba(28, 24, 18, 0.13);
+  /* Cool slate shadow: a brown shadow over a warm field was the other half of
+     the mud. Slate against salt-washed paper reads as clean shade, and the
+     tight 1px line keeps every card edge crisp. */
+  --shadow: 0 1px 2px rgba(38, 54, 63, 0.055), 0 9px 28px -9px rgba(38, 54, 63, 0.14);
+  --shadow-lg: 0 3px 10px rgba(38, 54, 63, 0.08), 0 22px 46px -13px rgba(38, 54, 63, 0.20);
 }
 
 @media (prefers-color-scheme: dark) {
