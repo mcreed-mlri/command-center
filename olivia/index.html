@@ -630,7 +630,8 @@
     .btn-danger { background:transparent; border:1px solid var(--line); color:var(--danger); margin-left:auto; }
 
     /* ---- my list ----------------------------------------------------- */
-    .sidebar .todo-add { margin-bottom:6px; }
+    .sidebar .todo-add { margin-bottom:10px; }
+    .sidebar .todo-add[hidden] { display:none; }
     .sidebar .todo-add input { padding:9px 11px; font-size:14px; }
     .sidebar .todo-add .btn-primary {
       flex:none; background:var(--ink); border-color:var(--ink);
@@ -863,11 +864,15 @@
         <section class="panel">
           <div class="panel-head">
             <h2 class="panel-title">My List</h2>
+            <div class="head-actions">
+              <button class="head-link" type="button" id="todoAddToggle" aria-expanded="false" aria-controls="todoAdd">Add</button>
+            </div>
           </div>
-          <form class="todo-add" id="todoAdd">
+          <form class="todo-add" id="todoAdd" hidden>
             <input id="todoInput" type="text" placeholder="Add something…" maxlength="300"
                    autocomplete="off" aria-label="Add a list item" />
             <button class="btn-sm btn-primary" type="submit">Add</button>
+            <button class="btn-sm btn-ghost" type="button" id="todoAddCancel">Cancel</button>
           </form>
           <ul class="todos" id="todos"></ul>
           <div class="todo-foot" id="todoFoot" hidden>
@@ -2182,7 +2187,23 @@
     /* ---- my list ----------------------------------------------------- */
     const todosEl = document.getElementById("todos");
     const todoFootEl = document.getElementById("todoFoot");
+    const todoAddForm = document.getElementById("todoAdd");
+    const todoAddToggle = document.getElementById("todoAddToggle");
+    const todoAddCancel = document.getElementById("todoAddCancel");
     const todoInput = document.getElementById("todoInput");
+    let todoAddOpen = false;
+
+    function setTodoAddOpen(open) {
+      todoAddOpen = open;
+      todoAddForm.hidden = !open;
+      todoAddToggle.setAttribute("aria-expanded", String(open));
+      todoAddToggle.textContent = open ? "Close" : "Add";
+      if (open) {
+        todoInput.focus();
+      } else {
+        todoInput.value = "";
+      }
+    }
 
     function renderTodos() {
       todosEl.replaceChildren();
@@ -2310,15 +2331,20 @@
       input.select();
     }
 
-    document.getElementById("todoAdd").addEventListener("submit", (e) => {
+    todoAddToggle.addEventListener("click", () => setTodoAddOpen(!todoAddOpen));
+    todoAddCancel.addEventListener("click", () => {
+      setTodoAddOpen(false);
+      todoAddToggle.focus();
+    });
+    todoAddForm.addEventListener("submit", (e) => {
       e.preventDefault();
       const text = clip(todoInput.value, 300);
       if (!text) return;
       myData.todos.push({ id: rid(), text, done: false, created: nowISO() });
-      todoInput.value = "";
       changed();
       renderTodos();
-      todoInput.focus();
+      setTodoAddOpen(false);
+      todoAddToggle.focus();
     });
 
     document.getElementById("clearDone").addEventListener("click", () => {
