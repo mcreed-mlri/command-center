@@ -1,0 +1,699 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Training Unit — Command Center Walkthrough</title>
+  <meta name="description" content="How to use the Training Unit Command Center, Focus Pages, and install it as an app." />
+  <meta name="robots" content="noindex" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --brand: #1a5aa0;
+      --brand-deep: #12447c;
+      --paper: #f8f7f4;
+      --paper-2: #f3f2ed;
+      --card: #ffffff;
+      --line: #e3e0d8;
+      --ink: #171511;
+      --muted: #524d45;
+      --faint: #686259;
+      --ok: #179a72;
+      --wait: #1c63b0;
+      --working: #c8791b;
+      --overdue: #c8493b;
+      --ashley: #7d4f9e;
+      --carolina: #4f8a5c;
+      --olivia: #a8553d;
+      --marlie: #3d6ea8;
+      --shadow: 0 1px 2px rgba(23, 21, 17, 0.04);
+      --max: 720px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Geist, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(1200px 420px at 50% -80px, color-mix(in srgb, var(--brand) 14%, transparent), transparent 70%),
+        var(--paper);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: var(--brand); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+    a:hover { color: var(--brand-deep); }
+
+    .print-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px 16px;
+      padding: 12px 20px;
+      background: color-mix(in srgb, var(--card) 92%, transparent);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+    }
+    .print-bar p {
+      margin: 0;
+      font-size: 13.5px;
+      color: var(--muted);
+      max-width: 52ch;
+    }
+    .print-bar strong { color: var(--ink); font-weight: 650; }
+    .print-actions { display: flex; gap: 8px; flex-shrink: 0; }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--ink);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font: inherit;
+      font-size: 13.5px;
+      font-weight: 650;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .btn:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+    .btn-primary {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--brand-deep); border-color: var(--brand-deep); color: #fff; }
+
+    .page {
+      width: min(var(--max), calc(100% - 40px));
+      margin: 0 auto;
+      padding: 36px 0 72px;
+    }
+
+    .cover {
+      padding: 8px 0 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 36px;
+    }
+    .eyebrow {
+      margin: 0 0 10px;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 5vw, 38px);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.08;
+    }
+    .lede {
+      margin: 0 0 20px;
+      font-size: 16.5px;
+      color: var(--muted);
+      max-width: 48ch;
+    }
+    .url-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      font-size: 14.5px;
+      font-weight: 650;
+      color: var(--ink);
+      box-shadow: var(--shadow);
+      text-decoration: none;
+    }
+    .url-chip:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); color: var(--brand-deep); }
+    .url-chip span {
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+    }
+
+    .toc {
+      margin: 28px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 8px;
+    }
+    .toc a {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 650;
+      font-size: 14.5px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .toc a:hover { color: var(--brand); }
+    .toc .n {
+      font-variant-numeric: tabular-nums;
+      color: var(--brand);
+      min-width: 1.6ch;
+    }
+    .toc .hint {
+      margin-left: auto;
+      font-weight: 400;
+      font-size: 13px;
+      color: var(--faint);
+    }
+
+    section {
+      margin: 0 0 40px;
+      padding-top: 8px;
+    }
+    .section-label {
+      margin: 0 0 8px;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--brand);
+    }
+    h2 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+    h3 {
+      margin: 22px 0 8px;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    p { margin: 0 0 12px; font-size: 14.5px; color: var(--ink); }
+    .muted { color: var(--muted); }
+    ul, ol {
+      margin: 0 0 14px;
+      padding-left: 1.25em;
+      font-size: 14.5px;
+    }
+    li { margin: 0 0 7px; }
+    li::marker { color: var(--brand); }
+    .note {
+      margin: 14px 0;
+      padding: 12px 14px;
+      background: var(--paper-2);
+      border-left: 3px solid var(--brand);
+      border-radius: 0 8px 8px 0;
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .note strong { color: var(--ink); }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+    @media (max-width: 640px) {
+      .split { grid-template-columns: 1fr; }
+    }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 16px 14px;
+      box-shadow: var(--shadow);
+    }
+    .panel h3 { margin: 0 0 8px; }
+    .panel p:last-child,
+    .panel ul:last-child { margin-bottom: 0; }
+    .panel .who {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 6px;
+    }
+
+    .kbd {
+      display: inline-block;
+      padding: 1px 7px;
+      border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      background: var(--card);
+      font-size: 12.5px;
+      font-weight: 650;
+      font-family: inherit;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .steps {
+      margin: 12px 0 16px;
+      padding: 0;
+      list-style: none;
+      counter-reset: step;
+    }
+    .steps li {
+      position: relative;
+      counter-increment: step;
+      margin: 0 0 10px;
+      padding: 12px 14px 12px 48px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: color-mix(in srgb, var(--brand) 12%, var(--paper));
+      color: var(--brand-deep);
+      font-size: 12.5px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .people {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+    @media (max-width: 520px) {
+      .people { grid-template-columns: 1fr; }
+    }
+    .person {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+    }
+    .mono {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 700;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+    .person strong { display: block; font-size: 14.5px; }
+    .person span { font-size: 12.5px; color: var(--faint); }
+    .mono.a { background: var(--ashley); }
+    .mono.c { background: var(--carolina); }
+    .mono.o { background: var(--olivia); }
+    .mono.m { background: var(--marlie); }
+
+    .status-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 12px 0 16px;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--paper-2);
+      font-size: 12.5px;
+      font-weight: 650;
+      color: var(--muted);
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .status.working { color: var(--working); }
+    .status.wait { color: var(--wait); }
+    .status.ok { color: var(--ok); }
+    .status.overdue { color: var(--overdue); }
+
+    .install-grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 8px;
+    }
+    .install {
+      break-inside: avoid;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .install h3 {
+      margin: 0 0 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--paper-2);
+      color: var(--faint);
+      font-size: 11px;
+      font-weight: 650;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .install .device {
+      margin: 0 0 12px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .install ol { margin-bottom: 0; }
+    .install ol:last-child { margin-bottom: 0; }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 0;
+    }
+    .checklist li {
+      position: relative;
+      padding: 8px 0 8px 28px;
+      border-bottom: 1px solid var(--line);
+      margin: 0;
+      font-size: 14.5px;
+    }
+    .checklist li:last-child { border-bottom: 0; }
+    .checklist li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 11px;
+      width: 16px;
+      height: 16px;
+      border: 1.5px solid var(--line);
+      border-radius: 4px;
+      background: var(--card);
+    }
+
+    footer.doc-foot {
+      margin-top: 48px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--faint);
+    }
+    footer.doc-foot p { margin: 0 0 6px; color: var(--faint); font-size: 13px; }
+
+    @media print {
+      @page {
+        size: letter;
+        margin: 0.65in 0.7in;
+      }
+      body {
+        background: #fff;
+        color: #000;
+        font-size: 11pt;
+      }
+      .print-bar { display: none !important; }
+      .page {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      .cover {
+        margin-bottom: 22pt;
+        padding-bottom: 16pt;
+      }
+      h1 { font-size: 22pt; }
+      h2 { font-size: 14pt; page-break-after: avoid; }
+      h3 { font-size: 11.5pt; page-break-after: avoid; }
+      a { color: inherit; text-decoration: none; }
+      .url-chip {
+        border: 1px solid #bbb;
+        box-shadow: none;
+      }
+      .panel, .steps li, .person, .install {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+      section {
+        break-inside: avoid;
+        margin-bottom: 18pt;
+      }
+      .install-section,
+      .focus-section,
+      .install-section section {
+        break-inside: auto;
+      }
+      .install { break-inside: avoid; page-break-inside: avoid; }
+      .toc a { border-color: #ccc; }
+      .toc .hint { display: none; }
+      .note { border-color: var(--brand); background: #f5f5f5; }
+      footer.doc-foot { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <div class="print-bar" role="region" aria-label="Print options">
+    <p><strong>Save as PDF:</strong> Press <span class="kbd">Ctrl</span> + <span class="kbd">P</span> (Windows) or <span class="kbd">⌘</span> + <span class="kbd">P</span> (Mac), then choose <strong>Save as PDF</strong>.</p>
+    <div class="print-actions">
+      <a class="btn" href="https://trainingunit.pages.dev/">Open Command Center</a>
+      <button class="btn btn-primary" type="button" onclick="window.print()">Print / Save PDF</button>
+    </div>
+  </div>
+
+  <main class="page">
+    <header class="cover">
+      <p class="eyebrow">MLRI Training Unit</p>
+      <h1>Command Center walkthrough</h1>
+      <p class="lede">A short guide to the team board, your personal Focus Page, and how to install the site like an app on your computer or phone.</p>
+      <a class="url-chip" href="https://trainingunit.pages.dev/" target="_blank" rel="noopener">
+        <span>Live site</span>
+        trainingunit.pages.dev
+      </a>
+
+      <ol class="toc">
+        <li><a href="#overview"><span class="n">1</span> What this is<span class="hint">two surfaces</span></a></li>
+        <li><a href="#board"><span class="n">2</span> Using the Command Center<span class="hint">team board</span></a></li>
+        <li><a href="#focus"><span class="n">3</span> Using your Focus Page<span class="hint">Monday + pins</span></a></li>
+        <li><a href="#install"><span class="n">4</span> Install as an app<span class="hint">computer &amp; phone</span></a></li>
+        <li><a href="#checklist"><span class="n">5</span> Quick start checklist<span class="hint">do this once</span></a></li>
+      </ol>
+    </header>
+
+    <section id="overview">
+      <p class="section-label">Overview</p>
+      <h2>What this is</h2>
+      <p class="muted">The Command Center is one door to every tool, folder, board, and standing document the Training Unit uses. No login — just open the link and go.</p>
+
+      <div class="split">
+        <div class="panel">
+          <span class="who">Team board</span>
+          <h3>Command Center</h3>
+          <p class="muted">Shared launcher for Drive, Monday, LMS, docs, Slack, Otter, and Claude. Start here when you need a shared tool or folder.</p>
+          <p><a href="https://trainingunit.pages.dev/">trainingunit.pages.dev</a></p>
+        </div>
+        <div class="panel">
+          <span class="who">Personal</span>
+          <h3>Focus Pages</h3>
+          <p class="muted">Your Monday milestones, personal pins, and a private list. Use this for daily triage of your own work.</p>
+          <p>One page each for Ashley, Carolina, Olivia, and Marlie.</p>
+        </div>
+      </div>
+
+      <div class="people" aria-label="Focus page links">
+        <a class="person" href="https://trainingunit.pages.dev/ashley/" style="text-decoration:none;color:inherit">
+          <div class="mono a" aria-hidden="true">A</div>
+          <div><strong>Ashley</strong><span>/ashley/</span></div>
+        </a>
+        <a class="person" href="https://trainingunit.pages.dev/carolina/" style="text-decoration:none;color:inherit">
+          <div class="mono c" aria-hidden="true">C</div>
+          <div><strong>Carolina</strong><span>/carolina/</span></div>
+        </a>
+        <a class="person" href="https://trainingunit.pages.dev/olivia/" style="text-decoration:none;color:inherit">
+          <div class="mono o" aria-hidden="true">O</div>
+          <div><strong>Olivia</strong><span>/olivia/</span></div>
+        </a>
+        <a class="person" href="https://trainingunit.pages.dev/marlie/" style="text-decoration:none;color:inherit">
+          <div class="mono m" aria-hidden="true">M</div>
+          <div><strong>Marlie</strong><span>/marlie/</span></div>
+        </a>
+      </div>
+
+      <p class="note"><strong>Daily habit:</strong> Keep the Command Center or your Focus Page open as a pinned tab — or install it as an app (see section 4). Glance at it throughout the day; click out to the real tool when you need it.</p>
+    </section>
+
+    <section id="board">
+      <p class="section-label">Team board</p>
+      <h2>Using the Command Center</h2>
+      <p class="muted">Open <a href="https://trainingunit.pages.dev/">trainingunit.pages.dev</a>. Everything on the board opens in a new tab except Focus Pages, which stay in the same tab.</p>
+
+      <h3>What’s on the board</h3>
+      <ul>
+        <li><strong>Planning &amp; Collaboration</strong> — Google Drive folders (project tree) and Monday.com workspaces/boards</li>
+        <li><strong>LMS</strong> — Learning Hub, Brightspace Manager, Brightspace (D2L), D2L Academy</li>
+        <li><strong>Important Documents</strong> — LACE Project Planning, Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map</li>
+        <li><strong>Quick Links</strong> — Slack, Otter.ai, Claude</li>
+      </ul>
+
+      <h3>Day-to-day moves</h3>
+      <ol class="steps">
+        <li><strong>Find a Drive folder or Monday board.</strong> Expand Google Drive or Monday.com, then drill into the project you need. Nested folders have an “Open whole folder” option.</li>
+        <li><strong>Jump to a standing doc or app.</strong> Use Important Documents or Quick Links when you already know the destination.</li>
+        <li><strong>Search when you don’t remember where something lives.</strong> Press <span class="kbd">/</span> or click the magnifying glass. Type a word — the board filters live.</li>
+        <li><strong>Open your Focus Page.</strong> Click your letter avatar (A / C / O / M) in the top right.</li>
+        <li><strong>Optional:</strong> Use the theme toggle for light or dark. Your choice is saved for next time.</li>
+      </ol>
+
+      <p class="note"><strong>Gray tiles marked “soon”</strong> are not ready yet — they won’t open. If a link is missing or outdated, contact Marlie (footer of the page).</p>
+    </section>
+
+    <section id="focus" class="focus-section">
+      <p class="section-label">Personal</p>
+      <h2>Using your Focus Page</h2>
+      <p class="muted">Your Focus Page is for your Monday work and personal shortcuts. Open it from the avatar stack on the Command Center, or bookmark your URL (e.g. <a href="https://trainingunit.pages.dev/marlie/">…/marlie/</a>).</p>
+
+      <h3>Monday milestones</h3>
+      <ul>
+        <li>Tasks pull from the six LACE boards: Operations, LMS, Content Design, Data &amp; Evaluation, Comms &amp; Branding, and Sustainability Roadmap.</li>
+        <li>A snapshot refreshes overnight. Hit <strong>Refresh</strong> anytime you want a live pull from Monday.</li>
+        <li>Click a task to open that item in Monday.</li>
+        <li>Filter by status or area, and switch views:</li>
+      </ul>
+      <ul>
+        <li><strong>Week</strong> — this week by day (default)</li>
+        <li><strong>List</strong> — Overdue, Due soon, Coming up, Later, No due date</li>
+        <li><strong>Board</strong> — kanban by status</li>
+        <li><strong>Calendar</strong> — month grid</li>
+      </ul>
+
+      <div class="status-row" aria-label="Status colors">
+        <span class="status working"><span class="dot"></span> Working on it</span>
+        <span class="status wait"><span class="dot"></span> Waiting</span>
+        <span class="status overdue"><span class="dot"></span> Overdue</span>
+        <span class="status ok"><span class="dot"></span> Done (when shown)</span>
+      </div>
+
+      <h3>My Pins</h3>
+      <p>Personal bookmarks that sync across your devices when you’re online. Click <strong>Manage</strong> to add, edit, reorder, or delete pins. Use them for the links you open constantly that don’t belong on the shared board.</p>
+
+      <h3>My List</h3>
+      <p>A private scratch list — add items, check them off, reorder, and clear finished ones. Handy for small reminders that aren’t Monday tasks.</p>
+
+      <p class="note"><strong>Privacy note:</strong> Focus Pages don’t require a login. Anyone on the team who has the URL can open any page. Treat them as personal workspaces, not secret vaults. Pins and lists sync for <em>your</em> page across your browsers/devices.</p>
+    </section>
+
+    <section id="install" class="install-section">
+      <p class="section-label">Install</p>
+      <h2>Install as an app</h2>
+      <p class="muted">The Command Center is a progressive web app (PWA). Installing it puts a Training Unit icon on your desktop, taskbar, or home screen and opens it in its own window — no browser tabs cluttering the view.</p>
+      <p class="note"><strong>Tip:</strong> Install from the main Command Center URL first (<a href="https://trainingunit.pages.dev/">trainingunit.pages.dev</a>). You can still open Focus Pages from the avatar stack inside the app. If install isn’t offered, pin the tab instead — that works fine too.</p>
+
+      <div class="install-grid">
+        <div class="install">
+          <h3>Windows <span class="tag">Chrome or Edge</span></h3>
+          <p class="device">Best experience for daily laptop use</p>
+          <ol>
+            <li>Open <strong>https://trainingunit.pages.dev</strong> in Chrome or Microsoft Edge.</li>
+            <li>Look in the address bar for an <strong>install icon</strong> (computer with a down arrow) or an <strong>Install</strong> / <strong>App available</strong> prompt.</li>
+            <li>Or open the browser menu (<strong>⋯</strong>) → <strong>Install Training Unit — Command Center</strong> / <strong>Apps</strong> → <strong>Install this site as an app</strong>.</li>
+            <li>Confirm. An app window opens, and you can pin it to the taskbar or Start menu.</li>
+            <li>Launch it from the taskbar/Start like any other app. It opens without the browser chrome.</li>
+          </ol>
+        </div>
+
+        <div class="install">
+          <h3>Mac <span class="tag">Chrome, Edge, or Safari</span></h3>
+          <p class="device">Desktop app window from the Dock</p>
+          <ol>
+            <li>Open <strong>https://trainingunit.pages.dev</strong>.</li>
+            <li><strong>Chrome / Edge:</strong> Click the install icon in the address bar, or menu → <strong>Install Training Unit — Command Center</strong>.</li>
+            <li><strong>Safari (macOS Sonoma+):</strong> File → <strong>Add to Dock</strong> (wording may be “Add to Dock…”).</li>
+            <li>Open the app from the Dock whenever you need it.</li>
+          </ol>
+        </div>
+
+        <div class="install">
+          <h3>iPhone or iPad <span class="tag">Safari</span></h3>
+          <p class="device">Add to Home Screen — required browser is Safari</p>
+          <ol>
+            <li>Open <strong>https://trainingunit.pages.dev</strong> in <strong>Safari</strong> (not Chrome or Firefox on iOS for this step).</li>
+            <li>Tap the <strong>Share</strong> button (square with an up arrow).</li>
+            <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
+            <li>Name it something short like “Training Unit,” then tap <strong>Add</strong>.</li>
+            <li>Open it from your home screen. It launches full-screen like an app.</li>
+          </ol>
+        </div>
+
+        <div class="install">
+          <h3>Android phone <span class="tag">Chrome</span></h3>
+          <p class="device">Install prompt or menu install</p>
+          <ol>
+            <li>Open <strong>https://trainingunit.pages.dev</strong> in Chrome.</li>
+            <li>If you see an <strong>Install app</strong> banner, tap it.</li>
+            <li>Otherwise tap the menu (<strong>⋮</strong>) → <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+            <li>Confirm. Open the Training Unit icon from your home screen or app drawer.</li>
+          </ol>
+        </div>
+      </div>
+
+      <h3>If you prefer not to install</h3>
+      <ul>
+        <li><strong>Pin the tab</strong> in Chrome/Edge (right-click the tab → Pin).</li>
+        <li>Or bookmark the Command Center and your Focus Page in a bookmarks bar folder.</li>
+      </ul>
+    </section>
+
+    <section id="checklist">
+      <p class="section-label">Once</p>
+      <h2>Quick start checklist</h2>
+      <p class="muted">Do this once, then you’re set for daily use.</p>
+      <ul class="checklist">
+        <li>Open <strong>https://trainingunit.pages.dev</strong> and confirm you can reach Drive, Monday, and docs</li>
+        <li>Press <span class="kbd">/</span> and try searching for “LACE” or “Slack”</li>
+        <li>Click your letter avatar and open your Focus Page</li>
+        <li>Scan this week’s milestones; hit Refresh if the snapshot looks stale</li>
+        <li>Add 2–3 personal links under My Pins (Manage → Add a pin)</li>
+        <li>Install the site as an app on your main computer (and phone if you want)</li>
+        <li>Pin the app or tab so it’s always one click away</li>
+      </ul>
+    </section>
+
+    <footer class="doc-foot">
+      <p>Questions, broken links, or something missing? Contact Marlie.</p>
+      <p>MLRI Training Unit · Command Center walkthrough · trainingunit.pages.dev</p>
+    </footer>
+  </main>
+</body>
+</html>
