@@ -220,12 +220,6 @@
     .filter-summary:not([hidden])::before {
       content:"·"; margin-right:6px; color:var(--line);
     }
-    .filter-badge {
-      min-width:18px; height:18px; padding:0 6px;
-      display:inline-grid; place-items:center;
-      border-radius:999px; background:var(--brand); color:var(--on-accent);
-      font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1;
-    }
     .view-toggle {
       margin-left:auto;
       display:inline-flex; align-items:center; gap:0;
@@ -830,7 +824,6 @@
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
                 <span>Filter</span>
                 <span class="filter-summary" id="filterSummary" hidden></span>
-                <span class="filter-badge" id="filterBadge" hidden></span>
               </button>
               <div class="menu-panel" id="filterPanel" hidden>
                 <div class="menu-section" id="statusMenuSection">
@@ -1095,7 +1088,6 @@
     const filterTrigger = document.getElementById("filterTrigger");
     const filterPanel = document.getElementById("filterPanel");
     const filterSummary = document.getElementById("filterSummary");
-    const filterBadge = document.getElementById("filterBadge");
     const taskToolbar = document.getElementById("taskToolbar");
     const AREA_ORDER = ["ops", "lms", "content", "data", "comms", "sustain"];
     const STATUS_FILTER_LABELS = {
@@ -1228,10 +1220,6 @@
       if (filterSummary) {
         filterSummary.hidden = !filtered;
         filterSummary.textContent = parts.join(" · ");
-      }
-      if (filterBadge) {
-        filterBadge.hidden = !filtered;
-        filterBadge.textContent = String(parts.length);
       }
       filterTrigger.setAttribute(
         "aria-label",
