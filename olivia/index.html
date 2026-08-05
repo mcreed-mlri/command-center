@@ -697,6 +697,40 @@
     const SNAPSHOT_DATE = "2026-08-04";
     let snapshotDate = SNAPSHOT_DATE;
     let snapshotLive = false;
+    const pageSlug = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "olivia";
+    const TASKS_LS_KEY = "tu-" + pageSlug + "-tasks-live-v1";
+
+    function saveLiveTasks(data){
+      try {
+        localStorage.setItem(TASKS_LS_KEY, JSON.stringify({
+          v: 1,
+          bakedSnapshotDate: SNAPSHOT_DATE,
+          snapshotDate: data.snapshotDate || snapshotDate,
+          fetchedAt: data.fetchedAt || new Date().toISOString(),
+          tasks: data.tasks,
+        }));
+      } catch(e){}
+    }
+
+    function loadLiveTasks(){
+      try {
+        const raw = localStorage.getItem(TASKS_LS_KEY);
+        if (!raw) return false;
+        const cached = JSON.parse(raw);
+        if (!Array.isArray(cached.tasks)) return false;
+        if (cached.bakedSnapshotDate !== SNAPSHOT_DATE){
+          localStorage.removeItem(TASKS_LS_KEY);
+          return false;
+        }
+        TASKS.length = 0;
+        TASKS.push(...cached.tasks);
+        snapshotDate = cached.snapshotDate || snapshotDate;
+        snapshotLive = true;
+        return true;
+      } catch(e){
+        return false;
+      }
+    }
 
     const BOARDS = {
       ops:     { label: "Operations",       id: "18418833001" },
@@ -1297,14 +1331,12 @@
     /* ---- snapshot note + live refresh ------------------------------ */
     const snapNote = document.getElementById("snapNote");
     const taskRefreshBtn = document.getElementById("taskRefresh");
-    const pageSlug = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "olivia";
 
     function paintSnapNote(){
       const [y,m,d] = snapshotDate.split("-").map(Number);
       const label = new Date(y, m-1, d).toLocaleDateString(undefined, { month:"long", day:"numeric" });
       snapNote.textContent = (snapshotLive ? "live · " : "snapshot · ") + label;
     }
-    paintSnapNote();
 
     taskRefreshBtn.addEventListener("click", async () => {
       if (taskRefreshBtn.disabled) return;
@@ -1322,6 +1354,7 @@
         TASKS.push(...data.tasks);
         snapshotDate = data.snapshotDate || snapshotDate;
         snapshotLive = true;
+        saveLiveTasks(data);
         paintSnapNote();
         refreshTasks();
       } catch (err) {
@@ -2011,6 +2044,8 @@
     });
 
     /* ---- init ------------------------------------------------------ */
+    loadLiveTasks();
+    paintSnapNote();
     renderFilters();
     setView(view);
     renderPins();
