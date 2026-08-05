@@ -131,15 +131,34 @@
     .panel-title a:hover, .panel-title a:focus-visible { color:var(--terracotta); outline:none; }
     .panel-note { font-size:12px; color:var(--faint); margin-left:auto; }
 
+    /* ---- task toolbar (filters + meta — secondary to content) ------ */
+    .task-toolbar {
+      display:flex; align-items:flex-end; gap:10px 12px; flex-wrap:wrap;
+      margin-bottom:12px;
+    }
+    .task-meta {
+      display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:auto;
+    }
+    .task-meta .panel-note { margin-left:0; font-size:11.5px; }
+    .filter-active {
+      display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
+      font-size:11px; font-weight:650; letter-spacing:.04em; text-transform:uppercase;
+      color:var(--terracotta); padding-bottom:7px;
+    }
+    .filter-active::before {
+      content:""; width:6px; height:6px; border-radius:50%; background:var(--terracotta); flex:none;
+    }
+    .task-content { min-height:80px; }
+
     /* ---- filters --------------------------------------------------- */
-    .filter-bar { margin:0 0 14px; }
-    .filter-row { display:flex; flex-wrap:wrap; gap:12px 14px; }
-    .filter-field { display:flex; flex-direction:column; gap:5px; flex:1; min-width:min(100%,180px); }
+    .filter-bar { margin:0; flex:1; min-width:0; max-width:420px; }
+    .filter-row { display:flex; flex-wrap:wrap; gap:8px; }
+    .filter-field { display:flex; flex-direction:column; gap:4px; flex:1; min-width:min(100%,140px); }
     .filter-label { font-size:11px; font-weight:650; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
     .filter-select {
-      font:inherit; font-size:14px; font-weight:600; color:var(--ink); width:100%;
-      background:var(--paper-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6459' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 11px center;
-      border:1px solid var(--line); border-radius:var(--radius); padding:8px 34px 8px 12px;
+      font:inherit; font-size:13px; font-weight:400; color:var(--ink); width:100%;
+      background:var(--paper-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6459' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+      border:1px solid var(--line); border-radius:var(--radius); padding:6px 30px 6px 10px;
       cursor:pointer; appearance:none; transition:border-color .15s, background-color .15s;
     }
     .filter-select:hover { border-color:color-mix(in srgb,var(--terracotta) 35%,var(--line)); }
@@ -197,10 +216,15 @@
     .snap-row { display:flex; align-items:center; gap:6px; flex-shrink:0; }
     @keyframes task-spin { to { transform: rotate(360deg); } }
     .mini-btn.spinning svg { animation: task-spin 0.85s linear infinite; }
-    .view-toggle { display:inline-flex; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:3px; }
-    .vbtn { font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; border:0; background:none; color:var(--muted); padding:5px 12px; border-radius:999px; transition:background .15s, color .15s; }
+    .view-toggle { display:inline-flex; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:2px; }
+    .vbtn { font:inherit; font-size:12px; font-weight:650; cursor:pointer; border:0; background:none; color:var(--muted); padding:4px 10px; border-radius:999px; transition:background .15s, color .15s; }
     .vbtn[aria-pressed="true"] { background:var(--terracotta); color:var(--on-accent); }
-    @media (max-width:520px){ .head-tools { width:100%; justify-content:space-between; } .vbtn { padding:5px 10px; font-size:12px; } }
+    @media (max-width:520px){
+      .head-tools { width:100%; justify-content:flex-end; }
+      .vbtn { padding:4px 8px; font-size:11.5px; }
+      .task-meta { margin-left:0; width:100%; justify-content:flex-end; }
+      .filter-bar { max-width:none; }
+    }
 
     /* ---- week view (focused: just this week) ----------------------- */
     .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
@@ -231,6 +255,8 @@
     .wk-group.is-overdue .wk-dow { color:var(--overdue); }
     .wk-group.is-done .wk-dow { color:var(--ok); }
     .wk-group.is-done .wk-day-head { border-bottom-color:color-mix(in srgb,var(--ok) 35%,var(--line)); }
+    .wk-group.is-ongoing .wk-dow { color:var(--working); }
+    .wk-group.is-ongoing .wk-day-head { border-bottom-color:color-mix(in srgb,var(--working) 45%,var(--line)); }
 
     .wk-list { display:flex; flex-direction:column; gap:6px; }
     .wk-task {
@@ -586,31 +612,36 @@
                 <button class="vbtn" type="button" data-view="board" aria-pressed="false">Board</button>
                 <button class="vbtn" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
               </div>
-              <span class="snap-row">
-                <button class="mini-btn icon-only" type="button" id="taskRefresh"
-                        title="Refresh from Monday" aria-label="Refresh tasks from Monday">
-                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
-                </button>
-                <span class="panel-note" id="snapNote"></span>
-              </span>
             </div>
           </div>
-          <div class="filter-bar">
-            <div class="filter-row">
-              <label class="filter-field" id="statusFilterGroup">
-                <span class="filter-label">Status</span>
-                <select class="filter-select" id="statusSelect" aria-label="Filter by status"></select>
-              </label>
-              <label class="filter-field">
-                <span class="filter-label">Area</span>
-                <select class="filter-select" id="areaSelect" aria-label="Filter by area"></select>
-              </label>
+          <div class="task-toolbar" id="taskToolbar" data-view="week">
+            <div class="filter-bar">
+              <div class="filter-row">
+                <label class="filter-field" id="statusFilterGroup">
+                  <span class="filter-label">Status</span>
+                  <select class="filter-select" id="statusSelect" aria-label="Filter by status"></select>
+                </label>
+                <label class="filter-field">
+                  <span class="filter-label">Area</span>
+                  <select class="filter-select" id="areaSelect" aria-label="Filter by area"></select>
+                </label>
+              </div>
             </div>
+            <span class="filter-active" id="filterActive" hidden>Filtered</span>
+            <span class="task-meta snap-row">
+              <button class="mini-btn icon-only" type="button" id="taskRefresh"
+                      title="Refresh from Monday" aria-label="Refresh tasks from Monday">
+                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+              </button>
+              <span class="panel-note" id="snapNote"></span>
+            </span>
           </div>
-          <div id="week"></div>
-          <div id="buckets" hidden></div>
-          <div id="kanban" hidden></div>
-          <div id="calendar" hidden></div>
+          <div class="task-content">
+            <div id="week"></div>
+            <div id="buckets" hidden></div>
+            <div id="kanban" hidden></div>
+            <div id="calendar" hidden></div>
+          </div>
         </section>
       </div>
 
@@ -809,6 +840,8 @@
     const statusSelect = document.getElementById("statusSelect");
     const areaSelect = document.getElementById("areaSelect");
     const statusFilterGroup = document.getElementById("statusFilterGroup");
+    const filterActive = document.getElementById("filterActive");
+    const taskToolbar = document.getElementById("taskToolbar");
     const AREA_ORDER = ["ops", "lms", "content", "data", "comms"];
 
     function visibleTasks(){
@@ -842,7 +875,13 @@
 
     function refreshTasks(){
       renderFilters();
+      updateToolbar();
       renderView();
+    }
+
+    function updateToolbar(){
+      if (taskToolbar) taskToolbar.dataset.view = view;
+      if (filterActive) filterActive.hidden = activeStatus === "all" && activeArea === "all";
     }
 
     function renderView(){
@@ -1025,11 +1064,20 @@
       const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " – " +
         end.toLocaleDateString(undefined, sameMonth ? { day:"numeric" } : { month:"short", day:"numeric" });
       const count = overdue.length + inWeek.length;
+      const hasDue = count > 0;
       titles.innerHTML = '<div class="wk-range"></div><div class="wk-rel"></div>';
       titles.querySelector(".wk-range").textContent = range;
+      let relDetail;
+      if (count) {
+        relDetail = count + (count === 1 ? " task" : " tasks") + (isCurrent ? " to do" : " due");
+        if (ongoing.length && isCurrent) relDetail += " · " + ongoing.length + " in progress";
+      } else if (ongoing.length && isCurrent) {
+        relDetail = "nothing due · " + ongoing.length + " in progress";
+      } else {
+        relDetail = "nothing due";
+      }
       titles.querySelector(".wk-rel").innerHTML =
-        '<b>' + relWeekLabel(weekOffset) + '</b> · ' +
-        (count ? count + (count === 1 ? " task" : " tasks") + (isCurrent ? " to do" : " due") : "nothing due");
+        '<b>' + relWeekLabel(weekOffset) + '</b> · ' + relDetail;
       const nav = document.createElement("div");
       nav.className = "wk-nav";
       if (!isCurrent){
@@ -1069,8 +1117,8 @@
         ));
       }
 
-      /* empty state — offer a jump to the next week that has anything */
-      if (!overdue.length && !inWeek.length){
+      /* empty state — skip the hero box when in-progress tasks are listed below */
+      if (!hasDue && !(ongoing.length && isCurrent)){
         const empty = document.createElement("div");
         empty.className = "wk-empty";
         const p = document.createElement("p");
@@ -1093,8 +1141,8 @@
         weekEl.appendChild(weekGroup("is-done", "Done this week", "checked off ✓", doneInWeek, { showDue:true }));
       }
 
-      /* things in flight with no date — current week only */
-      if (ongoing.length){
+      /* in-progress with no date — collapsed by default */
+      if (ongoing.length && isCurrent){
         const det = document.createElement("details");
         det.className = "wk-ongoing";
         det.open = false;
@@ -1285,6 +1333,7 @@
       kanbanEl.hidden = v !== "board";
       calendarEl.hidden = v !== "calendar";
       statusFilterGroup.style.display = v === "board" ? "none" : "";
+      updateToolbar();
       renderView();
     }
     document.querySelectorAll(".vbtn").forEach(b =>
