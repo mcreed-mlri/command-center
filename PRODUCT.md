@@ -149,7 +149,7 @@ was confirmed as inviolable when asked, so neither outranks a good reason:
   name). Owned by the MLRI Training Unit.
 - **Voice, as written in the shipped copy and the README:** plain, warm, direct,
   second-person, no product-marketing register. "One place for every tool the
-  MLRI Training Unit uses." "Go back to team page." "Add something…" "Private
+  MLRI Training Unit uses." "Go back to team page." "Add something…" "Personal
   focus page." Instructions are written for a colleague, not a developer. Match
   this; do not raise the register.
 - **Assets on hand:** `icons/` holds real vendor marks (Google Drive, Monday,
