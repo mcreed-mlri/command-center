@@ -1886,8 +1886,11 @@
 
     /* ---- sync -------------------------------------------------------- */
     let pushTimer = null;
+    let retryTimer = null;
+    let retryAttempt = 0;
     let remoteLive = null;  // null = untested, true = KV answered, false = local only
     let pullDone = false;
+    const RETRY_DELAYS = [5000, 15000, 30000, 60000, 120000];
 
     const syncEl = document.createElement("span");
     syncEl.className = "sync-note";
@@ -1937,12 +1940,22 @@
       myData.updated = nowISO();
       saveLocal();
       clearTimeout(pushTimer);
+      clearTimeout(retryTimer);
+      retryAttempt = 0;
       if (remoteLive !== false) setSync("saving", "Saving…");
       pushTimer = setTimeout(push, PUSH_DELAY);
     }
 
+    function scheduleRetry() {
+      clearTimeout(retryTimer);
+      if (retryAttempt >= RETRY_DELAYS.length) return;
+      const wait = RETRY_DELAYS[retryAttempt++];
+      retryTimer = setTimeout(push, wait);
+    }
+
     async function push() {
       if (remoteLive === false) return;
+      clearTimeout(retryTimer);
       try {
         const getRes = await fetch(API_URL, { headers: { "Accept": "application/json" } });
         if (getRes.ok) {
@@ -1957,11 +1970,12 @@
         });
         if (!res.ok) throw new Error("HTTP " + res.status);
         remoteLive = true;
+        retryAttempt = 0;
         setSync("saved", "Synced across devices");
       } catch (e) {
         if (remoteLive === null && !pullDone) return;
         if (remoteLive === null) { remoteLive = false; setSync("local", "Saved on this device only"); }
-        else setSync("error", "Couldn't sync — will retry");
+        else { setSync("error", "Couldn't sync — will retry"); scheduleRetry(); }
       }
     }
 
@@ -2382,6 +2396,20 @@
         if (syncEl.dataset.state === "error" && remoteLive !== false) push();
       }
     });
+    addEventListener("online", () => {
+      if (remoteLive === false) {
+        remoteLive = null;
+        pull();
+      } else if (syncEl.dataset.state === "error") {
+        retryAttempt = 0;
+        push();
+      }
+    });
+
+    /* ---- service worker --------------------------------------------- */
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+    }
   </script>
 </body>
 </html>
