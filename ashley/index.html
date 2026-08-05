@@ -98,10 +98,6 @@
       color:color-mix(in srgb,var(--who,var(--brand)) 45%,#fff);
       background:color-mix(in srgb,var(--who,var(--brand)) 26%,var(--card));
     }
-    .eyebrow {
-      font-size:11px; letter-spacing:.16em; text-transform:uppercase;
-      color:var(--earth-deep); font-weight:700; margin:0; white-space:nowrap;
-    }
     h1 {
       font-family:var(--sans); font-weight:750; font-size:clamp(22px,2.8vw,28px);
       line-height:1.1; letter-spacing:-0.025em; color:var(--ink); margin:0;
@@ -329,7 +325,7 @@
 
     /* ---- week view (focused: just this week) ----------------------- */
     .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    /* Date and week label share one baseline, as in the mockup */
+    /* Date/range and nav share one baseline. */
     .wk-titles { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 11px; min-width:0; }
     .wk-range { font-family:var(--sans); font-size:19px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; }
     .wk-rel { font-size:12.5px; color:var(--muted); margin-top:0; }
@@ -785,7 +781,6 @@
         <span class="hero-sep" aria-hidden="true"></span>
         <span class="who-mono" id="whoMono" aria-hidden="true"></span>
         <h1 id="whoName">Ashley</h1>
-        <p class="eyebrow">Focus Page</p>
         <div class="head-meta">
           <span class="greeting" id="greeting"></span>
           <span class="today" id="today"></span>
@@ -1340,8 +1335,7 @@
       titles.querySelector(".wk-range").textContent = isCurrent
         ? today.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" })
         : range;
-      titles.querySelector(".wk-rel").innerHTML =
-        '<b>Week of ' + start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + '</b>';
+      titles.querySelector(".wk-rel").textContent = "";
       const nav = document.createElement("div");
       nav.className = "wk-nav";
       if (!isCurrent){
