@@ -179,25 +179,74 @@
     .monday-open:hover { text-decoration:underline; text-underline-offset:2px; }
 
     .monday-controls {
-      display:flex; align-items:center; gap:18px; flex-wrap:wrap;
-      margin-bottom:20px;
+      display:flex; align-items:center; gap:10px 12px; flex-wrap:wrap;
+      margin:0 0 18px; padding:10px 12px;
+      background:var(--paper-2);
+      border:1px solid var(--line);
+      border-radius:12px;
     }
-    .monday-controls .menu-wrap { display:flex; align-items:center; }
-    .view-menu-wrap { margin-left:auto; }
-    .menu-trigger {
-      font:inherit; font-size:14px; font-weight:600; color:var(--ink);
-      background:none; border:0; padding:0; cursor:pointer;
-      display:inline-flex; align-items:center; gap:7px;
-      line-height:1; min-height:20px;
-      transition:color .15s;
-    }
-    .view-trigger { gap:6px; }
-    .view-trigger .view-kicker { color:var(--muted); font-weight:600; }
-    .view-trigger:hover .view-kicker { color:var(--muted); }
-    .view-menu-wrap .menu-panel { left:auto; right:0; }
+    .monday-controls .menu-wrap { display:flex; align-items:center; position:relative; }
     .menu-wrap { position:relative; }
-    .menu-trigger:hover { color:var(--brand-deep); }
-    .menu-trigger svg { width:14px; height:14px; color:var(--muted); flex:none; }
+    .filter-trigger {
+      font:inherit; font-size:13px; font-weight:650; color:var(--ink);
+      background:var(--card); border:1px solid var(--line); border-radius:999px;
+      padding:7px 12px 7px 11px; cursor:pointer;
+      display:inline-flex; align-items:center; gap:7px;
+      line-height:1.2; min-height:34px; box-shadow:var(--shadow);
+      transition:color .15s, background .15s, border-color .15s;
+    }
+    .filter-trigger svg { width:14px; height:14px; color:var(--muted); flex:none; }
+    .filter-trigger:hover {
+      border-color:color-mix(in srgb,var(--brand) 40%,var(--line));
+      color:var(--brand-deep);
+    }
+    .filter-trigger:hover svg { color:var(--brand-deep); }
+    .filter-trigger:focus-visible {
+      outline:none;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 35%,transparent), var(--shadow);
+    }
+    .filter-trigger[aria-expanded="true"],
+    .filter-trigger.is-filtered {
+      border-color:color-mix(in srgb,var(--brand) 50%,var(--line));
+      color:var(--brand-deep);
+      background:var(--card);
+    }
+    .filter-trigger[aria-expanded="true"] svg,
+    .filter-trigger.is-filtered svg { color:var(--brand); }
+    .filter-summary {
+      max-width:22ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+      font-size:12.5px; font-weight:600; color:var(--muted);
+    }
+    .filter-summary:not([hidden])::before {
+      content:"·"; margin-right:6px; color:var(--line);
+    }
+    .filter-badge {
+      min-width:18px; height:18px; padding:0 6px;
+      display:inline-grid; place-items:center;
+      border-radius:999px; background:var(--brand); color:var(--on-accent);
+      font-size:11px; font-weight:700; font-variant-numeric:tabular-nums; line-height:1;
+    }
+    .view-toggle {
+      margin-left:auto;
+      display:inline-flex; align-items:center; gap:0;
+      padding:3px; background:var(--card);
+      border:1px solid var(--line); border-radius:999px;
+      box-shadow:var(--shadow);
+    }
+    .view-seg {
+      font:inherit; font-size:12.5px; font-weight:650; color:var(--muted);
+      background:transparent; border:0; border-radius:999px;
+      padding:6px 12px; cursor:pointer; line-height:1.2; min-height:28px;
+      transition:color .15s, background .15s;
+    }
+    .view-seg:hover { color:var(--ink); }
+    .view-seg:focus-visible {
+      outline:none;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 35%,transparent);
+    }
+    .view-seg[aria-pressed="true"] {
+      background:var(--brand); color:var(--on-accent);
+    }
     .menu-panel {
       position:absolute; top:calc(100% + 8px); left:0; z-index:25;
       min-width:210px; background:var(--card);
@@ -278,6 +327,10 @@
       .monday-head { align-items:flex-start; }
       .monday-open { width:100%; }
       .menu-panel { min-width:min(240px,calc(100vw - 48px)); }
+      .monday-controls { padding:10px; }
+      .view-toggle { margin-left:0; width:100%; }
+      .view-seg { flex:1; text-align:center; padding:7px 8px; }
+      .filter-summary { max-width:16ch; }
     }
 
     /* ---- week view (focused: just this week) ----------------------- */
@@ -683,7 +736,7 @@
     /* ---- focus states ------------------------------------------------ */
     /* One ring for every control, matching the Command Center. Each item's
        own --accent tints it, so the ring belongs to the thing you focused. */
-    .menu-trigger:focus-visible, .menu-item:focus-visible, .monday-refresh:focus-visible, .monday-open:focus-visible,
+    .filter-trigger:focus-visible, .view-seg:focus-visible, .menu-item:focus-visible, .monday-refresh:focus-visible, .monday-open:focus-visible,
     .mini-btn:focus-visible, .btn-sm:focus-visible,
     .head-link:focus-visible, .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
     .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
@@ -773,9 +826,11 @@
           </div>
           <div class="monday-controls" id="taskToolbar" data-view="week">
             <div class="menu-wrap" id="filterMenuWrap">
-              <button class="menu-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="filterPanel">
+              <button class="filter-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="filterPanel" aria-label="Filter tasks">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
-                Filter
+                <span>Filter</span>
+                <span class="filter-summary" id="filterSummary" hidden></span>
+                <span class="filter-badge" id="filterBadge" hidden></span>
               </button>
               <div class="menu-panel" id="filterPanel" hidden>
                 <div class="menu-section" id="statusMenuSection">
@@ -788,22 +843,11 @@
                 </div>
               </div>
             </div>
-            <div class="menu-wrap view-menu-wrap" id="viewMenuWrap">
-              <button class="menu-trigger view-trigger" type="button" id="viewTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="viewPanel">
-                <span class="view-kicker">View:</span>
-                <span id="viewTriggerLabel">Week</span>
-              </button>
-              <div class="menu-panel" id="viewPanel" hidden>
-                <div class="menu-section">
-                  <div class="menu-section-label">View</div>
-                  <ul class="menu-list" id="viewMenu">
-                    <li><button class="menu-item view-menu-item" type="button" data-view="week">Week</button></li>
-                    <li><button class="menu-item view-menu-item" type="button" data-view="list">List</button></li>
-                    <li><button class="menu-item view-menu-item" type="button" data-view="board">Board</button></li>
-                    <li><button class="menu-item view-menu-item" type="button" data-view="calendar">Calendar</button></li>
-                  </ul>
-                </div>
-              </div>
+            <div class="view-toggle" id="viewToggle" role="group" aria-label="Task view">
+              <button class="view-seg" type="button" data-view="week" aria-pressed="true">Week</button>
+              <button class="view-seg" type="button" data-view="list" aria-pressed="false">List</button>
+              <button class="view-seg" type="button" data-view="board" aria-pressed="false">Board</button>
+              <button class="view-seg" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
             </div>
           </div>
           <div class="task-content">
@@ -977,7 +1021,6 @@
     ];
 
     const VIEWS = ["week", "list", "board", "calendar"];
-    const VIEW_LABELS = { week:"Week", list:"List", board:"Board", calendar:"Calendar" };
     let activeStatus = "all";
     let activeArea = "all";
     let view = "week";
@@ -998,14 +1041,17 @@
     const areaMenu = document.getElementById("areaMenu");
     const statusMenuSection = document.getElementById("statusMenuSection");
     const filterMenuWrap = document.getElementById("filterMenuWrap");
-    const viewMenuWrap = document.getElementById("viewMenuWrap");
     const filterTrigger = document.getElementById("filterTrigger");
-    const viewTrigger = document.getElementById("viewTrigger");
     const filterPanel = document.getElementById("filterPanel");
-    const viewPanel = document.getElementById("viewPanel");
-    const viewTriggerLabel = document.getElementById("viewTriggerLabel");
+    const filterSummary = document.getElementById("filterSummary");
+    const filterBadge = document.getElementById("filterBadge");
     const taskToolbar = document.getElementById("taskToolbar");
     const AREA_ORDER = ["ops", "lms", "content", "data", "comms", "sustain"];
+    const STATUS_FILTER_LABELS = {
+      work: "Working on it",
+      wait: "Waiting",
+      idle: "Not started",
+    };
 
     function visibleTasks(){
       return TASKS.filter(t => {
@@ -1048,11 +1094,9 @@
     }
 
     function closeMenus(except){
-      [[filterMenuWrap, filterTrigger, filterPanel], [viewMenuWrap, viewTrigger, viewPanel]].forEach(([wrap, trigger, panel]) => {
-        if (!wrap || wrap === except) return;
-        panel.hidden = true;
-        trigger.setAttribute("aria-expanded", "false");
-      });
+      if (!filterMenuWrap || filterMenuWrap === except) return;
+      filterPanel.hidden = true;
+      filterTrigger.setAttribute("aria-expanded", "false");
     }
 
     function toggleMenu(wrap, trigger, panel){
@@ -1065,10 +1109,6 @@
     filterTrigger.addEventListener("click", (e) => {
       e.stopPropagation();
       toggleMenu(filterMenuWrap, filterTrigger, filterPanel);
-    });
-    viewTrigger.addEventListener("click", (e) => {
-      e.stopPropagation();
-      toggleMenu(viewMenuWrap, viewTrigger, viewPanel);
     });
     document.addEventListener("click", () => closeMenus());
     document.addEventListener("keydown", (e) => {
@@ -1126,9 +1166,26 @@
         areaMenu.appendChild(menuItem(BOARDS[k].label, activeArea === k, null, () => { activeArea = k; }));
       });
 
-      document.querySelectorAll(".view-menu-item").forEach(b =>
-        b.classList.toggle("is-selected", b.dataset.view === view));
-      if (viewTriggerLabel) viewTriggerLabel.textContent = VIEW_LABELS[view];
+      document.querySelectorAll(".view-seg").forEach(b =>
+        b.setAttribute("aria-pressed", String(b.dataset.view === view)));
+
+      const parts = [];
+      if (activeStatus !== "all") parts.push(STATUS_FILTER_LABELS[activeStatus] || activeStatus);
+      if (activeArea !== "all" && BOARDS[activeArea]) parts.push(BOARDS[activeArea].label);
+      const filtered = parts.length > 0;
+      filterTrigger.classList.toggle("is-filtered", filtered);
+      if (filterSummary) {
+        filterSummary.hidden = !filtered;
+        filterSummary.textContent = parts.join(" · ");
+      }
+      if (filterBadge) {
+        filterBadge.hidden = !filtered;
+        filterBadge.textContent = String(parts.length);
+      }
+      filterTrigger.setAttribute(
+        "aria-label",
+        filtered ? "Filter tasks, " + parts.join(", ") : "Filter tasks"
+      );
     }
 
     // Sort by soonest due date; undated tasks fall to the end.
@@ -1571,9 +1628,8 @@
       renderFilters();
       renderView();
     }
-    document.querySelectorAll(".view-menu-item").forEach(b =>
-      b.addEventListener("click", (e) => {
-        e.stopPropagation();
+    document.querySelectorAll(".view-seg").forEach(b =>
+      b.addEventListener("click", () => {
         setView(b.dataset.view);
         closeMenus();
       }));
