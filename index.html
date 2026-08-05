@@ -14,7 +14,7 @@
   <meta name="twitter:title" content="Training Unit — Command Center" />
   <meta name="twitter:description" content="One place for every tool the MLRI Training Unit uses." />
   <meta name="twitter:image" content="https://trainingunit.pages.dev/icons/app/icon.svg" />
-  <meta name="theme-color" content="#efd1b9" />
+  <meta name="theme-color" content="#fdf6f1" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48 64x64 128x128 256x256" />
   <link rel="icon" href="icons/app/icon.svg" type="image/svg+xml" />
@@ -27,9 +27,10 @@
   <link rel="stylesheet" href="tokens.css" />
 
   <style>
-    /* top-right actions (search + theme) */
+    /* top-right actions (greeting + avatars + search + theme) */
     .head-right {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; justify-content: flex-end;
+      flex-wrap: wrap; gap: 10px 14px; min-width: 0;
     }
     .top-actions {
       display: flex; align-items: center; gap: 8px; flex-shrink: 0;
@@ -99,6 +100,7 @@
     }
     body {
       margin: 0;
+      width: 100%;
       max-width: 100%;
       overflow-x: clip;
       overscroll-behavior-x: none;
@@ -108,9 +110,22 @@
       background: var(--canvas-bg);
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
-      padding: max(20px, env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+      padding: max(20px, env(safe-area-inset-top)) var(--layout-gutter) calc(40px + env(safe-area-inset-bottom));
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
     }
-    .wrap { max-width: min(1160px, 100%); margin: 0 auto; min-width: 0; }
+    .wrap {
+      width: 100%;
+      max-width: min(var(--layout-max), 100%);
+      margin-inline: auto;
+      min-width: 0;
+      flex: 1 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
 
     /* ---- accessibility --------------------------------------------- */
     .skip-link {
@@ -130,70 +145,128 @@
     }
 
     /* ---- header ---------------------------------------------------- */
+    /* A band, not a card: the wash and the hairline run the full width of the
+       window while the content stays on the same column as the board below.
+       `margin-inline: calc(50% - 50vw)` reaches from .wrap out to both edges at
+       any width; .hero-inner puts the content back on the grid. (html already
+       carries overflow-x: clip, so a scrollbar's worth of 100vw is clipped
+       rather than becoming a sideways scroll.) */
     header.hero-band {
+      margin-inline: calc(50% - 50vw);
+      margin-top: calc(-1 * max(20px, env(safe-area-inset-top)));
+      margin-bottom: 26px;
+      padding-inline: var(--layout-gutter);
+      background: var(--hero-bg);
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-inner {
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
-      gap: 16px 28px;
-      padding: 22px 26px;
-      margin-bottom: 20px;
+      gap: 14px 28px;
+      max-width: min(var(--layout-max), 100%);
+      margin-inline: auto;
+      padding: 18px 0 16px;
       min-width: 0;
-      max-width: 100%;
-      background: var(--hero-bg);
-      border: 1px solid var(--line-soft);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
     }
-    .head-main { min-width: 0; }
-    .tick {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--earth); flex-shrink: 0;
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--earth) 22%, transparent);
+    /* Title and eyebrow share one line, the eyebrow trailing it as a kicker. */
+    .head-main {
+      min-width: 0;
+      display: flex; align-items: baseline; flex-wrap: wrap;
+      column-gap: 14px; row-gap: 2px;
     }
     .eyebrow {
-      display: flex; align-items: center; gap: 8px;
       font-size: 11px; letter-spacing: .16em; text-transform: uppercase;
-      color: var(--earth-deep); font-weight: 700; margin: 0 0 6px;
+      color: var(--earth-deep); font-weight: 700; margin: 0;
+      white-space: nowrap;
     }
     h1 {
       font-family: var(--sans); font-weight: 750;
-      font-size: clamp(28px, 4.5vw, 38px); line-height: 1.05;
-      letter-spacing: -0.03em; color: var(--ink); margin: 0;
+      font-size: clamp(22px, 2.8vw, 28px); line-height: 1.1;
+      letter-spacing: -0.025em; color: var(--ink); margin: 0;
     }
+    /* The header is the one boxed container on the page, so nothing inside it
+       gets a box of its own — the greeting sits directly on the hero wash. */
     .head-meta {
-      text-align: right;
+      flex: 0 1 auto; min-width: 0; text-align: right;
       display: flex; flex-direction: column; justify-content: center;
-      padding: 6px 14px;
-      background: var(--paper-2);
-      border: 1px solid var(--line-soft);
-      border-radius: var(--radius);
     }
     .greeting { font-size: 14px; font-weight: 650; color: var(--ink); line-height: 1.25; }
     .today { font-size: 12px; color: var(--muted); margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+    /* ---- team avatar stack (the door to each focus page) ------------ */
+    .avatar-stack { display: flex; align-items: center; flex: none; }
+    .avatar-stack > * + * { margin-left: -8px; }
+    .avatar {
+      position: relative; flex: none;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-family: var(--sans); font-weight: 700; font-size: 12.5px;
+      text-decoration: none; color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 16%, var(--card));
+      box-shadow: 0 0 0 2px var(--card);
+      transition: transform .16s ease, box-shadow .16s ease;
+    }
+    /* Person accents are literals, so unlike a token they do NOT lighten with
+       the theme and accent-on-dark-tint lands near 3:1. Mix the letter toward
+       paper in dark mode, matching the focus pages' .who-mono. */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .avatar {
+        color: color-mix(in srgb, var(--accent) 45%, #fff);
+        background: color-mix(in srgb, var(--accent) 26%, var(--card));
+      }
+    }
+    :root[data-theme="dark"] .avatar {
+      color: color-mix(in srgb, var(--accent) 45%, #fff);
+      background: color-mix(in srgb, var(--accent) 26%, var(--card));
+    }
+    .avatar:hover, .avatar:focus-visible {
+      outline: none; z-index: 3; transform: translateY(-2px);
+      box-shadow: 0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
+    }
+    /* Overflow beyond AVATAR_MAX collapses here; the popover reuses .focus-list. */
+    .av-menu { position: relative; flex: none; }
+    .av-menu > summary {
+      list-style: none; cursor: pointer;
+      width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 11.5px; font-weight: 700; color: var(--muted);
+      background: var(--paper-2); box-shadow: 0 0 0 2px var(--card);
+      font-variant-numeric: tabular-nums;
+      transition: color .15s ease, transform .16s ease;
+    }
+    .av-menu > summary::-webkit-details-marker { display: none; }
+    .av-menu > summary:hover, .av-menu[open] > summary { color: var(--ink); transform: translateY(-2px); }
+    .av-menu > summary:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--brand) 40%, transparent);
+    }
     @media (max-width: 640px) {
       body {
         padding: max(12px, env(safe-area-inset-top)) 12px calc(28px + env(safe-area-inset-bottom));
       }
       header.hero-band {
+        margin-top: calc(-1 * max(12px, env(safe-area-inset-top)));
+        margin-bottom: 18px;
+        padding-inline: 12px;
+      }
+      .hero-inner {
         grid-template-columns: 1fr;
-        gap: 14px;
-        padding: 16px 18px;
-        margin-bottom: 14px;
+        gap: 12px;
+        padding: 14px 0 12px;
       }
       .head-right {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: stretch;
-        gap: 10px;
         width: 100%;
+        justify-content: space-between;
+        gap: 10px 12px;
       }
       .head-meta {
-        min-height: 42px;
+        flex: 1 1 auto;
         min-width: 0;
         text-align: left;
-        padding: 6px 12px;
-        border-radius: var(--radius);
       }
+      .avatar { width: 30px; height: 30px; font-size: 12px; }
+      .av-menu > summary { width: 30px; height: 30px; }
       .top-actions { gap: 6px; }
       .icon-btn {
         width: 42px;
@@ -209,23 +282,23 @@
         width: auto;
         z-index: 50;
       }
-      h1 { font-size: clamp(28px, 10vw, 36px); }
+      h1 { font-size: clamp(21px, 6vw, 26px); }
     }
 
     /* ---- dashboard grid -------------------------------------------- */
-    #board { margin-top: 0; min-width: 0; max-width: 100%; }
+    #board { margin-top: 0; min-width: 0; max-width: 100%; margin-bottom: 40px; }
 
     @media (min-width: 960px) {
       #board {
         display: grid;
-        grid-template-columns: minmax(0, 62fr) minmax(300px, 38fr);
-        gap: 16px;
+        grid-template-columns: minmax(0, 63fr) minmax(300px, 37fr);
+        gap: 44px;
         align-items: start;
       }
       .dash-col {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 34px;
         min-width: 0;
       }
 
@@ -239,7 +312,7 @@
         margin-top: 0;
       }
       #board.is-searching .dash-panel + .dash-panel {
-        margin-top: 16px;
+        margin-top: 34px;
       }
       #board.is-searching .dash-col:first-child .dash-panel:first-child {
         margin-top: 0;
@@ -250,49 +323,46 @@
       #board {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 30px;
       }
       .dash-col {
         display: flex;
         flex-direction: column;
-        gap: 16px;
+        gap: 30px;
         min-width: 0;
         max-width: 100%;
       }
     }
 
+    /* A section is a label and a rule, not a card. Nothing on the board is
+       boxed or shadowed — the header band is the page's only container. */
     .dash-panel {
-      background: var(--card);
-      border: 1px solid var(--line-soft);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow);
-      padding: 20px 20px 18px;
       min-width: 0;
       max-width: 100%;
     }
-    .dash-panel--work { padding: 22px; }
 
     .panel-head {
-      margin: 0 0 16px; padding-bottom: 12px;
-      border-bottom: 1px solid var(--line-soft);
+      margin: 0 0 4px; padding-bottom: 7px;
+      border-bottom: 1px solid var(--line);
     }
     .panel-title {
       display: flex; align-items: center; gap: 8px;
-      font-size: 12px; font-weight: 700; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--muted); margin: 0;
+      font-size: 11px; font-weight: 700; letter-spacing: .16em;
+      text-transform: uppercase; color: var(--earth-deep); margin: 0;
     }
     .panel-title::before {
       content: ""; flex-shrink: 0;
-      width: 4px; height: 12px; border-radius: 2px;
+      width: 4px; height: 11px; border-radius: 2px;
       background: var(--earth);
     }
 
 
     /* ---- layouts --------------------------------------------------- */
-    .grid { display: grid; gap: 10px; grid-template-columns: minmax(0, 1fr); }
-    .grid--tools { gap: 12px; }
+    /* Rows butt directly against each other; the hairline is the only
+       separator, so every list gap here is 0. */
+    .grid { display: grid; gap: 0; grid-template-columns: minmax(0, 1fr); }
 
-    /* ---- Important Documents (Editorial Document Roster) ---------- */
+    /* ---- Documents of Record (editorial document roster) ----------- */
     .doc-list {
       list-style: none; margin: 0; padding: 0;
       display: flex; flex-direction: column; gap: 0;
@@ -300,23 +370,30 @@
     .doc-list > li { min-width: 0; }
     .doc-row {
       display: flex; align-items: center; gap: 12px;
-      padding: 12px 10px; border-radius: 8px;
+      padding: 11px 4px; border-radius: 7px;
       text-decoration: none; color: inherit;
       border-bottom: 1px solid var(--line-soft);
       min-width: 0; max-width: 100%;
-      transition: background .17s ease, border-color .17s ease, transform .17s ease;
+      transition: background .17s ease, border-color .17s ease;
     }
-    .doc-divider-item + li .doc-row,
+    /* A row that already has a divider under it doesn't also draw its own rule. */
+    .doc-list > li:has(+ .doc-divider-item) .doc-row,
     .doc-list > li:last-child .doc-row { border-bottom: none; }
+    /* Hover reads as the row being picked out, not merely touched: it lifts to
+       the top of the tonal ladder and takes a short accent edge on its leading
+       side. The edge is an inset shadow so it costs no layout and can't shift
+       the text by a pixel on the way in. */
     .doc-row:hover {
-      background: var(--paper-2);
+      background: var(--hover-tint);
       border-bottom-color: transparent;
-      transform: translateX(3px);
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand));
     }
     .doc-row:focus-visible {
-      background: var(--paper-2);
+      background: var(--hover-tint);
+      border-bottom-color: transparent;
       outline: none;
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent);
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand)),
+                  0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent);
     }
     .doc-row .tile-body { flex: 1; min-width: 0; }
     .doc-row .tile-name { font-size: 14.5px; font-weight: 650; color: var(--ink); }
@@ -326,56 +403,53 @@
     .doc-divider-item { list-style: none; }
     .doc-divider {
       border: 0; border-top: 1px solid var(--line-soft);
-      margin: 6px 0; height: 0;
+      margin: 5px 0; height: 0;
     }
+    /* Documents of Record: a 30px icon chip, smaller than a board tile's mark. */
+    .dash-panel[data-section="Important Documents"] .mono {
+      width: 30px; height: 30px; border-radius: 8px; font-size: 14px;
+    }
+    .dash-panel[data-section="Important Documents"] .mono--icon svg { width: 16px; height: 16px; }
 
-    /* LMS Portal Tiles */
+    /* ---- LMS (2x2 of unboxed tool rows) ---------------------------- */
     .dash-panel[data-section="LMS"] .doc-list {
-      display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    @media (max-width: 520px) {
-      .dash-panel[data-section="LMS"] .doc-list { grid-template-columns: 1fr; }
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 26px; row-gap: 0;
     }
     .dash-panel[data-section="LMS"] .doc-list > li:not(.doc-divider-item) { display: contents; }
     .dash-panel[data-section="LMS"] .doc-divider-item { grid-column: 1 / -1; }
-    .dash-panel[data-section="LMS"] .doc-row {
-      background: var(--paper-2);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 14px;
-    }
-    .dash-panel[data-section="LMS"] .doc-row:hover,
-    .dash-panel[data-section="LMS"] .doc-row:focus-visible {
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line));
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
+    .dash-panel[data-section="LMS"] .doc-row { padding: 13px 4px; gap: 13px; }
+    /* Both cells of the bottom row end the list, not just the last child. */
+    .dash-panel[data-section="LMS"] .doc-list > li:nth-last-child(-n+2) .doc-row { border-bottom: none; }
+    /* Slightly larger chip than a document row's; the fill comes from
+       `mono--fill` on the items themselves. */
+    .dash-panel[data-section="LMS"] .mono { width: 34px; height: 34px; border-radius: 9px; }
+    .dash-panel[data-section="LMS"] .doc-row .tile-name { font-size: 15px; }
+    .dash-panel[data-section="LMS"] .doc-row .tile-arrow { opacity: .8; }
+    /* Stacked in one column, only the true last row ends the list again. */
+    @media (max-width: 520px) {
+      .dash-panel[data-section="LMS"] .doc-list { grid-template-columns: 1fr; }
+      .dash-panel[data-section="LMS"] .doc-list > li:nth-last-child(2) .doc-row { border-bottom: 1px solid var(--line-soft); }
     }
 
+    /* ---- Quick Links (icon over label, laid out inline) ------------ */
     .app-grid {
       list-style: none; margin: 0; padding: 0;
-      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px;
+      display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px;
     }
     .app-grid > li { min-width: 0; display: flex; }
     .app-grid .app-tile { flex: 1; width: 100%; }
-    @media (max-width: 400px) { .app-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     .app-tile {
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
-      padding: 16px 10px; border-radius: var(--radius);
+      display: flex; flex-direction: column; align-items: center; gap: 9px;
+      padding: 14px 6px; border-radius: 10px;
       text-decoration: none; color: inherit; text-align: center;
-      background: var(--paper-2); border: 1px solid var(--line);
-      transition: transform .17s ease, border-color .17s ease, background .17s ease, box-shadow .17s ease;
+      background: transparent; border: 0;
+      transition: background .17s ease;
     }
-    .app-tile:hover {
-      transform: translateY(-2px);
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line));
-      box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--accent, var(--brand)) 25%, transparent);
-    }
+    .app-tile:hover { background: var(--hover-tint); }
     .app-tile:focus-visible {
       outline: none;
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line));
+      background: var(--hover-tint);
       box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent);
     }
     .app-label {
@@ -384,34 +458,12 @@
       width: 100%; text-align: center;
     }
     .app-tile.is-soon { opacity: .55; cursor: default; }
-    .app-tile.is-soon:hover { transform: none; border-color: var(--line); }
+    .app-tile.is-soon:hover { transform: none; background: transparent; }
     .app-tile .soon-tag {
       margin: 0; font-size: 10.5px; padding: 1px 5px;
     }
 
-    /* ---- focus page menu -------------------------------------------- */
-    .focus-nav { display: flex; justify-content: flex-end; margin: 0 0 14px; }
-    .focus-menu { position: relative; }
-    .focus-menu > summary {
-      list-style: none; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
-      font-size: 12.5px; font-weight: 650; color: var(--muted);
-      background: var(--card); border: 1px solid var(--line-soft); border-radius: 999px;
-      padding: 6px 14px; box-shadow: var(--shadow);
-      transition: color .15s, border-color .15s, background .15s, transform .15s;
-    }
-    .focus-menu > summary::-webkit-details-marker { display: none; }
-    .focus-menu > summary:hover,
-    .focus-menu[open] > summary {
-      color: var(--ink); background: var(--card);
-      border-color: color-mix(in srgb, var(--brand) 45%, var(--line));
-      transform: translateY(-1px);
-    }
-    .focus-menu > summary:focus-visible {
-      outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent), var(--shadow);
-    }
-    .fm-person { width: 14px; height: 14px; flex: none; color: var(--earth); }
-    .fm-chev { font-size: 9px; transition: transform .16s; }
-    .focus-menu[open] .fm-chev { transform: rotate(180deg); }
+    /* ---- focus page popover (the avatar stack's "+N" overflow) ------ */
     .focus-list {
       position: absolute; right: 0; top: calc(100% + 6px); z-index: 30;
       min-width: 190px; list-style: none; margin: 0; padding: 6px;
@@ -433,10 +485,6 @@
       background: color-mix(in srgb, var(--accent) 14%, var(--card));
       border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
     }
-    @media (max-width: 640px) { .focus-nav { justify-content: stretch; } .focus-menu { width: 100%; }
-      .focus-menu > summary { width: 100%; justify-content: center; }
-      .focus-list { left: 0; right: 0; } }
-
     @media (max-width: 640px) {
       .dash-col,
       .panel-body,
@@ -455,20 +503,15 @@
         white-space: normal;
       }
       .announce-more { white-space: normal; }
-      .dash-panel {
-        padding: 14px 12px 12px;
-        border-radius: var(--radius);
-      }
-      .dash-panel--work { padding: 14px 12px 12px; }
       .panel-head {
-        margin-bottom: 10px;
-        padding-bottom: 10px;
+        margin-bottom: 2px;
+        padding-bottom: 7px;
       }
       .tile,
       .acc-summary,
       .doc-row {
         gap: 10px;
-        padding: 12px;
+        padding: 12px 2px;
       }
       .tile,
       .doc-row,
@@ -501,25 +544,25 @@
         padding-inline: 7px;
       }
       .sublinks {
-        padding: 6px;
+        padding: 2px 0 4px 14px;
       }
       .sublinks > li { margin-left: 0; }
       .sublink {
         gap: 8px;
-        padding: 10px;
+        padding: 9px 8px;
       }
       .sublink-arrow { opacity: .75; }
       .subsublinks {
-        margin-left: 7px;
+        margin-left: 5px;
         padding-left: 9px;
       }
       .app-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 6px;
+        gap: 2px;
       }
       .app-tile {
-        min-height: 94px;
-        padding: 12px 6px;
+        min-height: 88px;
+        padding: 12px 4px;
         gap: 8px;
       }
       .app-label {
@@ -538,18 +581,15 @@
     }
 
     @media (max-width: 400px) {
-      .head-right {
-        grid-template-columns: 1fr;
-      }
       .top-actions {
         justify-content: flex-end;
       }
-      .app-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
+      /* The meta pill is part of the row's meaning ("7 folders"), so it shrinks
+         here rather than dropping out — the description ellipsises instead. */
       .acc-count,
       .subfolder-count {
-        display: none;
+        font-size: 11.5px;
+        padding-inline: 6px;
       }
     }
 
@@ -584,25 +624,27 @@
       background: color-mix(in srgb, var(--accent, var(--brand)) 14%, var(--card));
     }
 
-    /* ---- tile ------------------------------------------------------ */
+    /* ---- tile (a childless tool row) ------------------------------- */
     .tile {
       display: flex; align-items: center; gap: 14px; text-decoration: none;
-      color: inherit; background: var(--paper-2); border: 1px solid var(--line);
-      border-radius: var(--radius); padding: 14px 16px;
+      color: inherit; background: transparent; border: 0;
+      border-bottom: 1px solid var(--line-soft);
+      border-radius: 7px; padding: 13px 4px;
       min-width: 0; max-width: 100%;
-      transition: transform .17s ease, border-color .17s ease, background .17s ease, box-shadow .17s ease;
+      transition: background .17s ease, border-color .17s ease;
     }
+    .grid > .tile:last-child { border-bottom: none; }
     .tile:hover {
-      transform: translateY(-2px);
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+      background: var(--hover-tint);
+      border-bottom-color: transparent;
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand));
     }
     .tile:focus-visible {
-      transform: translateY(-2px);
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 55%, var(--line));
+      background: var(--hover-tint);
+      border-bottom-color: transparent;
       outline: none;
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent), var(--shadow);
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand)),
+                  0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent);
     }
     /* ---- shared application-icon chip (all app logos + letter tiles) ---- */
     .mono {
@@ -613,18 +655,27 @@
       background: color-mix(in srgb, var(--accent, var(--brand)) 12%, var(--card));
       border: 1px solid color-mix(in srgb, var(--accent, var(--brand)) 20%, transparent);
     }
+    /* Transparent artwork (Slack, Drive, Monday) sits on a white plate. */
     .mono--logo {
       background: var(--card);
       border: 1px solid var(--line-soft);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
     }
     .mono--logo img { width: 24px; height: 24px; display: block; object-fit: contain; }
-    /* Learning Hub's logo reads heavier than the Brightspace marks; trim it back. */
-    .mono--logo img[src*="learning-hub"] { width: 22px; height: 22px; }
-    /* Brightspace (D2L) mark has extra padding in the PNG — scale up to match neighbors. */
-    .mono--logo img[src*="brightspace.png"] { width: 28px; height: 28px; }
-    /* D2L Academy mark is a circle with extra padding — scale up to match neighbors. */
-    .mono--logo img[src*="D2L-Symbol"] { width: 32px; height: 32px; }
+    /* `fill: true` — the logo already paints its own rounded ground (Otter's
+       rect, Claude's rounded path, the Brightspace/D2L marks), so it fills the
+       chip. A plate behind one of these just rings the artwork's own edge. */
+    .mono--fill {
+      background: transparent;
+      border: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+    .mono--fill img {
+      width: 100%; height: 100%;
+      border-radius: inherit;
+      object-fit: cover;
+    }
     .mono--icon svg {
       width: 20px; height: 20px; display: block;
       stroke: currentColor; fill: none;
@@ -639,108 +690,130 @@
     .tile:hover .tile-arrow, .tile:focus-visible .tile-arrow { color: var(--accent, var(--brand)); transform: translateX(3px); }
 
     /* ---- accordion tile (Drive, Monday) --------------------------- */
+    /* Open by default: the section is meant to read as an app row with its
+       folders/workspaces listed under it, not as something you unfold. */
     .tile-accordion {
       grid-column: 1 / -1;
-      background: var(--paper-2);
-      border: 1px solid var(--line);
-      border-left: 3px solid var(--accent, var(--brand));
-      border-radius: var(--radius);
-      overflow: hidden;
-      transition: transform .17s ease, border-color .17s ease, background .17s ease, box-shadow .17s ease;
+      background: transparent;
+      border: 0;
+      border-bottom: 1px solid var(--line-soft);
+      border-radius: 0;
+      overflow: visible;
     }
-    .tile-accordion:hover,
-    .tile-accordion[open] {
-      background: var(--card);
-      border-color: color-mix(in srgb, var(--accent, var(--brand)) 50%, var(--line));
-      border-left-color: var(--accent, var(--brand));
-      box-shadow: var(--shadow);
-    }
+    .grid > .tile-accordion:last-child { border-bottom: none; }
     .acc-summary {
       list-style: none; cursor: pointer;
-      display: flex; align-items: center; gap: 14px; padding: 15px 16px;
+      display: flex; align-items: center; gap: 14px; padding: 13px 4px;
+      border-radius: 7px;
       min-width: 0;
+      transition: background .17s ease;
     }
+    .acc-summary:hover {
+      background: var(--hover-tint);
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand));
+    }
+    /* One line of text, so the row closes up around a smaller mark. */
+    .acc-summary--tight { padding: 9px 4px; gap: 11px; }
+    .acc-summary--tight .mono { width: 32px; height: 32px; border-radius: 9px; font-size: 15px; }
+    .acc-summary--tight .mono--logo img { width: 20px; height: 20px; }
+    .acc-summary--tight .tile-name { font-size: 15.5px; }
     .acc-summary .tile-body { flex: 1; min-width: 0; }
     .acc-summary::-webkit-details-marker { display: none; }
     .acc-summary:focus-visible {
       outline: none;
-      box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent, var(--brand)) 45%, transparent);
+      background: var(--hover-tint);
+      box-shadow: inset 2px 0 0 var(--accent, var(--brand)),
+                  0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent);
     }
+    /* Plain text, no pill — the count is a quiet fact about the row, and a
+       bordered capsule was the last enclosed shape left on the board. */
     .acc-count {
-      margin-left: auto; flex: none; font-size: 12.5px; font-weight: 600; color: var(--muted);
-      background: color-mix(in srgb, var(--accent, var(--brand)) 10%, var(--card));
-      border: 1px solid color-mix(in srgb, var(--accent, var(--brand)) 20%, transparent);
-      border-radius: 999px; padding: 2px 9px;
+      margin-left: auto; flex: none;
+      font-size: 12.5px; font-weight: 600; color: var(--muted);
       font-variant-numeric: tabular-nums;
     }
-    .acc-chev { margin-left: 0; }
-    .tile-accordion[open] .acc-chev { transform: rotate(90deg); color: var(--accent, var(--brand)); }
+    .acc-chev { margin-left: 0; font-size: 15px; }
+    .tile-accordion[open] .acc-chev { transform: rotate(90deg); }
+    .acc-summary:hover .acc-chev,
+    .acc-summary:focus-visible .acc-chev { color: var(--accent, var(--brand)); }
 
-    /* one folder per line, indented so they read as children of the tile */
+    /* A two-column mini list, indented under the app row it belongs to. */
     .sublinks {
       list-style: none; margin: 0;
-      border-top: 1px solid var(--line); padding: 6px 6px 6px 14px; display: grid; gap: 2px;
+      border-top: 0; padding: 0 0 6px 34px;
+      display: grid; grid-template-columns: minmax(0, 1fr);
+      row-gap: 0; column-gap: 22px;
     }
-    .sublinks > li { margin-left: 12px; }
-    .sublinks > li:has(.sublink-lead) { margin-left: 0; grid-column: 1 / -1; }
-    .sublinks > li.subfolder-item { grid-column: 1 / -1; }
+    @media (min-width: 560px) {
+      .sublinks { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .sublinks > li { margin-left: 0; min-width: 0; }
+    .sublinks > li:has(.sublink-lead) { grid-column: 1 / -1; }
     .sublink {
-      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
-      border-radius: 10px; text-decoration: none; color: var(--ink); font-size: 15px;
+      display: flex; align-items: center; gap: 9px; padding: 8px 8px;
+      border-radius: 7px; text-decoration: none; color: var(--ink); font-size: 14px;
+      border-bottom: 1px solid color-mix(in srgb, var(--line-soft) 60%, transparent);
+      transition: background .14s ease, border-color .14s ease;
     }
-    .sublink:hover { background: var(--paper-2); }
-    .sublink:focus-visible { outline: none; box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--accent, var(--brand)) 45%, transparent); }
+    .sublink:hover { background: var(--hover-tint); border-bottom-color: transparent; }
+    .sublink:focus-visible {
+      outline: none; border-bottom-color: transparent; background: var(--hover-tint);
+      box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent, var(--brand)) 45%, transparent);
+    }
     .sublink-tick { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--accent, var(--brand)); }
     .sublink-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .sublink-arrow { margin-left: auto; color: var(--faint); opacity: 0; transition: opacity .14s; }
     .sublink:hover .sublink-arrow { opacity: 1; }
     /* ---- nested drill-down (a folder that holds subfolders) ------- */
-    .subfolder { grid-column: 1 / -1; }
+    /* Closed, it's one cell of the mini list; open, it takes the full width so
+       its own two-column list has room. */
+    .subfolder { min-width: 0; }
+    .sublinks > li.subfolder-item:has(> .subfolder[open]) { grid-column: 1 / -1; }
     .sublink-parent { cursor: pointer; list-style: none; min-width: 0; }
     .sublink-parent::-webkit-details-marker { display: none; }
+    /* --muted, not --faint: --faint sits at 3.9:1 on the --paper-2 pill. */
     .subfolder-count {
-      margin-left: auto; flex: none; font-size: 12.5px; color: var(--faint);
+      margin-left: auto; flex: none; font-size: 12px; color: var(--muted);
       background: var(--paper-2); border-radius: 999px; padding: 1px 8px;
+      font-variant-numeric: tabular-nums;
     }
-    .subfolder-chev { flex: none; margin-left: 8px; color: var(--faint); transition: transform .16s; }
+    .subfolder-chev { flex: none; margin-left: 8px; color: var(--muted); transition: transform .16s; }
     .subfolder[open] > .sublink-parent { color: var(--accent, var(--brand)); }
     .subfolder[open] > .sublink-parent .subfolder-chev { transform: rotate(90deg); color: var(--accent, var(--brand)); }
     .subsublinks {
       list-style: none;
-      display: grid; gap: 2px;
-      margin: 2px 0 6px 9px; padding: 2px 0 2px 12px;
-      border-left: 2px solid var(--line);
+      display: grid; gap: 0 18px;
+      margin: 0 0 6px 10px; padding: 2px 0 2px 12px;
+      border-left: 1px solid var(--line);
     }
     .subsublinks > li { min-width: 0; }
     @media (min-width: 560px) { .subsublinks { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
-    .subsublink { font-size: 14.5px; }
+    .subsublink { font-size: 13.5px; }
     .subsublink .sublink-tick { width: 5px; height: 5px; opacity: .55; }
-    .subsublink-open { color: var(--faint); }
+    .subsublink-open { color: var(--muted); }
     .subsublink-open .sublink-name { font-style: italic; }
     /* pinned "open whole drive" row at the top */
-    .sublink-lead { grid-column: 1 / -1; color: var(--faint); border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 4px; }
+    .sublink-lead { grid-column: 1 / -1; color: var(--muted); border-bottom: 1px solid var(--line); border-radius: 0; margin-bottom: 2px; }
     .sublink-lead .sublink-tick { display: none; }
     .sublink-lead .sublink-name { font-style: italic; }
     .sublink-lead .sublink-arrow { opacity: .8; }
     /* a row (or subfolder) set off by a separator line above it */
-    .sublink-divider, .subfolder.has-divider { grid-column: 1 / -1; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 12px; }
+    .sublink-divider, .subfolder.has-divider { grid-column: 1 / -1; border-top: 1px solid var(--line); margin-top: 4px; padding-top: 10px; }
     .subfolder.has-divider { padding-top: 0; }
     .subfolder.has-divider > .sublink-parent { margin-top: 6px; }
-    .acc-note { margin: 0; padding: 4px 16px 16px; color: var(--faint); font-size: 14.5px; }
+    .acc-note { margin: 0; padding: 4px 4px 14px; color: var(--muted); font-size: 14px; }
 
     .empty {
-      color: var(--faint); font-size: 15px; padding: 24px;
+      color: var(--muted); font-size: 15px; padding: 28px 4px;
       display: none; text-align: center;
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: var(--radius-lg); margin-top: 16px;
+      margin-top: 8px;
     }
 
     .results-bar {
       display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-      margin-bottom: 16px; padding: 10px 10px 10px 16px;
+      margin-bottom: 20px; padding: 0 2px 10px;
       min-width: 0; max-width: 100%;
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: var(--radius-lg); box-shadow: var(--shadow);
+      border-bottom: 1px solid var(--line);
     }
     .results-bar[hidden] { display: none; }
     .results-bar-text { font-size: 14.5px; color: var(--muted); }
@@ -760,12 +833,20 @@
 
     /* ---- footer ---------------------------------------------------- */
     footer {
-      margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--line);
-      color: var(--muted); font-size: 14px; text-align: center;
+      display: flex; align-items: baseline; justify-content: space-between;
+      flex-wrap: wrap; gap: 6px 18px;
+      margin-top: auto; padding-top: 14px; border-top: 1px solid var(--line);
+      color: var(--muted); font-size: 12.5px; text-align: left;
       overflow-wrap: anywhere;
     }
     footer a { color: var(--ink); font-weight: 650; text-decoration: underline; text-underline-offset: 2px; }
     footer a:hover { color: var(--brand); }
+    .foot-hint { display: inline-flex; align-items: baseline; gap: 6px; white-space: nowrap; }
+    .foot-hint kbd {
+      font: inherit; font-size: 11px; font-weight: 700; line-height: 1.4;
+      padding: 1px 5px; border-radius: 5px;
+      border: 1px solid var(--line); background: var(--card); color: var(--muted);
+    }
 
     /* ---- announcement banner -------------------------------------- */
     .announce {
@@ -775,7 +856,7 @@
       background: color-mix(in srgb, var(--earth) 10%, var(--card));
       border: 1px solid color-mix(in srgb, var(--earth) 24%, var(--line));
       border-left: 3px solid var(--earth);
-      border-radius: var(--radius); box-shadow: var(--shadow);
+      border-radius: var(--radius);
       font-size: 14px; color: var(--ink);
     }
     .announce-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--earth); }
@@ -792,11 +873,10 @@
     .announce-x:focus-visible { outline: none; box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
 
     /* ---- "coming soon" state (a link that isn't live yet) --------- */
-    .quick.is-soon, .tile.is-soon, .doc-row.is-soon {
-      cursor: default; opacity: .62;
-      background: var(--paper-2); box-shadow: none;
-    }
-    .quick.is-soon:hover, .tile.is-soon:hover, .doc-row.is-soon:hover { transform: none; border-color: var(--line); }
+    .quick.is-soon { cursor: default; opacity: .62; background: var(--paper-2); box-shadow: none; }
+    .tile.is-soon, .doc-row.is-soon { cursor: default; opacity: .62; background: transparent; }
+    .quick.is-soon:hover { transform: none; border-color: var(--line); }
+    .tile.is-soon:hover, .doc-row.is-soon:hover { transform: none; background: transparent; }
     .soon-tag {
       margin-left: 8px; flex: none; font-size: 10.5px; font-weight: 700;
       letter-spacing: .08em; text-transform: uppercase; color: var(--faint);
@@ -819,15 +899,17 @@
   <div class="wrap">
     <div id="announce"></div>
     <header class="hero-band">
+      <div class="hero-inner">
       <div class="head-main">
-        <p class="eyebrow"><span class="tick" aria-hidden="true"></span> MLRI · Training Unit</p>
         <h1>Command Center</h1>
+        <p class="eyebrow">MLRI Training Unit</p>
       </div>
       <div class="head-right">
         <div class="head-meta">
           <div class="greeting" id="greeting"></div>
           <div class="today" id="today"></div>
         </div>
+        <nav class="avatar-stack" id="avatarStack" aria-label="Team focus pages"></nav>
         <div class="top-actions">
           <div class="search-wrap">
             <button class="icon-btn" id="searchToggle" type="button" title="Search tools (press /)" aria-label="Search tools, press slash" aria-keyshortcuts="/" aria-expanded="false" aria-controls="searchPanel">
@@ -844,18 +926,8 @@
           <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch color theme"></button>
         </div>
       </div>
+      </div>
     </header>
-
-    <div class="focus-nav">
-      <details class="focus-menu" id="focusMenu">
-        <summary>
-          <svg class="fm-person" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-          <span>Go to your focus page</span>
-          <span class="fm-chev" aria-hidden="true">▾</span>
-        </summary>
-        <ul class="focus-list" id="focusList"></ul>
-      </details>
-    </div>
 
     <div class="results-bar" id="resultsBar" hidden>
       <span class="results-bar-text" id="resultsBarText"></span>
@@ -867,7 +939,8 @@
     <p class="empty" id="empty" role="status" aria-live="polite">No tool matches that. Try a different word.</p>
 
     <footer>
-      Missing or outdated link? <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=mcreed@mlri.org" target="_blank" rel="noopener noreferrer">Contact Marlie</a>.
+      <span>Missing or outdated link? <a href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=mcreed@mlri.org" target="_blank" rel="noopener noreferrer">Contact Marlie</a>.</span>
+      <span class="foot-hint">Press <kbd>/</kbd> to search</span>
     </footer>
   </div>
 
@@ -898,10 +971,32 @@
       url:  "",   // optional link the banner opens (new tab); "" for none
     };
 
+    /* ── Project dot colours ────────────────────────────────────────────
+       ONE map, read by both Google Drive and Monday.com. A project keeps the
+       same dot in both tools, so this is the only place a project colour is
+       written — never repeat a hex on a child below, add the project here and
+       point at it with `cat`. The name here is also what the dot's tooltip says.
+       (Per-item accents are data, not palette — see DESIGN.md "Secondary" —
+       so these stay literals rather than becoming --hue-* tokens.) */
+    const CATEGORY_COLORS = {
+      "Access to Counsel":        "#37b26b",
+      "Basic Benefits Trainings": "#f4c344",
+      "LACE Project":             "#ea6a63",
+      "MLRI Trainings":           "#a66dd4",
+      "Research":                 "#f07aa6",
+      "Training Unit":            "#5b9bd5",
+    };
+
+    /* A child's dot: its project colour, or its own `color` for one-offs
+       (the "open the whole drive" rows, which draw no dot at all). */
+    function dotColor(child) {
+      return CATEGORY_COLORS[child.cat] || child.color || null;
+    }
+
     const LINKS = [
-      { section: "Planning & Collaboration", name: "Google Drive", desc: "Shared files and folders", icon: "icons/google-drive.svg", accent: "#2f855a",
-        count: "7 folders", group: "work-acc",
-        keywords: "google drive docs sheets files storage folders",
+      { section: "Planning & Collaboration", name: "Google Drive", icon: "icons/google-drive.svg", accent: "#2f855a",
+        count: "7 folders", open: true,
+        keywords: "google drive docs sheets files storage folders shared",
         children: [
           /* `lead: true`  → a pinned row at the top (opens the whole Training Unit drive).
              `divider: true` → draws a separator line above the row.
@@ -909,9 +1004,9 @@
              its subfolders, and an "Open whole folder" row still jumps to Drive.
              A folder without `children` just opens in a new tab. */
           { name: "Open Training Unit folder", lead: true, url: "https://drive.google.com/drive/folders/0AN0wtOcYONTeUk9PVA?dmr=1&ec=wgc-drive-%5Bmodule%5D-goto" },
-          { name: "Access to Counsel Project", color: "#37b26b", url: "https://drive.google.com/drive/folders/1XfrM3LAiro9nWAKN8HWzMu1eWvG8Db8a" },
-          { name: "Basic Benefits Training Project", color: "#f4c344", url: "https://drive.google.com/drive/folders/1xOKTjNfqqPwT7YLfSklZNDsSceo8GQ4C" },
-          { name: "LACE Project", color: "#ea6a63", url: "https://drive.google.com/drive/folders/1Dm_i7yKFwWMTtLHQ08hJLk_nMKgFmPkA",
+          { name: "Access to Counsel Project", cat: "Access to Counsel", url: "https://drive.google.com/drive/folders/1XfrM3LAiro9nWAKN8HWzMu1eWvG8Db8a" },
+          { name: "Basic Benefits Training Project", cat: "Basic Benefits Trainings", url: "https://drive.google.com/drive/folders/1xOKTjNfqqPwT7YLfSklZNDsSceo8GQ4C" },
+          { name: "LACE Project", cat: "LACE Project", url: "https://drive.google.com/drive/folders/1Dm_i7yKFwWMTtLHQ08hJLk_nMKgFmPkA",
             children: [
               { name: "Admin", url: "https://drive.google.com/drive/folders/1Ia1thkh3ydr3Xta0Wlw5i7Pxj6HfErAE" },
               { name: "Branding", url: "https://drive.google.com/drive/folders/1DSObC7x9hZeLannzmiWYc4H3CcFWpset" },
@@ -920,8 +1015,8 @@
               { name: "LMS", url: "https://drive.google.com/drive/folders/1I4uRMPxo_B8Z0DN66ZppGUA72MkwrkfM" },
               { name: "Team Management & Professional Development", url: "https://drive.google.com/drive/folders/1YxtFBgOwTzj02I5O9yHYwsWvfy38O50c" },
             ] },
-          { name: "MLRI Trainings", color: "#a66dd4", url: "https://drive.google.com/drive/folders/1Z2cm71KuS98leMq0F50dMRxjFbZXQQgV" },
-          { name: "Research", color: "#f07aa6", url: "https://drive.google.com/drive/folders/1xMXM-U5ORtAkS0UJowm1nLC-KZMAWMkF",
+          { name: "MLRI Trainings", cat: "MLRI Trainings", url: "https://drive.google.com/drive/folders/1Z2cm71KuS98leMq0F50dMRxjFbZXQQgV" },
+          { name: "Research", cat: "Research", url: "https://drive.google.com/drive/folders/1xMXM-U5ORtAkS0UJowm1nLC-KZMAWMkF",
             children: [
               { name: "AI", url: "https://drive.google.com/drive/folders/1H3F_B83_In4-b2lnOC4dC0rN01Muc6EH" },
               { name: "Appeals — Dick Bauer Materials", url: "https://drive.google.com/drive/folders/122B73TAicFqApueuJkX5lboXYrpL2PTo" },
@@ -945,25 +1040,26 @@
               { name: "Trauma-Informed Advocacy", url: "https://drive.google.com/drive/folders/1rDnpuxtKQUT4ro_0vzbdOqk8m0ksFceR" },
               { name: "Written Advocacy", url: "https://drive.google.com/drive/folders/18el69cTB5nWKE2sx9nn7QUBSySjn7XbJ" },
             ] },
-          { name: "Training Unit Operations", color: "#5b9bd5", url: "https://drive.google.com/drive/folders/1tGXhdRgM8p3M3EYCHCG_ognpgLveVkc8",
+          { name: "Training Unit Operations", cat: "Training Unit", url: "https://drive.google.com/drive/folders/1tGXhdRgM8p3M3EYCHCG_ognpgLveVkc8",
             children: [
               { name: "Otter Meeting Summaries", url: "https://drive.google.com/drive/folders/1x0IBUlXj9JOqs30Ekp9CYPLPSGQq0DKu" },
             ] },
           { name: "Open External Collaboration folder", lead: true, color: "#9aa0a6", url: "https://drive.google.com/drive/folders/0AKgEti2nIL4SUk9PVA" },
         ] },
-      { section: "Planning & Collaboration", name: "Monday.com", desc: "Project boards, tasks, and workflows", icon: "icons/monday.svg", accent: "#ff3d57",
-        count: "4 workspaces", group: "work-acc", openLabel: "Open workspace",
-        keywords: "monday project management boards workspaces lace training unit basic benefits access counsel",
+      { section: "Planning & Collaboration", name: "Monday.com", icon: "icons/monday.svg", accent: "#ff3d57",
+        count: "4 workspaces", open: true, openLabel: "Open workspace",
+        keywords: "monday project management boards tasks workflows workspaces lace training unit basic benefits access counsel",
         children: [
-          /* Parent workspaces (colors match the Drive folders). A workspace with
-             boards drills down; one with no boards is just a link to the workspace. */
+          /* Parent workspaces. `cat` pulls the same dot colour the matching Drive
+             folder uses, from CATEGORY_COLORS above. A workspace with boards
+             drills down; one with no boards is just a link to the workspace. */
           { name: "Open Monday", lead: true, url: "https://training-unit-hq.monday.com/" },
-          { name: "Access to Counsel", color: "#37b26b", url: "https://training-unit-hq.monday.com/workspaces/15744754" },
-          { name: "Basic Benefits Trainings", color: "#f4c344", url: "https://training-unit-hq.monday.com/workspaces/16174611",
+          { name: "Access to Counsel", cat: "Access to Counsel", url: "https://training-unit-hq.monday.com/workspaces/15744754" },
+          { name: "Basic Benefits Trainings", cat: "Basic Benefits Trainings", url: "https://training-unit-hq.monday.com/workspaces/16174611",
             children: [
               { name: "Current Trainings", url: "https://training-unit-hq.monday.com/boards/18421123182" },
             ] },
-          { name: "LACE Project", color: "#ea6a63", url: "https://training-unit-hq.monday.com/workspaces/16174604",
+          { name: "LACE Project", cat: "LACE Project", url: "https://training-unit-hq.monday.com/workspaces/16174604",
             children: [
               { name: "Operations", url: "https://training-unit-hq.monday.com/boards/18418833001" },
               { name: "Content Design", url: "https://training-unit-hq.monday.com/boards/18420946283" },
@@ -974,7 +1070,7 @@
               { name: "Outreach Log", url: "https://training-unit-hq.monday.com/boards/18423351254" },
               { name: "LACE Project Archive", url: "https://training-unit-hq.monday.com/boards/18422595899" },
             ] },
-          { name: "Training Unit", color: "#5b9bd5", url: "https://training-unit-hq.monday.com/workspaces/15455154",
+          { name: "Training Unit", cat: "Training Unit", url: "https://training-unit-hq.monday.com/workspaces/15455154",
             children: [
               { name: "Meeting Notes from Otter", url: "https://training-unit-hq.monday.com/boards/18419007109" },
               { name: "Internal MLRI Trainings", url: "https://training-unit-hq.monday.com/boards/18421126170" },
@@ -999,18 +1095,18 @@
       { section: "Quick Links", name: "Slack", desc: "Team chat & channels", quick: true,
         url: "https://trainingunitgroup.slack.com/archives/C0B9C8KHHML", icon: "icons/slack.svg", mono: "S", accent: "#4a154b", keywords: "slack chat messages channels dm" },
       { section: "Quick Links", name: "Otter.ai", desc: "Meeting transcripts & notes", quick: true,
-        url: "https://otter.ai/home", icon: "icons/otter.svg", mono: "O", accent: "#4b57e8", keywords: "otter transcription recording notes" },
+        url: "https://otter.ai/home", icon: "icons/otter.svg", fill: true, mono: "O", accent: "#4b57e8", keywords: "otter transcription recording notes" },
       { section: "Quick Links", name: "Claude", desc: "AI assistant", quick: true,
-        url: "https://claude.ai/", icon: "icons/claude.svg", mono: "C", accent: "#c15f3c", keywords: "claude ai anthropic assistant chat llm nonprofit writing" },
+        url: "https://claude.ai/", icon: "icons/claude.svg", fill: true, mono: "C", accent: "#c15f3c", keywords: "claude ai anthropic assistant chat llm nonprofit writing" },
 
-      { section: "LMS", name: "Learning Hub", desc: "Learner-facing course portal",
-        url: "https://lms-discovery.vercel.app/", icon: "icons/learning-hub.png", mono: "L", accent: "#3f6b4f", keywords: "lace learning hub courses learners brightspace lms discovery" },
-      { section: "LMS", name: "Brightspace Manager", desc: "Staff administration and course management",
-        url: "https://brightspace-manager.vercel.app/", icon: "icons/brightspacemanager.svg", mono: "B", accent: "#6b4f9e", keywords: "lace brightspace manager admin staff sync bsm" },
+      { section: "LMS", name: "Learning Hub", desc: "Learner-facing portal",
+        url: "https://lms-discovery.vercel.app/", icon: "icons/learning-hub.png", fill: true, mono: "L", accent: "#3f6b4f", keywords: "lace learning hub courses learners brightspace lms discovery" },
+      { section: "LMS", name: "Brightspace Manager", desc: "Staff administration",
+        url: "https://brightspace-manager.vercel.app/", icon: "icons/brightspacemanager.svg", fill: true, mono: "B", accent: "#6b4f9e", keywords: "lace brightspace manager admin staff sync bsm" },
       { section: "LMS", name: "Brightspace (D2L)", desc: "Learning management system",
-        url: "https://mlri.brightspace.com/d2l/home", icon: "icons/brightspace.png", mono: "B", accent: "#c2410c", keywords: "brightspace d2l lms login courses mlri" },
-      { section: "LMS", name: "D2L Academy", desc: "Certificate training and courses",
-        url: "https://community.desire2learn.com/d2l/home", icon: "icons/D2L-Symbol.png", mono: "A", accent: "#0a7285", keywords: "d2l academy certificate training courses brightspace community desire2learn professional development" },
+        url: "https://mlri.brightspace.com/d2l/home", icon: "icons/brightspace.png", fill: true, mono: "B", accent: "#c2410c", keywords: "brightspace d2l lms login courses mlri" },
+      { section: "LMS", name: "D2L Academy", desc: "Certificate training",
+        url: "https://community.desire2learn.com/d2l/home", icon: "icons/D2L-Symbol.png", fill: true, mono: "A", accent: "#0a7285", keywords: "d2l academy certificate training courses brightspace community desire2learn professional development" },
     ];
 
     const SECTION_ORDER = ["Planning & Collaboration", "LMS", "Important Documents", "Quick Links"];
@@ -1036,6 +1132,12 @@
     const SR_NEW_TAB = '<span class="sr-only"> (opens in new tab)</span>';
     const SR_SOON = '<span class="sr-only">, coming soon</span>';
 
+    /* Below this width the board is a single column, so the Drive and Monday
+       lists start collapsed — expanded, they'd push everything else on the page
+       below two screens of folder names. Same breakpoint the layout uses. */
+    const compact = window.matchMedia("(max-width: 640px)");
+    const startsOpen = (item) => !!item.open && !compact.matches;
+
     function sectionId(name) {
       return "sec-" + name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     }
@@ -1051,7 +1153,9 @@
 
     function monoHtml(item) {
       if (item.icon) {
-        return '<span class="mono mono--logo" aria-hidden="true"><img src="' + item.icon + '" alt=""></span>';
+        // `fill: true` when the logo carries its own ground — see .mono--fill.
+        return '<span class="mono mono--logo' + (item.fill ? ' mono--fill' : '') +
+               '" aria-hidden="true"><img src="' + item.icon + '" alt=""></span>';
       }
       if (item.lucide && LUCIDE[item.lucide]) {
         return '<span class="mono mono--icon" aria-hidden="true">' + LUCIDE[item.lucide] + '</span>';
@@ -1069,24 +1173,30 @@
       d.className = "tile-accordion";
       d.style.setProperty("--accent", item.accent);
       if (item.group) { d.setAttribute("name", item.group); d.dataset.group = item.group; }
-      if (item.open) { d.open = true; d.dataset.default = "open"; }
+      if (item.open) {
+        d.dataset.wantsOpen = "1";                 // re-checked if the breakpoint flips
+        d.open = startsOpen(item);
+        d.dataset.default = d.open ? "open" : "closed";
+      }
       const childText = item.children
         .flatMap(c => [c.name, ...(c.children ? c.children.map(g => g.name) : [])])
         .join(" ");
       d.dataset.search = searchKey(item, sec, childText);
 
+      // No `desc` → a single-line row. The folder list underneath already says
+      // what the app is for, so the description was restating it.
       const sum = document.createElement("summary");
-      sum.className = "acc-summary";
+      sum.className = "acc-summary" + (item.desc ? "" : " acc-summary--tight");
       sum.innerHTML =
         monoHtml(item) +
         '<span class="tile-body">' +
           '<div class="tile-name"></div>' +
-          '<div class="tile-desc"></div>' +
+          (item.desc ? '<div class="tile-desc"></div>' : '') +
         '</span>' +
         '<span class="acc-count"></span>' +
-        '<span class="tile-arrow acc-chev" aria-hidden="true">→</span>';
+        '<span class="tile-arrow acc-chev" aria-hidden="true">›</span>';
       sum.querySelector(".tile-name").textContent = item.name;
-      sum.querySelector(".tile-desc").textContent = item.desc;
+      if (item.desc) sum.querySelector(".tile-desc").textContent = item.desc;
       if (item.count) sum.querySelector(".acc-count").textContent = item.count;
       d.appendChild(sum);
 
@@ -1094,7 +1204,8 @@
       box.className = "sublinks";
 
       // One plain link row (a leaf folder, or the "Open whole folder" shortcut).
-      const makeLeaf = (name, url, cls, extra) => {
+      // `cat` names the project the dot stands for, so hovering the dot says so.
+      const makeLeaf = (name, url, cls, extra, cat) => {
         const li = document.createElement("li");
         const a = document.createElement("a");
         a.className = cls;
@@ -1107,6 +1218,7 @@
           '<span class="sublink-arrow" aria-hidden="true">↗</span>' +
           (url && url !== "#" ? SR_NEW_TAB : "");
         a.querySelector(".sublink-name").textContent = name;
+        if (cat) a.querySelector(".sublink-tick").title = cat + " — same colour in Google Drive and Monday.com";
         li.appendChild(a);
         return li;
       };
@@ -1116,7 +1228,8 @@
           // A folder that contains subfolders → a nested drill-down.
           const sf = document.createElement("details");
           sf.className = "subfolder" + (c.divider ? " has-divider" : "");
-          if (c.color) sf.style.setProperty("--accent", c.color);  // dot + subfolders inherit it
+          const sfDot = dotColor(c);
+          if (sfDot) sf.style.setProperty("--accent", sfDot);  // dot + subfolders inherit it
           sf.dataset.search =
             (c.name + " " + c.children.map(g => g.name).join(" ") + " " + item.name).toLowerCase();
 
@@ -1129,6 +1242,7 @@
             '<span class="subfolder-chev" aria-hidden="true">›</span>';
           ss.querySelector(".sublink-name").textContent = c.name;
           ss.querySelector(".subfolder-count").textContent = c.children.length;
+          if (c.cat) ss.querySelector(".sublink-tick").title = c.cat + " — same colour in Google Drive and Monday.com";
           sf.appendChild(ss);
 
           const inner = document.createElement("ul");
@@ -1147,8 +1261,9 @@
           let cls = "sublink";
           if (c.lead) cls += " sublink-lead";
           if (c.divider) cls += " sublink-divider";
-          const leaf = makeLeaf(c.name, c.url, cls);
-          if (c.color) leaf.style.setProperty("--accent", c.color);
+          const leaf = makeLeaf(c.name, c.url, cls, "", c.cat);
+          const dot = dotColor(c);
+          if (dot) leaf.style.setProperty("--accent", dot);
           box.appendChild(leaf);
         }
       }
@@ -1253,7 +1368,7 @@
       const items = groups[sec];
 
       const s = document.createElement("section");
-      s.className = "dash-panel" + (cfg.layout === "tools" ? " dash-panel--work" : "");
+      s.className = "dash-panel";
       s.dataset.section = sec;
 
       const sid = sectionId(sec);
@@ -1266,6 +1381,7 @@
       label.id = sid;
       label.textContent = sec;
       head.appendChild(label);
+
       s.appendChild(head);
 
       const body = document.createElement("div");
@@ -1297,14 +1413,45 @@
 
     board.append(leftCol, rightCol);
 
-    /* ---- focus page menu ------------------------------------------- */
-    (function renderFocusMenu() {
-      const menu = document.getElementById("focusMenu");
-      const list = document.getElementById("focusList");
+    /* ---- team avatar stack ----------------------------------------- */
+    /* Each focus page is one avatar in the header. Past AVATAR_MAX the rest
+       collapse into a "+N" chip that opens the same popover list, so the stack
+       never pushes the header's actions off the row. */
+    const AVATAR_MAX = 4;
 
-      for (const p of FOCUS_PAGES) {
+    (function renderAvatarStack() {
+      const stack = document.getElementById("avatarStack");
+      if (!stack) return;
+
+      const fits = FOCUS_PAGES.length <= AVATAR_MAX;
+      const shown = fits ? FOCUS_PAGES : FOCUS_PAGES.slice(0, AVATAR_MAX - 1);
+      const rest = fits ? [] : FOCUS_PAGES.slice(AVATAR_MAX - 1);
+
+      for (const p of shown) {
         const a = document.createElement("a");
+        a.className = "avatar";
         a.href = p.url;                       // same-site, so same tab
+        a.style.setProperty("--accent", p.accent);
+        a.title = p.name + "’s focus page";
+        a.setAttribute("aria-label", p.name + "’s focus page");
+        a.textContent = p.mono;
+        stack.appendChild(a);
+      }
+
+      if (!rest.length) return;
+
+      const menu = document.createElement("details");
+      menu.className = "av-menu";
+      const sum = document.createElement("summary");
+      sum.title = rest.length + " more focus pages";
+      sum.setAttribute("aria-label", "Show " + rest.length + " more focus pages");
+      sum.textContent = "+" + rest.length;
+
+      const list = document.createElement("ul");
+      list.className = "focus-list";
+      for (const p of rest) {
+        const a = document.createElement("a");
+        a.href = p.url;
         a.style.setProperty("--accent", p.accent);
         const mono = document.createElement("span");
         mono.className = "fm-mono";
@@ -1318,6 +1465,9 @@
         list.appendChild(li);
       }
 
+      menu.append(sum, list);
+      stack.appendChild(menu);
+
       // <details> has no built-in dismiss, so wire up the two people expect.
       document.addEventListener("click", (e) => {
         if (menu.open && !menu.contains(e.target)) menu.open = false;
@@ -1325,7 +1475,7 @@
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && menu.open) {
           menu.open = false;
-          menu.querySelector("summary").focus();
+          sum.focus();
         }
       });
     })();
@@ -1468,6 +1618,17 @@
     }
     q.addEventListener("input", applyFilter);
 
+    /* Rotating a phone to landscape crosses the breakpoint, so re-apply the
+       default rather than leaving the lists in the other layout's state. An
+       active search owns the open/closed state, so leave it alone. */
+    compact.addEventListener("change", () => {
+      if (q.value.trim()) return;
+      for (const el of board.querySelectorAll('.tile-accordion[data-wants-open="1"]')) {
+        el.dataset.default = compact.matches ? "closed" : "open";
+        el.open = !compact.matches;
+      }
+    });
+
     function clearSearch(focusEl) {
       q.value = ""; applyFilter();
       if (focusEl) focusEl.focus();
@@ -1512,7 +1673,7 @@
       const themeLabel = dark ? "Switch to light mode" : "Switch to dark mode";
       toggle.setAttribute("aria-label", themeLabel);
       toggle.setAttribute("title", themeLabel);
-      if (themeMeta) themeMeta.content = dark ? "#15171c" : "#efd1b9";
+      if (themeMeta) themeMeta.content = dark ? "#191c24" : "#fdf6f1";  // match the header band
     }
     toggle.addEventListener("click", () => {
       const next = isDark() ? "light" : "dark";

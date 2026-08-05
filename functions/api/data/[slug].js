@@ -37,8 +37,11 @@ const str = (v, max) => (typeof v === "string" ? v : "").slice(0, max).trim();
 /* Only http(s) survives. A pin url becomes an href, so a "javascript:" value
    arriving from storage would be a self-XSS waiting to happen. */
 function safeUrl(v) {
+  let raw = str(v, 2048);
+  if (!raw) return "";
+  if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = "https://" + raw;
   try {
-    const u = new URL(str(v, 2048));
+    const u = new URL(raw);
     return u.protocol === "http:" || u.protocol === "https:" ? u.href : "";
   } catch {
     return "";

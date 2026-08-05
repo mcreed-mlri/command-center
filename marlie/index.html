@@ -15,15 +15,20 @@
 
   <style>
     * { box-sizing:border-box; }
-    html { -webkit-text-size-adjust:100%; }
-    html,body { overflow-x:clip; }
+    html { -webkit-text-size-adjust:100%; overflow-x:clip; overscroll-behavior-x:none; }
     body {
-      margin:0; font-family:var(--sans); color:var(--ink); line-height:1.5;
+      margin:0; width:100%; max-width:100%; overflow-x:clip; overscroll-behavior-x:none;
+      touch-action:pan-y pinch-zoom;
+      font-family:var(--sans); color:var(--ink); line-height:1.5;
       background:var(--canvas-bg);
       -webkit-font-smoothing:antialiased;
-      padding:max(20px,env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom));
+      padding:max(20px,env(safe-area-inset-top)) var(--layout-gutter) calc(40px + env(safe-area-inset-bottom));
+      min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; align-items:stretch;
     }
-    .wrap { max-width:1100px; margin:0 auto; }
+    .wrap {
+      width:100%; max-width:min(var(--layout-max),100%); margin-inline:auto; min-width:0;
+      flex:1 0 auto; display:flex; flex-direction:column;
+    }
     a { color:inherit; }
     .skip-link {
       position:absolute; left:16px; top:-100%; z-index:100; padding:10px 14px;
@@ -34,25 +39,82 @@
     .skip-link:focus { position:fixed; top:max(16px,env(safe-area-inset-top)); left:16px; outline:none; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
-    /* ---- header ---------------------------------------------------- */
+    /* ---- header ------------------------------------------------------
+       A band, not a card: the wash and hairline run the full width of the
+       window while the content stays on the same column as the page below.
+       `margin-inline: calc(50% - 50vw)` reaches from .wrap out to both edges;
+       .hero-inner puts the content back on the grid. html carries
+       overflow-x:clip, so a scrollbar's worth of 100vw is clipped rather than
+       becoming a sideways scroll. Mirrors the Command Center header. */
     header.hero {
-      display:grid; grid-template-columns:1fr auto; align-items:center; gap:16px 28px;
-      padding:22px 26px; margin-bottom:20px; background:var(--hero-bg);
-      border:1px solid var(--line-soft); border-radius:var(--radius-lg); box-shadow:var(--shadow);
+      margin-inline:calc(50% - 50vw);
+      margin-top:calc(-1 * max(20px,env(safe-area-inset-top)));
+      margin-bottom:26px;
+      padding-inline:var(--layout-gutter);
+      background:var(--hero-bg);
+      border-bottom:1px solid var(--line);
+    }
+    /* Padding and column match the Command Center's .hero-inner exactly, and
+        both headers are governed by the same tallest child (the 44px icon
+        button), so the band is the same height on every page. */
+    .hero-inner {
+      display:flex; align-items:center; flex-wrap:wrap; gap:4px 12px;
+      max-width:min(var(--layout-max),100%); margin-inline:auto; padding:18px 0 16px;
+      min-width:0;
+    }
+    /* Back to the Command Center — plain text in the band, not a floating pill */
+    .team-back {
+      display:inline-flex; align-items:center; gap:6px; flex:none;
+      text-decoration:none; font-size:13px; font-weight:650; color:var(--ink);
+      padding:3px 2px; border-radius:6px;
+      transition:color .15s;
+    }
+    .team-back:hover { color:var(--brand); }
+    .team-back:focus-visible {
+      outline:none;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 35%,transparent);
+    }
+    .tb-arrow { font-size:14px; line-height:1; }
+    .hero-sep { flex:none; width:1px; height:20px; background:var(--line); }
+    /* The person's mark — the same tinted circle the Command Center's avatar
+       stack uses, so a face means the same thing on both pages. */
+    .who-mono {
+      flex:none; width:32px; height:32px; border-radius:50%;
+      display:grid; place-items:center;
+      font-family:var(--sans); font-weight:700; font-size:12.5px;
+      color:var(--who,var(--brand));
+      background:color-mix(in srgb,var(--who,var(--brand)) 16%,var(--card));
+    }
+    /* The person accents are literals, so unlike a token they do NOT lighten
+       with the theme — accent-on-dark-tint lands near 3:1. Mixing the letter
+       toward paper (and the ground a little further from it) restores it. */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) .who-mono {
+        color:color-mix(in srgb,var(--who,var(--brand)) 45%,#fff);
+        background:color-mix(in srgb,var(--who,var(--brand)) 26%,var(--card));
+      }
+    }
+    :root[data-theme="dark"] .who-mono {
+      color:color-mix(in srgb,var(--who,var(--brand)) 45%,#fff);
+      background:color-mix(in srgb,var(--who,var(--brand)) 26%,var(--card));
     }
     .eyebrow {
-      display:flex; align-items:center; gap:8px; font-size:11px; letter-spacing:.16em;
-      text-transform:uppercase; color:var(--earth-deep); font-weight:700; margin:0 0 6px;
+      font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+      color:var(--earth-deep); font-weight:700; margin:0; white-space:nowrap;
     }
-    .tick { width:6px; height:6px; border-radius:50%; background:var(--earth); flex-shrink:0; box-shadow:0 0 0 3px color-mix(in srgb,var(--earth) 22%,transparent); }
-    h1 { font-family:var(--sans); font-weight:750; font-size:clamp(28px,4.5vw,38px); line-height:1.05; letter-spacing:-0.03em; color:var(--ink); margin:0; }
+    h1 {
+      font-family:var(--sans); font-weight:750; font-size:clamp(22px,2.8vw,28px);
+      line-height:1.1; letter-spacing:-0.025em; color:var(--ink); margin:0;
+    }
+    /* Greeting and date on one line, joined by a middot */
     .head-meta {
-      text-align:right; padding:6px 14px; background:var(--paper-2); border:1px solid var(--line-soft);
-      border-radius:var(--radius); display:flex; flex-direction:column; justify-content:center;
+      display:flex; align-items:baseline; gap:7px; min-width:0;
+      margin-left:auto; flex:none;
     }
-    .greeting { font-size:14px; font-weight:650; line-height:1.25; }
-    .today { font-size:12px; color:var(--muted); margin-top:2px; font-variant-numeric:tabular-nums; }
-    .head-right { display:flex; align-items:center; gap:12px; }
+    .greeting { font-size:13px; font-weight:650; line-height:1.3; color:var(--ink); }
+    .today { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .today::before { content:"·"; margin-right:7px; color:var(--faint); }
+    .head-right { display:flex; align-items:center; gap:8px; flex:none; }
     .icon-btn {
       width:44px; height:44px; display:grid; place-items:center; background:var(--card);
       border:1px solid var(--line); border-radius:999px; color:var(--ink); cursor:pointer;
@@ -61,89 +123,120 @@
     .icon-btn:hover { transform:translateY(-1px); border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); }
     .icon-btn svg { width:20px; height:20px; }
 
-    /* ---- layout ---------------------------------------------------- */
-    .cols { display:grid; grid-template-columns:minmax(0,63fr) minmax(300px,37fr); gap:16px; align-items:start; }
-    @media (max-width:900px){ .cols { grid-template-columns:1fr; } }
-    .col { display:flex; flex-direction:column; gap:16px; min-width:0; }
-
-    /* ---- team page link (mirrors focus-nav on the Command Center) -- */
-    .focus-nav { display:flex; justify-content:flex-end; margin:0 0 14px; }
-    .team-back {
-      display:inline-flex; align-items:center; gap:8px; text-decoration:none;
-      font-size:12.5px; font-weight:650; color:var(--muted);
-      background:var(--card); border:1px solid var(--line-soft); border-radius:999px;
-      padding:6px 14px; box-shadow:var(--shadow); transition:color .15s, border-color .15s, background .15s, transform .15s;
+    /* ---- layout (matches Command Center #board grid) --------------- */
+    main.cols { margin-top:0; min-width:0; max-width:100%; margin-bottom:40px; }
+    @media (min-width:960px){
+      .cols {
+        display:grid;
+        grid-template-columns:minmax(0,63fr) minmax(300px,37fr);
+        gap:44px;
+        align-items:start;
+      }
+      .col { display:flex; flex-direction:column; gap:34px; min-width:0; }
     }
-    .team-back:hover, .team-back:focus-visible {
-      color:var(--ink); background:var(--card); transform:translateY(-1px);
-      border-color:color-mix(in srgb, var(--brand) 45%, var(--line));
-      outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand) 30%, transparent), var(--shadow);
-    }
-    .team-back svg { width:14px; height:14px; flex:none; }
-    @media (max-width:640px){
-      .focus-nav { justify-content:stretch; }
-      .team-back { width:100%; justify-content:center; }
+    @media (max-width:959px){
+      .cols { display:flex; flex-direction:column; gap:30px; }
+      .col { display:flex; flex-direction:column; gap:30px; min-width:0; max-width:100%; }
     }
 
-    .panel {
-      background:var(--card); border:1px solid var(--line-soft); border-radius:var(--radius-lg);
-      box-shadow:var(--shadow); padding:20px 20px 18px;
-    }
-    .panel-head { margin:0 0 16px; padding-bottom:12px; border-bottom:1px solid var(--line-soft);
+    /* A section is a label and a rule. Nothing here is boxed or shadowed --
+       the header band is the page's only container. */
+    .panel { min-width:0; }
+    .panel-head { margin:0 0 12px; padding-bottom:7px; border-bottom:1px solid var(--line);
       display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
     .panel-title {
-      display:flex; align-items:center; gap:8px; font-size:12px; font-weight:700;
-      letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:0;
+      display:flex; align-items:center; gap:8px; font-size:11px; font-weight:700;
+      letter-spacing:.16em; text-transform:uppercase; color:var(--earth-deep); margin:0;
     }
-    .panel-title::before { content:""; width:4px; height:12px; border-radius:2px; background:var(--earth); }
+    .panel-title::before { content:""; flex:none; width:4px; height:11px; border-radius:2px; background:var(--earth); }
     .panel-title a { color:inherit; text-decoration:none; transition:color .15s; }
     .panel-title a:hover, .panel-title a:focus-visible { color:var(--brand); outline:none; }
-    .panel-note { font-size:12px; color:var(--faint); margin-left:auto; }
 
-    /* ---- task toolbar (filters + meta — secondary to content) ------ */
-    .task-toolbar {
-      display:flex; align-items:flex-end; gap:10px 12px; flex-wrap:wrap;
-      margin-bottom:12px;
+    /* ---- Monday tasks header + filter menus ------------------------- */
+    .monday-head {
+      display:flex; align-items:flex-start; justify-content:space-between;
+      gap:12px 16px; flex-wrap:wrap;
+      margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--line);
     }
-    .task-meta {
-      display:flex; align-items:center; gap:6px; flex-shrink:0; margin-left:auto;
+    .monday-head-main {
+      display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; min-width:0;
     }
-    .task-meta .panel-note { margin-left:0; font-size:11.5px; }
-    .filter-active {
-      display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
-      font-size:11px; font-weight:650; letter-spacing:.04em; text-transform:uppercase;
-      color:var(--brand); padding-bottom:7px;
+    .monday-mark { flex:none; display:block; }
+    .monday-title { font-size:15px; font-weight:650; color:var(--ink); margin:0; line-height:1.3; }
+    .monday-meta { font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
+    .monday-meta::before { content:"·"; margin:0 8px 0 2px; color:var(--line); }
+    .monday-refresh {
+      font:inherit; line-height:0; padding:2px; border:0; border-radius:6px;
+      background:transparent; color:var(--faint); cursor:pointer;
+      transition:color .15s, background .15s;
     }
-    .filter-active::before {
-      content:""; width:6px; height:6px; border-radius:50%; background:var(--brand); flex:none;
+    .monday-refresh:hover { color:var(--ink); background:var(--hover-tint); }
+    .monday-refresh svg { width:13px; height:13px; display:block; }
+    .monday-open {
+      flex:none; font-size:13px; font-weight:650; color:var(--brand);
+      text-decoration:none; line-height:1.3; padding-top:1px;
     }
+    .monday-open:hover { text-decoration:underline; text-underline-offset:2px; }
+
+    .monday-controls {
+      display:flex; align-items:center; gap:18px; flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+    .monday-controls .menu-wrap { display:flex; align-items:center; }
+    .view-menu-wrap { margin-left:auto; }
+    .menu-trigger {
+      font:inherit; font-size:14px; font-weight:600; color:var(--ink);
+      background:none; border:0; padding:0; cursor:pointer;
+      display:inline-flex; align-items:center; gap:7px;
+      line-height:1; min-height:20px;
+      transition:color .15s;
+    }
+    .view-trigger { gap:6px; }
+    .view-trigger .view-kicker { color:var(--muted); font-weight:600; }
+    .view-trigger:hover .view-kicker { color:var(--muted); }
+    .view-menu-wrap .menu-panel { left:auto; right:0; }
+    .menu-wrap { position:relative; }
+    .menu-trigger:hover { color:var(--brand-deep); }
+    .menu-trigger svg { width:14px; height:14px; color:var(--muted); flex:none; }
+    .menu-panel {
+      position:absolute; top:calc(100% + 8px); left:0; z-index:25;
+      min-width:210px; background:var(--card);
+      border:1px solid var(--line); border-radius:10px;
+      box-shadow:var(--shadow); padding:6px 0;
+    }
+    .menu-panel[hidden] { display:none; }
+    .menu-section + .menu-section { margin-top:4px; padding-top:4px; border-top:1px solid var(--line-soft); }
+    .menu-section-label {
+      font-size:10px; font-weight:700; letter-spacing:.12em;
+      text-transform:uppercase; color:var(--faint);
+      padding:6px 14px 4px;
+    }
+    .menu-list { list-style:none; margin:0; padding:0; }
+    .menu-item {
+      display:flex; align-items:center; gap:8px; width:100%;
+      font:inherit; font-size:14px; font-weight:500; color:var(--ink);
+      background:transparent; border:0; padding:8px 14px;
+      cursor:pointer; text-align:left; transition:background .13s;
+    }
+    .menu-item:hover { background:var(--hover-tint); }
+    .menu-item.is-selected {
+      background:color-mix(in srgb,var(--earth) 20%,var(--card));
+      font-weight:650;
+    }
+    .menu-dot { width:8px; height:8px; border-radius:50%; flex:none; }
     .task-content { min-height:80px; }
 
-    /* ---- filters --------------------------------------------------- */
-    .filter-bar { margin:0; flex:1; min-width:0; max-width:420px; }
-    .filter-row { display:flex; flex-wrap:wrap; gap:8px; }
-    .filter-field { display:flex; flex-direction:column; gap:4px; flex:1; min-width:min(100%,140px); }
-    .filter-label { font-size:11px; font-weight:650; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); }
-    .filter-select {
-      font:inherit; font-size:13px; font-weight:400; color:var(--ink); width:100%;
-      background:var(--paper-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6459' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
-      border:1px solid var(--line); border-radius:var(--radius); padding:6px 30px 6px 10px;
-      cursor:pointer; appearance:none; transition:border-color .15s, background-color .15s;
-    }
-    .filter-select:hover { border-color:color-mix(in srgb,var(--brand) 35%,var(--line)); }
-    .filter-select:focus { outline:none; border-color:var(--brand); background-color:var(--card); }
-
     /* ---- task buckets + table -------------------------------------- */
-    .bucket { border:1px solid var(--line); border-radius:var(--radius); margin-bottom:10px; overflow:hidden; background:var(--paper-2); }
+    .bucket { border:0; border-top:1px solid var(--line); border-radius:0; margin-bottom:2px; background:transparent; }
     .bucket > summary {
       list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 14px; font-weight:650; font-size:14px;
+      padding:11px 4px; font-weight:650; font-size:14px;
     }
     .bucket > summary::-webkit-details-marker { display:none; }
     .bucket-chev { color:var(--faint); transition:transform .16s; }
     .bucket[open] .bucket-chev { transform:rotate(90deg); }
-    .bucket-count { margin-left:auto; font-size:12.5px; color:var(--muted); background:var(--card);
-      border-radius:999px; padding:2px 9px; font-variant-numeric:tabular-nums; }
+    .bucket-count { margin-left:auto; font-size:12.5px; color:var(--muted);
+      font-variant-numeric:tabular-nums; }
     .bucket-dot { width:9px; height:9px; border-radius:50%; flex:none; }
     .bucket.b-overdue .bucket-dot { background:var(--overdue); }
     .bucket.b-soon .bucket-dot { background:var(--warm); }
@@ -151,12 +244,12 @@
     .bucket.b-later .bucket-dot { background:var(--idle); }
     .bucket.b-none .bucket-dot { background:var(--line); }
 
-    .ttable { width:100%; border-collapse:collapse; background:var(--card); }
+    .ttable { width:100%; border-collapse:collapse; background:transparent; }
     .ttable th { text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
-      color:var(--faint); font-weight:650; padding:8px 14px; border-top:1px solid var(--line); }
-    .trow { border-top:1px solid var(--line); transition:background .13s; }
-    .trow:hover { background:var(--paper-2); }
-    .trow td { padding:11px 14px; vertical-align:middle; font-size:14.5px; }
+      color:var(--muted); font-weight:650; padding:8px 4px; border-top:1px solid var(--line); }
+    .trow { border-top:1px solid var(--line-soft); transition:background .13s; }
+    .trow:hover { background:var(--hover-tint); }
+    .trow td { padding:11px 4px; vertical-align:middle; font-size:14.5px; }
     .t-name a { text-decoration:none; font-weight:600; }
     .t-name a:hover { color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
     .t-name .shared { font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
@@ -179,36 +272,60 @@
       .trow td, .ttable th { padding:10px; }
     }
 
-    /* ---- view toggle (List / Board) -------------------------------- */
-    .head-tools { margin-left:auto; display:flex; align-items:center; gap:12px; }
-    .head-tools .panel-note { margin-left:0; }
-    .snap-row { display:flex; align-items:center; gap:6px; flex-shrink:0; }
     @keyframes task-spin { to { transform: rotate(360deg); } }
-    .mini-btn.spinning svg { animation: task-spin 0.85s linear infinite; }
-    .view-toggle { display:inline-flex; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:2px; }
-    .vbtn { font:inherit; font-size:12px; font-weight:650; cursor:pointer; border:0; background:none; color:var(--muted); padding:4px 10px; border-radius:999px; transition:background .15s, color .15s; }
-    .vbtn[aria-pressed="true"] { background:var(--brand); color:var(--on-accent); }
+    .monday-refresh.spinning svg { animation: task-spin 0.85s linear infinite; }
     @media (max-width:520px){
-      .head-tools { width:100%; justify-content:flex-end; }
-      .vbtn { padding:4px 8px; font-size:11.5px; }
-      .task-meta { margin-left:0; width:100%; justify-content:flex-end; }
-      .filter-bar { max-width:none; }
+      .monday-head { align-items:flex-start; }
+      .monday-open { width:100%; }
+      .menu-panel { min-width:min(240px,calc(100vw - 48px)); }
     }
 
     /* ---- week view (focused: just this week) ----------------------- */
-    .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:14px; }
-    .wk-titles { min-width:0; }
-    .wk-range { font-family:var(--sans); font-size:18px; font-weight:700; line-height:1.2; letter-spacing:-0.02em; }
-    .wk-rel { font-size:12.5px; color:var(--faint); margin-top:2px; }
+    .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+    /* Date and week label share one baseline, as in the mockup */
+    .wk-titles { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 11px; min-width:0; }
+    .wk-range { font-family:var(--sans); font-size:19px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; }
+    .wk-rel { font-size:12.5px; color:var(--muted); margin-top:0; }
     .wk-rel b { color:var(--earth-deep); font-weight:650; }
+
+    /* ---- week strip -------------------------------------------------
+       Read-only on purpose: it shows you where you are in the week, it is not
+       a control. No links, no hit targets, and aria-hidden because the group
+       headings below already carry the real dates. */
+    .wk-strip {
+      display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:2px; margin:0 0 20px;
+    }
+    .wk-cell { text-align:center; padding:2px 2px 4px; min-width:0; }
+    .wk-cell-dow {
+      font-size:10px; font-weight:700; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--muted);
+    }
+    .wk-cell-num {
+      margin:6px auto 0; width:30px; height:30px; border-radius:50%;
+      display:grid; place-items:center;
+      font-size:14px; font-weight:650; color:var(--ink);
+      font-variant-numeric:tabular-nums;
+    }
+    .wk-cell.is-past .wk-cell-dow, .wk-cell.is-past .wk-cell-num { color:var(--faint); }
+    /* --on-accent, not #fff: --earth lightens in dark mode, so a hard white
+       would invert from readable to invisible exactly there. */
+    .wk-cell.is-today .wk-cell-num { background:var(--earth); color:var(--on-accent); }
+    .wk-cell.is-today .wk-cell-dow { color:var(--earth-deep); }
     .wk-nav { margin-left:auto; display:flex; gap:6px; flex:none; }
     .wk-nav button {
-      font:inherit; font-size:18px; line-height:1; width:34px; height:34px; cursor:pointer;
-      background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
-      color:var(--ink); display:grid; place-items:center; transition:border-color .15s, transform .15s;
+      font:inherit; font-size:18px; line-height:1; width:32px; height:32px; cursor:pointer;
+      background:transparent; border:1px solid var(--line); border-radius:9px;
+      color:var(--muted); display:grid; place-items:center; transition:border-color .15s, color .15s, background .15s;
     }
+    .wk-nav button:hover { color:var(--ink); background:var(--hover-tint); }
     .wk-nav button:hover { border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); transform:translateY(-1px); }
     .wk-nav button.wk-now { width:auto; padding:0 12px; font-size:13px; font-weight:650; }
+
+    /* The week calendar frames the whole task panel, so it sits above the
+       panel heading rather than inside the Week view's own content. */
+    .week-cal { margin-bottom:32px; }
+    .week-cal .wk-strip { margin-bottom:0; }
 
     .wk-group { margin-bottom:16px; }
     .wk-group:last-child { margin-bottom:0; }
@@ -216,7 +333,7 @@
       display:flex; align-items:center; gap:8px; padding:0 2px 7px; margin-bottom:8px;
       border-bottom:1px solid var(--line);
     }
-    .wk-dow { font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+    .wk-dow { font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--earth-deep); }
     .wk-date { font-size:12px; color:var(--faint); }
     .wk-day-n { margin-left:auto; font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
     .wk-group.is-today .wk-dow { color:var(--brand); }
@@ -227,38 +344,47 @@
     .wk-group.is-ongoing .wk-dow { color:var(--working); }
     .wk-group.is-ongoing .wk-day-head { border-bottom-color:color-mix(in srgb,var(--working) 45%,var(--line)); }
 
-    .wk-list { display:flex; flex-direction:column; gap:6px; }
+    .wk-list { display:flex; flex-direction:column; gap:0; }
+    /* Hairline rows, and the accent moves from a left bar to a leading dot */
     .wk-task {
-      display:flex; align-items:center; gap:12px; text-decoration:none; color:inherit;
-      background:var(--paper-2); border:1px solid var(--line); border-left:3px solid var(--accent,var(--line));
-      border-radius:10px; padding:10px 13px;
-      transition:transform .13s, border-color .13s, box-shadow .13s;
+      display:flex; align-items:center; gap:11px; text-decoration:none; color:inherit;
+      background:transparent; border:0;
+      border-bottom:1px solid var(--line-soft);
+      border-radius:7px; padding:11px 4px;
+      transition:background .14s, border-color .14s;
     }
+    .wk-task::before {
+      content:""; flex:none; width:7px; height:7px; border-radius:50%;
+      background:var(--accent,var(--line));
+    }
+    .wk-list > .wk-task:last-child { border-bottom:none; }
     .wk-task:hover {
-      transform:translateX(2px); box-shadow:var(--shadow);
-      border-color:color-mix(in srgb,var(--brand) 40%,var(--line));
-      border-left-color:var(--accent,var(--line));
+      background:var(--hover-tint); border-bottom-color:transparent;
+      box-shadow:inset 2px 0 0 var(--accent,var(--brand));
     }
-    .wk-main { min-width:0; flex:1; }
-    .wk-name { display:block; font-size:14.5px; font-weight:600; line-height:1.35; }
+    /* One line: name, then area and due pushed to the right */
+    .wk-main { display:flex; align-items:baseline; gap:12px; min-width:0; flex:1; }
+    .wk-name { flex:1; min-width:0; font-size:14.5px; font-weight:600; line-height:1.35;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
     .wk-task.is-done { opacity:.88; }
     .wk-task.is-done .wk-name { text-decoration:line-through; color:var(--muted); }
-    .wk-meta { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
+    .wk-meta { flex:none; font-size:12px; color:var(--muted); margin-top:0; }
     .wk-right { flex:none; text-align:right; }
     .wk-due { display:block; font-size:12px; color:var(--faint); margin-top:3px; font-variant-numeric:tabular-nums; }
     .wk-due.od { color:var(--overdue); font-weight:650; }
 
-    .wk-ongoing { margin-top:18px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--paper-2); }
+    /* Still a collapsed <details> — undated in-progress work stays folded away
+        by default. Just unboxed to match the rest of the page. */
+    .wk-ongoing { margin-top:18px; border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; }
     .wk-ongoing > summary {
       list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 14px; font-weight:650; font-size:14px;
+      padding:11px 4px; font-weight:650; font-size:14px;
     }
     .wk-ongoing > summary::-webkit-details-marker { display:none; }
     .wk-ongoing[open] .bucket-chev { transform:rotate(90deg); }
-    .wk-ongoing .wk-list { padding:0 8px 8px; }
-    .wk-ongoing .wk-task { background:var(--card); }
+    .wk-ongoing .wk-list { padding:0 0 8px; }
 
-    .wk-empty { text-align:center; padding:26px 12px; border:1px dashed var(--line); border-radius:var(--radius); background:var(--paper-2); }
+    .wk-empty { text-align:center; padding:26px 12px; border:0; background:transparent; }
     .wk-empty p { margin:0; color:var(--muted); font-size:14.5px; }
     .wk-empty .wk-jump {
       font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
@@ -275,18 +401,18 @@
     /* ---- kanban board (read-only visual) --------------------------- */
     .kanban { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
     @media (max-width:720px){ .kanban { grid-template-columns:1fr; } }
-    .kcol { background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius); padding:10px; min-width:0; }
+    .kcol { background:transparent; border:0; border-top:1px solid var(--line); border-radius:0; padding:8px 0 0; min-width:0; }
     .kcol-head { display:flex; align-items:center; gap:8px; margin:2px 4px 10px; font-size:12px;
       font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); }
     .kcol-head .kd { width:9px; height:9px; border-radius:50%; flex:none; }
-    .kcol-head .kn { margin-left:auto; background:var(--card); border-radius:999px; padding:1px 8px;
-      font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .kcol-head .kn { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
     .kcol.k-work .kd { background:var(--working); } .kcol.k-wait .kd { background:var(--wait); } .kcol.k-idle .kd { background:var(--idle); }
-    .kcard { display:block; text-decoration:none; color:inherit; background:var(--card);
-      border:1px solid var(--line); border-left:3px solid var(--accent,var(--line)); border-radius:10px;
-      padding:10px 12px; margin-bottom:8px; transition:transform .13s, border-color .13s, box-shadow .13s; }
-    .kcard:last-child { margin-bottom:0; }
-    .kcard:hover { transform:translateY(-1px); border-color:color-mix(in srgb,var(--brand) 40%,var(--line)); box-shadow:var(--shadow); }
+    .kcard { display:block; text-decoration:none; color:inherit; background:transparent;
+      border:0; border-bottom:1px solid var(--line-soft); border-radius:7px;
+      padding:10px 4px; margin-bottom:0; transition:background .13s, border-color .13s; }
+    .kcard:last-child { border-bottom:none; }
+    .kcard:hover { background:var(--hover-tint); border-bottom-color:transparent;
+      box-shadow:inset 2px 0 0 var(--accent,var(--brand)); }
     .kcard-name { font-size:13.5px; font-weight:600; line-height:1.35; }
     .kcard-meta { display:flex; align-items:flex-start; gap:8px; margin-top:7px; font-size:12px; color:var(--muted); }
     .kcard-board { min-width:0; flex:1; line-height:1.35; }
@@ -322,19 +448,22 @@
     }
     .cal-task:hover { background:var(--card); box-shadow:var(--shadow); }
     .cal-more { font-size:10px; color:var(--faint); padding:0 4px; line-height:1.3; }
-    .cal-undated { margin-top:16px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--paper-2); }
+    .cal-undated { margin-top:16px; border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; }
     .cal-undated > summary {
       list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 14px; font-weight:650; font-size:14px;
+      padding:11px 4px; font-weight:650; font-size:14px;
     }
     .cal-undated > summary::-webkit-details-marker { display:none; }
     .cal-undated[open] .bucket-chev { transform:rotate(90deg); }
-    .cal-undated-list { list-style:none; margin:0; padding:0 8px 8px; display:flex; flex-direction:column; gap:4px; }
+    .cal-undated-list { list-style:none; margin:0; padding:0 0 8px; display:flex; flex-direction:column; gap:0; }
     .cal-undated-list a {
-      display:flex; align-items:center; gap:8px; text-decoration:none; color:inherit;
-      padding:8px 10px; border-radius:8px; background:var(--card); border:1px solid var(--line); font-size:13.5px;
+      display:flex; align-items:center; gap:9px; text-decoration:none; color:inherit;
+      padding:9px 4px; border-radius:7px; background:transparent;
+      border:0; border-bottom:1px solid var(--line-soft); font-size:13.5px;
+      transition:background .14s, border-color .14s;
     }
-    .cal-undated-list a:hover { border-color:color-mix(in srgb,var(--brand) 40%,var(--line)); }
+    .cal-undated-list > li:last-child a { border-bottom:none; }
+    .cal-undated-list a:hover { background:var(--hover-tint); border-bottom-color:transparent; }
     .cal-undated-list .ud-dot { width:8px; height:8px; border-radius:50%; flex:none; background:var(--accent); }
     .cal-undated-list .ud-name { flex:1; min-width:0; font-weight:600; }
     .cal-undated-list .ud-board { font-size:12px; color:var(--muted); white-space:nowrap; }
@@ -344,37 +473,73 @@
     .list-empty { color:var(--faint); font-size:14px; text-align:center; padding:16px 8px; }
 
     /* ---- jump links ------------------------------------------------ */
-    .links { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+    .links { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; }
     .links a {
       --link-accent:var(--earth);
-      display:flex; align-items:center; gap:12px; text-decoration:none; padding:11px 13px;
-      border-radius:var(--radius); border:1px solid color-mix(in srgb,var(--link-accent) 24%,var(--line));
-      background:color-mix(in srgb,var(--link-accent) 7%,var(--paper-2));
-      transition:background .15s, border-color .15s, transform .15s, box-shadow .15s;
+      display:flex; align-items:center; gap:11px; text-decoration:none; padding:10px 4px;
+      border-radius:7px; border:0; border-bottom:1px solid var(--line-soft);
+      background:transparent;
+      transition:background .15s, border-color .15s;
     }
+    .links > li:last-child a { border-bottom:none; }
     .links a:hover {
-      background:color-mix(in srgb,var(--link-accent) 13%,var(--paper-2));
-      border-color:color-mix(in srgb,var(--link-accent) 42%,var(--line));
-      transform:translateX(3px);
-      box-shadow:0 4px 14px -6px color-mix(in srgb,var(--link-accent) 35%,transparent);
+      background:var(--hover-tint); border-bottom-color:transparent;
+      box-shadow:inset 2px 0 0 var(--link-accent);
     }
     .link-icon {
-      width:36px; height:36px; border-radius:10px; flex:none;
+      width:24px; height:24px; border-radius:50%; flex:none;
       display:grid; place-items:center;
       background:color-mix(in srgb,var(--link-accent) 16%,var(--card));
       color:var(--link-accent);
       border:1px solid color-mix(in srgb,var(--link-accent) 22%,var(--line));
     }
-    .link-icon svg { width:18px; height:18px; display:block; }
+    .link-icon svg { width:13px; height:13px; display:block; }
     .links .lname { font-size:14.5px; font-weight:600; flex:1; min-width:0; line-height:1.35; }
     .links .larr {
-      flex:none; width:28px; height:28px; border-radius:999px;
-      display:grid; place-items:center; font-size:14px; line-height:1;
-      color:var(--link-accent);
-      background:color-mix(in srgb,var(--link-accent) 10%,transparent);
-      opacity:.85; transition:opacity .15s, transform .15s;
+      flex:none; width:20px; height:20px; border-radius:999px;
+      display:grid; place-items:center; font-size:13px; line-height:1;
+      color:var(--muted); background:transparent;
+      opacity:.7; transition:opacity .15s, transform .15s, color .15s;
     }
+    .links a:hover .larr { color:var(--link-accent); }
     .links a:hover .larr { opacity:1; transform:translate(1px,-1px); }
+
+    /* ---- sidebar (pins + list — right column) ----------------------- */
+    .sidebar .panel-head { margin-bottom:10px; }
+    .sidebar .head-link {
+      font:inherit; font-size:13px; font-weight:650; color:var(--brand);
+      background:none; border:0; padding:0; cursor:pointer; text-decoration:none;
+    }
+    .sidebar .head-link:hover { text-decoration:underline; text-underline-offset:2px; }
+    .sidebar .head-link[aria-pressed="true"] { color:var(--brand-deep); }
+    .sidebar .links a {
+      padding:11px 4px; gap:10px;
+    }
+    .sidebar .links a:hover {
+      background:var(--hover-tint); border-bottom-color:var(--line-soft);
+      box-shadow:none;
+    }
+    .sidebar .link-icon {
+      width:20px; height:20px;
+      background:var(--link-accent);
+      color:var(--on-accent);
+      border:none;
+    }
+    .sidebar .link-icon svg { width:11px; height:11px; }
+    .sidebar .links .lname { font-size:14px; font-weight:600; }
+    .sidebar .links .larr {
+      width:auto; height:auto; font-size:13px; opacity:.5;
+      transform:none;
+    }
+    .sidebar .links a:hover .larr { opacity:.85; transform:none; }
+    .sidebar .list-empty { text-align:left; padding:8px 4px 12px; }
+    .sidebar .pin-manage {
+      display:flex; align-items:center; gap:10px;
+      padding:11px 4px; border-bottom:1px solid var(--line-soft);
+    }
+    .sidebar .pin-manage:last-child { border-bottom:none; }
+    .sidebar .pin-manage .pin-label { flex:1; min-width:0; font-size:14px; font-weight:600;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
     /* ---- my pins ---------------------------------------------------- */
     .pin-row { display:flex; align-items:center; gap:8px; }
@@ -394,13 +559,8 @@
     .mini-btn.icon-only svg { width:14px; height:14px; display:block; flex-shrink:0; }
     .head-actions { margin-left:auto; display:flex; gap:6px; align-items:center; }
 
-    .pin-manage { display:flex; align-items:center; gap:6px; padding:6px 0; }
-    .pin-manage .pin-label { flex:1; min-width:0; font-size:14px; font-weight:600;
-      overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    .pin-swatch { width:10px; height:10px; border-radius:50%; flex:none; background:var(--link-accent,var(--brand)); }
-
     /* ---- pin editor -------------------------------------------------- */
-    .pin-form { border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2); padding:12px; margin-top:10px; }
+    .pin-form { border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; padding:14px 0 4px; margin-top:8px; }
     .pin-form label { display:block; font-size:11px; font-weight:650; letter-spacing:.06em;
       text-transform:uppercase; color:var(--faint); margin:0 0 4px; }
     .pin-form input[type="text"], .pin-form input[type="url"] {
@@ -427,19 +587,32 @@
     .btn-danger { background:transparent; border:1px solid var(--line); color:var(--danger); margin-left:auto; }
 
     /* ---- my list ----------------------------------------------------- */
+    .sidebar .todo-add { margin-bottom:6px; }
+    .sidebar .todo-add input { padding:9px 11px; font-size:14px; }
+    .sidebar .todo-add .btn-primary {
+      flex:none; background:var(--ink); border-color:var(--ink);
+      padding:10px 14px; border-radius:8px;
+    }
+    .sidebar .todo-add .btn-primary:hover { background:color-mix(in srgb,var(--ink) 88%,var(--brand)); border-color:color-mix(in srgb,var(--ink) 88%,var(--brand)); }
+    .sidebar .todo { padding:11px 4px; align-items:center; }
+    .sidebar .todo-check { width:16px; height:16px; border-radius:3px; margin-top:0; }
+    .sidebar .todo.done .todo-check { background:var(--ok); border-color:var(--ok); }
+    .sidebar .todo-text { font-size:14px; line-height:1.4; }
     .todo-add { display:flex; gap:8px; margin-bottom:12px; }
     .todo-add input {
-      font:inherit; font-size:14px; flex:1; min-width:0; color:var(--ink); background:var(--paper-2);
+      font:inherit; font-size:14px; flex:1; min-width:0; color:var(--ink); background:var(--card);
       border:1px solid var(--line); border-radius:var(--radius); padding:10px 12px;
     }
     .todo-add input:focus { outline:none; border-color:var(--brand); background:var(--card); }
-    .todos { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px; }
+    .todos { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; }
     .todo {
-      display:flex; align-items:flex-start; gap:10px; padding:9px 11px;
-      border:1px solid var(--line); border-radius:var(--radius); background:var(--paper-2);
-      transition:border-color .15s, opacity .15s;
+      display:flex; align-items:flex-start; gap:10px; padding:10px 4px;
+      border:0; border-bottom:1px solid var(--line-soft); border-radius:7px;
+      background:transparent;
+      transition:background .15s, border-color .15s, opacity .15s;
     }
-    .todo:hover { border-color:color-mix(in srgb,var(--brand) 30%,var(--line)); }
+    .todos > .todo:last-child { border-bottom:none; }
+    .todo:hover { background:var(--hover-tint); border-bottom-color:transparent; }
     .todo-check {
       flex:none; width:18px; height:18px; margin-top:1px; border-radius:5px; cursor:pointer; padding:0;
       border:1.5px solid var(--idle); background:transparent; display:grid; place-items:center; color:var(--on-accent);
@@ -483,23 +656,36 @@
     .sync-note[data-state="local"]  .sync-dot { background:var(--idle); }
     .sync-note[data-state="error"]  .sync-dot { background:var(--danger); }
 
-    footer { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13.5px; text-align:center; }
+    /* margin-top:auto drops the footer to the bottom of the viewport on a
+       short page, so it sits where a long page's footer sits. main carries the
+       minimum gap for when the page IS long. */
+    footer {
+      display:flex; align-items:baseline; justify-content:space-between;
+      flex-wrap:wrap; gap:6px 18px;
+      margin-top:auto; padding-top:14px; border-top:1px solid var(--line);
+      color:var(--muted); font-size:12.5px; text-align:left;
+    }
     footer a { color:var(--ink); font-weight:650; text-decoration:underline; text-underline-offset:2px; }
     footer a:hover { color:var(--brand); }
 
     @media (max-width:640px){
       body { padding:max(12px,env(safe-area-inset-top)) 12px calc(28px + env(safe-area-inset-bottom)); }
-      header.hero { grid-template-columns:1fr; gap:12px; padding:16px; }
-      .head-meta { text-align:left; }
-      .panel { padding:14px 12px; }
+      header.hero {
+        margin-top:calc(-1 * max(12px,env(safe-area-inset-top)));
+        margin-bottom:18px;
+        padding-inline:12px;
+      }
+      .hero-inner { padding:14px 0 12px; gap:12px; }
+      .head-meta { margin-left:0; }
+      .hero-sep { display:none; }
       .todo, .wk-task, .kcard, .links a, .cal-undated-list a { min-height:48px; }
-      .vbtn { padding:7px 12px; }
     }
     /* ---- focus states ------------------------------------------------ */
     /* One ring for every control, matching the Command Center. Each item's
        own --accent tints it, so the ring belongs to the thing you focused. */
-    .vbtn:focus-visible, .mini-btn:focus-visible, .btn-sm:focus-visible,
-    .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
+    .menu-trigger:focus-visible, .menu-item:focus-visible, .monday-refresh:focus-visible, .monday-open:focus-visible,
+    .mini-btn:focus-visible, .btn-sm:focus-visible,
+    .head-link:focus-visible, .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
     .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
     .wk-nav button:focus-visible, .cal-nav button:focus-visible,
     .wk-empty .wk-jump:focus-visible, .wk-task:focus-visible,
@@ -518,7 +704,6 @@
       outline:none; border-radius:6px;
       box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 35%,transparent);
     }
-    .filter-select:focus-visible { box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 30%,transparent); }
 
     /* ---- touch ------------------------------------------------------- */
     /* The row actions are revealed by hover on pointer devices. Touch has no
@@ -548,62 +733,78 @@
   <a class="skip-link" href="#focus-main">Skip to your tasks</a>
   <div class="wrap">
     <header class="hero">
-      <div>
-        <p class="eyebrow"><span class="tick" aria-hidden="true"></span> Personal · MLRI Training Unit</p>
-        <h1>Marlie's Focus Page</h1>
-      </div>
-      <div class="head-right">
+      <div class="hero-inner">
+        <a class="team-back" href="../"><span class="tb-arrow" aria-hidden="true">&#8592;</span> Command Center</a>
+        <span class="hero-sep" aria-hidden="true"></span>
+        <span class="who-mono" id="whoMono" aria-hidden="true"></span>
+        <h1 id="whoName">Marlie</h1>
+        <p class="eyebrow">Focus Page</p>
         <div class="head-meta">
-          <div class="greeting" id="greeting"></div>
-          <div class="today" id="today"></div>
+          <span class="greeting" id="greeting"></span>
+          <span class="today" id="today"></span>
         </div>
-        <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch color theme"></button>
+        <div class="head-right">
+          <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch color theme"></button>
+        </div>
       </div>
     </header>
-
-    <div class="focus-nav">
-      <a class="team-back" href="../">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-        <span>Go back to team page</span>
-      </a>
-    </div>
 
     <main class="cols" id="focus-main">
       <!-- LEFT: tasks -->
       <div class="col">
         <section class="panel">
-          <div class="panel-head">
-            <h2 class="panel-title"><a href="https://training-unit-hq.monday.com/workspaces/16174604" target="_blank" rel="noopener noreferrer">My Monday Tasks</a></h2>
-            <div class="head-tools">
-              <div class="view-toggle" role="group" aria-label="View mode">
-                <button class="vbtn" type="button" data-view="week" aria-pressed="true">Week</button>
-                <button class="vbtn" type="button" data-view="list" aria-pressed="false">List</button>
-                <button class="vbtn" type="button" data-view="board" aria-pressed="false">Board</button>
-                <button class="vbtn" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
-              </div>
-            </div>
-          </div>
-          <div class="task-toolbar" id="taskToolbar" data-view="week">
-            <div class="filter-bar">
-              <div class="filter-row">
-                <label class="filter-field" id="statusFilterGroup">
-                  <span class="filter-label">Status</span>
-                  <select class="filter-select" id="statusSelect" aria-label="Filter by status"></select>
-                </label>
-                <label class="filter-field">
-                  <span class="filter-label">Area</span>
-                  <select class="filter-select" id="areaSelect" aria-label="Filter by area"></select>
-                </label>
-              </div>
-            </div>
-            <span class="filter-active" id="filterActive" hidden>Filtered</span>
-            <span class="task-meta snap-row">
-              <button class="mini-btn icon-only" type="button" id="taskRefresh"
+          <!-- Week calendar: filled by renderWeekCal(), pinned above Monday tasks -->
+          <div class="week-cal" id="weekCal"></div>
+          <div class="monday-head">
+            <div class="monday-head-main">
+              <svg class="monday-mark" aria-hidden="true" viewBox="0 0 20 20" width="20" height="20">
+                <rect x="2" y="3" width="4" height="14" rx="1" fill="#ff3d57"/>
+                <rect x="8" y="3" width="4" height="14" rx="1" fill="#ffcb00"/>
+                <rect x="14" y="3" width="4" height="14" rx="1" fill="#00d647"/>
+              </svg>
+              <span class="monday-title">Milestones from Monday</span>
+              <span class="monday-meta" id="snapNote"></span>
+              <button class="monday-refresh" type="button" id="taskRefresh"
                       title="Refresh from Monday" aria-label="Refresh tasks from Monday">
-                <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
               </button>
-              <span class="panel-note" id="snapNote"></span>
-            </span>
+            </div>
+            <a class="monday-open" href="https://training-unit-hq.monday.com/workspaces/16174604" target="_blank" rel="noopener noreferrer">Open in Monday <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="monday-controls" id="taskToolbar" data-view="week">
+            <div class="menu-wrap" id="filterMenuWrap">
+              <button class="menu-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="filterPanel">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+                Filter
+              </button>
+              <div class="menu-panel" id="filterPanel" hidden>
+                <div class="menu-section" id="statusMenuSection">
+                  <div class="menu-section-label">Status</div>
+                  <ul class="menu-list" id="statusMenu"></ul>
+                </div>
+                <div class="menu-section">
+                  <div class="menu-section-label">Area</div>
+                  <ul class="menu-list" id="areaMenu"></ul>
+                </div>
+              </div>
+            </div>
+            <div class="menu-wrap view-menu-wrap" id="viewMenuWrap">
+              <button class="menu-trigger view-trigger" type="button" id="viewTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="viewPanel">
+                <span class="view-kicker">View:</span>
+                <span id="viewTriggerLabel">Week</span>
+              </button>
+              <div class="menu-panel" id="viewPanel" hidden>
+                <div class="menu-section">
+                  <div class="menu-section-label">View</div>
+                  <ul class="menu-list" id="viewMenu">
+                    <li><button class="menu-item view-menu-item" type="button" data-view="week">Week</button></li>
+                    <li><button class="menu-item view-menu-item" type="button" data-view="list">List</button></li>
+                    <li><button class="menu-item view-menu-item" type="button" data-view="board">Board</button></li>
+                    <li><button class="menu-item view-menu-item" type="button" data-view="calendar">Calendar</button></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="task-content">
             <div id="week"></div>
@@ -615,12 +816,12 @@
       </div>
 
       <!-- RIGHT: pins + list -->
-      <div class="col">
+      <div class="col sidebar">
         <section class="panel">
           <div class="panel-head">
             <h2 class="panel-title">My Pins</h2>
             <div class="head-actions">
-              <button class="mini-btn" type="button" id="pinManage" aria-pressed="false">Manage</button>
+              <button class="head-link" type="button" id="pinManage" aria-pressed="false">Manage</button>
             </div>
           </div>
           <ul class="links" id="pins"></ul>
@@ -630,7 +831,6 @@
         <section class="panel">
           <div class="panel-head">
             <h2 class="panel-title">My List</h2>
-            <span class="panel-note" id="todoCount" role="status" aria-live="polite"></span>
           </div>
           <form class="todo-add" id="todoAdd">
             <input id="todoInput" type="text" placeholder="Add something…" maxlength="300"
@@ -646,7 +846,7 @@
     </main>
 
     <footer>
-      Private focus page
+      <span>Private focus page</span>
       <span id="syncSlot" role="status" aria-live="polite"></span>
     </footer>
   </div>
@@ -810,7 +1010,8 @@
     const TODAY_ISO = toIso(today);
     function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
     // Weeks run Monday → Sunday.
-    function startOfWeek(d){ return addDays(d, -((d.getDay() + 6) % 7)); }
+    /* Sunday-start, matching the week strip's Sun..Sat columns. */
+    function startOfWeek(d){ return addDays(d, -d.getDay()); }
     const THIS_WEEK = startOfWeek(today);
     function weekIndexOf(iso){
       return Math.round((startOfWeek(parseDue(iso)) - THIS_WEEK) / (7 * MS_DAY));
@@ -826,9 +1027,11 @@
     ];
 
     const VIEWS = ["week", "list", "board", "calendar"];
+    const VIEW_LABELS = { week:"Week", list:"List", board:"Board", calendar:"Calendar" };
     let activeStatus = "all";
     let activeArea = "all";
     let view = "week";
+    let lastSyncedAt = null;
     let calMonth = today.getMonth();
     let calYear = today.getFullYear();
     let weekOffset = 0;               // 0 = this week, 1 = next week, …
@@ -837,15 +1040,22 @@
       if (VIEWS.includes(saved)) view = saved;
     } catch(e){}
     const weekEl = document.getElementById("week");
+    const weekCalEl = document.getElementById("weekCal");
     const bucketsEl = document.getElementById("buckets");
     const kanbanEl = document.getElementById("kanban");
     const calendarEl = document.getElementById("calendar");
-    const statusSelect = document.getElementById("statusSelect");
-    const areaSelect = document.getElementById("areaSelect");
-    const statusFilterGroup = document.getElementById("statusFilterGroup");
-    const filterActive = document.getElementById("filterActive");
+    const statusMenu = document.getElementById("statusMenu");
+    const areaMenu = document.getElementById("areaMenu");
+    const statusMenuSection = document.getElementById("statusMenuSection");
+    const filterMenuWrap = document.getElementById("filterMenuWrap");
+    const viewMenuWrap = document.getElementById("viewMenuWrap");
+    const filterTrigger = document.getElementById("filterTrigger");
+    const viewTrigger = document.getElementById("viewTrigger");
+    const filterPanel = document.getElementById("filterPanel");
+    const viewPanel = document.getElementById("viewPanel");
+    const viewTriggerLabel = document.getElementById("viewTriggerLabel");
     const taskToolbar = document.getElementById("taskToolbar");
-    const AREA_ORDER = ["ops", "lms", "content", "data", "comms"];
+    const AREA_ORDER = ["ops", "lms", "content", "data", "comms", "sustain"];
 
     function visibleTasks(){
       return TASKS.filter(t => {
@@ -884,10 +1094,63 @@
 
     function updateToolbar(){
       if (taskToolbar) taskToolbar.dataset.view = view;
-      if (filterActive) filterActive.hidden = activeStatus === "all" && activeArea === "all";
+      if (statusMenuSection) statusMenuSection.hidden = view === "board";
+    }
+
+    function closeMenus(except){
+      [[filterMenuWrap, filterTrigger, filterPanel], [viewMenuWrap, viewTrigger, viewPanel]].forEach(([wrap, trigger, panel]) => {
+        if (!wrap || wrap === except) return;
+        panel.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+      });
+    }
+
+    function toggleMenu(wrap, trigger, panel){
+      const open = panel.hidden;
+      closeMenus(open ? wrap : null);
+      panel.hidden = !open;
+      trigger.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    filterTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleMenu(filterMenuWrap, filterTrigger, filterPanel);
+    });
+    viewTrigger.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleMenu(viewMenuWrap, viewTrigger, viewPanel);
+    });
+    document.addEventListener("click", () => closeMenus());
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closeMenus();
+    });
+
+    function menuItem(label, selected, dotColor, onPick){
+      const li = document.createElement("li");
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "menu-item" + (selected ? " is-selected" : "");
+      if (dotColor) {
+        const dot = document.createElement("span");
+        dot.className = "menu-dot";
+        dot.style.background = dotColor;
+        dot.setAttribute("aria-hidden", "true");
+        btn.append(dot, document.createTextNode(label));
+      } else {
+        btn.textContent = label;
+      }
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        onPick();
+        closeMenus();
+        refreshTasks();
+      });
+      li.appendChild(btn);
+      return li;
     }
 
     function renderView(){
+      renderWeekCal();
       if (view === "week") renderWeek();
       else if (view === "board") renderKanban();
       else if (view === "calendar") renderCalendar();
@@ -896,27 +1159,27 @@
 
     function renderFilters(){
       const statusDefs = [
-        { k:"all",  label:"All statuses" },
-        { k:"work", label:"Working on it" },
-        { k:"wait", label:"Waiting" },
-        { k:"idle", label:"Not started" },
+        { k:"all",  label:"All statuses",    dot:"var(--working)" },
+        { k:"work", label:"Working on it",   dot:"var(--working)" },
+        { k:"wait", label:"Waiting",         dot:"var(--wait)" },
+        { k:"idle", label:"Not started",     dot:"var(--idle)" },
       ];
-      statusSelect.innerHTML = statusDefs.map(d =>
-        '<option value="'+d.k+'"'+(d.k===activeStatus?' selected':'')+'>'+
-        d.label+' ('+countByStatus(d.k)+')</option>'
-      ).join("");
+      statusMenu.replaceChildren();
+      statusDefs.forEach(d => {
+        statusMenu.appendChild(menuItem(d.label, activeStatus === d.k, d.dot, () => { activeStatus = d.k; }));
+      });
 
       const boards = AREA_ORDER.filter(k => TASKS.some(t => t.b === k));
-      areaSelect.innerHTML =
-        '<option value="all"'+(activeArea==="all"?' selected':'')+'>All areas ('+countByArea("all")+')</option>' +
-        boards.map(k =>
-          '<option value="'+k+'"'+(k===activeArea?' selected':'')+'>'+
-          BOARDS[k].label+' ('+countByArea(k)+')</option>'
-        ).join("");
-    }
+      areaMenu.replaceChildren();
+      areaMenu.appendChild(menuItem("All areas", activeArea === "all", null, () => { activeArea = "all"; }));
+      boards.forEach(k => {
+        areaMenu.appendChild(menuItem(BOARDS[k].label, activeArea === k, null, () => { activeArea = k; }));
+      });
 
-    statusSelect.addEventListener("change", () => { activeStatus = statusSelect.value; refreshTasks(); });
-    areaSelect.addEventListener("change", () => { activeArea = areaSelect.value; refreshTasks(); });
+      document.querySelectorAll(".view-menu-item").forEach(b =>
+        b.classList.toggle("is-selected", b.dataset.view === view));
+      if (viewTriggerLabel) viewTriggerLabel.textContent = VIEW_LABELS[view];
+    }
 
     // Sort by soonest due date; undated tasks fall to the end.
     // Ties break on status then name, so what's in progress leads its day and
@@ -1040,16 +1303,12 @@
       return g;
     }
 
-    function renderWeek(){
-      weekEl.innerHTML = "";
+    function weekFrame(){
       const start = addDays(THIS_WEEK, weekOffset * 7);
       const end = addDays(start, 6);
       const startIso = toIso(start), endIso = toIso(end);
       const isCurrent = weekOffset === 0;
       const tasks = visibleTasks();
-
-      // On the current week, anything already past (including earlier this
-      // week) rolls up into one Overdue group so the days stay forward-looking.
       const cutoff = isCurrent ? TODAY_ISO : startIso;
       const overdue = isCurrent ? tasks.filter(t => t.due && t.due < TODAY_ISO).sort(byDue) : [];
       const inWeek = tasks.filter(t => t.due && t.due >= cutoff && t.due <= endIso);
@@ -1057,8 +1316,17 @@
       const doneInWeek = activeStatus === "all"
         ? areaFilteredTasks().filter(t => t.s === "done" && t.due && t.due >= startIso && t.due <= endIso).sort(byDue)
         : [];
+      return { start, end, startIso, endIso, isCurrent, tasks, overdue, inWeek, ongoing, doneInWeek };
+    }
 
-      /* header */
+    function syncWeekNav(){
+      renderWeekCal();
+      if (view === "week") renderWeek();
+    }
+
+    function renderWeekCal(){
+      weekCalEl.innerHTML = "";
+      const { start, end, isCurrent } = weekFrame();
       const head = document.createElement("div");
       head.className = "wk-head";
       const titles = document.createElement("div");
@@ -1066,38 +1334,54 @@
       const sameMonth = start.getMonth() === end.getMonth();
       const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " – " +
         end.toLocaleDateString(undefined, sameMonth ? { day:"numeric" } : { month:"short", day:"numeric" });
-      const count = overdue.length + inWeek.length;
-      const hasDue = count > 0;
       titles.innerHTML = '<div class="wk-range"></div><div class="wk-rel"></div>';
-      titles.querySelector(".wk-range").textContent = range;
-      let relDetail;
-      if (count) {
-        relDetail = count + (count === 1 ? " task" : " tasks") + (isCurrent ? " to do" : " due");
-        if (ongoing.length && isCurrent) relDetail += " · " + ongoing.length + " in progress";
-      } else if (ongoing.length && isCurrent) {
-        relDetail = "nothing due · " + ongoing.length + " in progress";
-      } else {
-        relDetail = "nothing due";
-      }
+      titles.querySelector(".wk-range").textContent = isCurrent
+        ? today.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" })
+        : range;
       titles.querySelector(".wk-rel").innerHTML =
-        '<b>' + relWeekLabel(weekOffset) + '</b> · ' + relDetail;
+        '<b>Week of ' + start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + '</b>';
       const nav = document.createElement("div");
       nav.className = "wk-nav";
       if (!isCurrent){
         const nowBtn = document.createElement("button");
         nowBtn.type = "button"; nowBtn.className = "wk-now"; nowBtn.textContent = "This week";
-        nowBtn.addEventListener("click", () => { weekOffset = 0; renderWeek(); });
+        nowBtn.addEventListener("click", () => { weekOffset = 0; syncWeekNav(); });
         nav.appendChild(nowBtn);
       }
       const prev = document.createElement("button");
       prev.type = "button"; prev.setAttribute("aria-label", "Previous week"); prev.textContent = "‹";
-      prev.addEventListener("click", () => { weekOffset--; renderWeek(); });
+      prev.addEventListener("click", () => { weekOffset--; syncWeekNav(); });
       const next = document.createElement("button");
       next.type = "button"; next.setAttribute("aria-label", "Next week"); next.textContent = "›";
-      next.addEventListener("click", () => { weekOffset++; renderWeek(); });
+      next.addEventListener("click", () => { weekOffset++; syncWeekNav(); });
       nav.append(prev, next);
       head.append(titles, nav);
-      weekEl.appendChild(head);
+      weekCalEl.appendChild(head);
+
+      const strip = document.createElement("div");
+      strip.className = "wk-strip";
+      strip.setAttribute("aria-hidden", "true");
+      for (let i = 0; i < 7; i++){
+        const d = addDays(start, i);
+        const iso = toIso(d);
+        const cell = document.createElement("div");
+        cell.className = "wk-cell" +
+          (iso === TODAY_ISO ? " is-today" : "") +
+          (iso < TODAY_ISO ? " is-past" : "");
+        cell.innerHTML = '<div class="wk-cell-dow"></div><div class="wk-cell-num"></div>';
+        cell.querySelector(".wk-cell-dow").textContent =
+          d.toLocaleDateString(undefined, { weekday:"short" });
+        cell.querySelector(".wk-cell-num").textContent = d.getDate();
+        strip.appendChild(cell);
+      }
+      weekCalEl.appendChild(strip);
+    }
+
+    function renderWeek(){
+      weekEl.innerHTML = "";
+      const { start, end, endIso, isCurrent, tasks, overdue, inWeek, ongoing, doneInWeek } = weekFrame();
+      const count = overdue.length + inWeek.length;
+      const hasDue = count > 0;
 
       /* overdue carry-over */
       if (overdue.length){
@@ -1134,7 +1418,7 @@
           const target = weekIndexOf(upcoming.due);
           jump.textContent = "Next up: " + parseDue(upcoming.due)
             .toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " →";
-          jump.addEventListener("click", () => { weekOffset = target; renderWeek(); });
+          jump.addEventListener("click", () => { weekOffset = target; syncWeekNav(); });
           empty.appendChild(jump);
         }
         weekEl.appendChild(empty);
@@ -1329,27 +1613,34 @@
     function setView(v){
       view = v;
       try { localStorage.setItem("marlie-view-v2", v); } catch(e){}
-      document.querySelectorAll(".vbtn").forEach(b =>
-        b.setAttribute("aria-pressed", b.dataset.view===v ? "true" : "false"));
       weekEl.hidden = v !== "week";
       bucketsEl.hidden = v !== "list";
       kanbanEl.hidden = v !== "board";
       calendarEl.hidden = v !== "calendar";
-      statusFilterGroup.style.display = v === "board" ? "none" : "";
       updateToolbar();
+      renderFilters();
       renderView();
     }
-    document.querySelectorAll(".vbtn").forEach(b =>
-      b.addEventListener("click", () => setView(b.dataset.view)));
+    document.querySelectorAll(".view-menu-item").forEach(b =>
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        setView(b.dataset.view);
+        closeMenus();
+      }));
 
     /* ---- snapshot note + live refresh ------------------------------ */
     const snapNote = document.getElementById("snapNote");
     const taskRefreshBtn = document.getElementById("taskRefresh");
 
     function paintSnapNote(){
+      if (snapshotLive && lastSyncedAt) {
+        const mins = Math.round((Date.now() - lastSyncedAt) / 60000);
+        snapNote.textContent = mins <= 0 ? "synced just now" : "synced " + mins + " min ago";
+        return;
+      }
       const [y,m,d] = snapshotDate.split("-").map(Number);
-      const label = new Date(y, m-1, d).toLocaleDateString(undefined, { month:"long", day:"numeric" });
-      snapNote.textContent = (snapshotLive ? "live · " : "snapshot · ") + label;
+      const label = new Date(y, m-1, d).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+      snapNote.textContent = "as of " + label;
     }
 
     taskRefreshBtn.addEventListener("click", async () => {
@@ -1368,6 +1659,7 @@
         TASKS.push(...data.tasks);
         snapshotDate = data.snapshotDate || snapshotDate;
         snapshotLive = true;
+        lastSyncedAt = Date.now();
         saveLiveTasks(data);
         paintSnapNote();
         refreshTasks();
@@ -1412,9 +1704,27 @@
     /* ---- greeting -------------------------------------------------- */
     (function(){
       const h = now.getHours();
-      const greet = h < 12 ? "Good morning, Marlie" : h < 18 ? "Good afternoon, Marlie" : "Good evening, Marlie";
-      document.getElementById("greeting").textContent = greet + ".";
-      document.getElementById("today").textContent = now.toLocaleDateString(undefined, { weekday:"long", month:"long", day:"numeric" });
+      // No name here -- the <h1> two inches to the left already says whose page
+      // this is, and the band only has room for one line of meta.
+      const greet = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+      document.getElementById("greeting").textContent = greet;
+      document.getElementById("today").textContent =
+        now.toLocaleDateString(undefined, { weekday:"short", day:"numeric", month:"short" });
+    })();
+
+    /* ---- whose page this is ---------------------------------------- */
+    /* Keyed off the <h1>, which is the one place the page states whose it is
+       and the one thing generate-focus-pages.mjs localises -- so the mark stays
+       correct without depending on the URL or on a per-page literal. */
+    const PERSON_ACCENT = { marlie:"#3d6ea8", ashley:"#7d4f9e", carolina:"#4f8a5c", olivia:"#a8553d" };
+    (function(){
+      const nameEl = document.getElementById("whoName");
+      const monoEl = document.getElementById("whoMono");
+      if (!nameEl || !monoEl) return;
+      const who = nameEl.textContent.trim();
+      monoEl.textContent = who.charAt(0).toUpperCase();
+      const accent = PERSON_ACCENT[who.toLowerCase()];
+      if (accent) document.querySelector("header.hero").style.setProperty("--who", accent);
     })();
 
     /* =================================================================
@@ -1493,8 +1803,11 @@
        same gate the Worker applies, repeated here because data can also
        arrive straight from localStorage. */
     function safeUrl(v) {
+      let raw = String(v == null ? "" : v).trim();
+      if (!raw) return "";
+      if (!/^[a-z][a-z0-9+.-]*:/i.test(raw)) raw = "https://" + raw;
       try {
-        const u = new URL(String(v == null ? "" : v).trim());
+        const u = new URL(raw);
         return u.protocol === "http:" || u.protocol === "https:" ? u.href : "";
       } catch (e) { return ""; }
     }
@@ -1541,61 +1854,13 @@
       return JSON.stringify(a) === JSON.stringify(b);
     }
 
-    function mergeTodos(local, remote, localWins) {
-      const byId = new Map();
-      for (const t of remote) byId.set(t.id, { ...t });
-      for (const t of local) {
-        const r = byId.get(t.id);
-        if (!r) { byId.set(t.id, { ...t }); continue; }
-        byId.set(t.id, {
-          id: t.id,
-          text: localWins ? (t.text || r.text) : (r.text || t.text),
-          done: r.done || t.done,
-          created: r.created || t.created,
-        });
-      }
-      const out = [];
-      const seen = new Set();
-      for (const t of local) {
-        if (byId.has(t.id)) { out.push(byId.get(t.id)); seen.add(t.id); }
-      }
-      for (const t of remote) {
-        if (!seen.has(t.id)) out.push(byId.get(t.id));
-      }
-      return out;
-    }
-
-    function mergePins(local, remote, localWins) {
-      const byId = new Map();
-      for (const p of remote) byId.set(p.id, { ...p });
-      for (const p of local) {
-        const r = byId.get(p.id);
-        if (!r) { byId.set(p.id, { ...p }); continue; }
-        byId.set(p.id, {
-          id: p.id,
-          label: localWins ? (p.label || r.label) : (r.label || p.label),
-          url: localWins ? (p.url || r.url) : (r.url || p.url),
-          icon: localWins ? (p.icon || r.icon) : (r.icon || p.icon),
-          color: localWins ? (p.color || r.color) : (r.color || p.color),
-        });
-      }
-      const out = [];
-      const seen = new Set();
-      for (const p of local) {
-        if (byId.has(p.id)) { out.push(byId.get(p.id)); seen.add(p.id); }
-      }
-      for (const p of remote) {
-        if (!seen.has(p.id)) out.push(byId.get(p.id));
-      }
-      return out;
-    }
-
     function mergeData(local, remote) {
       const localWins = (local.updated || "") >= (remote.updated || "");
+      const winner = localWins ? local : remote;
       return normalize({
         v: 1,
-        pins: mergePins(local.pins, remote.pins, localWins),
-        todos: mergeTodos(local.todos, remote.todos, localWins),
+        pins: winner.pins,
+        todos: winner.todos,
         updated: [local.updated, remote.updated].filter(Boolean).sort().pop() || null,
       });
     }
@@ -1686,15 +1951,19 @@
     let manageMode = false;
     let editingId = null;   // pin id being edited, or "new", or null
 
+    function pinIconEl(p) {
+      const icon = document.createElement("span");
+      icon.className = "link-icon";
+      icon.innerHTML = PIN_ICONS[p.icon] || PIN_ICONS.link;
+      return icon;
+    }
+
     function pinLink(p) {
       const a = document.createElement("a");
       a.href = p.url;
       a.target = "_blank";
       a.rel = "noopener noreferrer";
       a.style.setProperty("--link-accent", p.color);
-      const icon = document.createElement("span");
-      icon.className = "link-icon";
-      icon.innerHTML = PIN_ICONS[p.icon] || PIN_ICONS.link;
       const name = document.createElement("span");
       name.className = "lname";
       name.textContent = p.label;
@@ -1702,7 +1971,7 @@
       arr.className = "larr";
       arr.setAttribute("aria-hidden", "true");
       arr.textContent = "↗";
-      a.append(icon, name, arr);
+      a.append(pinIconEl(p), name, arr);
       return a;
     }
 
@@ -1735,8 +2004,6 @@
         } else {
           li.className = "pin-manage";
           li.style.setProperty("--link-accent", p.color);
-          const dot = document.createElement("span");
-          dot.className = "pin-swatch";
           const label = document.createElement("span");
           label.className = "pin-label";
           label.textContent = p.label;
@@ -1748,7 +2015,7 @@
             miniBtn("✎", "Edit " + p.label, () => openEditor(p.id)),
             miniBtn("✕", "Delete " + p.label, () => deletePin(p.id))
           );
-          li.append(dot, label, actions);
+          li.append(pinIconEl(p), label, actions);
         }
         pinsEl.appendChild(li);
       });
@@ -1806,9 +2073,11 @@
       const urlLabel = document.createElement("label");
       urlLabel.textContent = "Link";
       const urlInput = document.createElement("input");
-      urlInput.type = "url";
+      urlInput.type = "text";
+      urlInput.inputMode = "url";
+      urlInput.autocomplete = "url";
       urlInput.value = draft.url;
-      urlInput.placeholder = "https://…";
+      urlInput.placeholder = "weather.com or https://…";
 
       const iconLabel = document.createElement("label");
       iconLabel.textContent = "Icon";
@@ -1881,7 +2150,7 @@
         const label = clip(nameInput.value, 60);
         const url = safeUrl(urlInput.value);
         if (!label) { err.textContent = "Give it a label."; err.hidden = false; return; }
-        if (!url) { err.textContent = "Needs a full http:// or https:// link."; err.hidden = false; return; }
+        if (!url) { err.textContent = "Enter a web address like weather.com or https://…"; err.hidden = false; return; }
         const next = { id: draft.id, label, url, icon: draft.icon, color: draft.color };
         if (existing) myData.pins = myData.pins.map(p => (p.id === next.id ? next : p));
         else myData.pins.push(next);
@@ -1908,7 +2177,6 @@
 
     /* ---- my list ----------------------------------------------------- */
     const todosEl = document.getElementById("todos");
-    const todoCountEl = document.getElementById("todoCount");
     const todoFootEl = document.getElementById("todoFoot");
     const todoInput = document.getElementById("todoInput");
 
@@ -1986,9 +2254,7 @@
         todosEl.appendChild(li);
       });
 
-      const openCount = open.length;
       const doneCount = done.length;
-      todoCountEl.textContent = myData.todos.length ? openCount + " open" : "";
       todoFootEl.hidden = !doneCount;
     }
 
@@ -2068,7 +2334,10 @@
     // A pending debounce would otherwise be lost when the tab closes.
     addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && pushTimer) { clearTimeout(pushTimer); push(); }
-      else if (document.visibilityState === "visible" && pullDone) pull();
+      else if (document.visibilityState === "visible" && pullDone) {
+        pull();
+        if (syncEl.dataset.state === "error" && remoteLive !== false) push();
+      }
     });
   </script>
 </body>

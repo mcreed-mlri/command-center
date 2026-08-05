@@ -1,8 +1,8 @@
 /* ============================================================================
    Training Unit Command Center — shared design tokens
-   Cape Cod Palette: Salt-washed neutral paper, a sunrise held to the sky —
-   apricot off the top-right corner, sea glass rising from the bottom-left.
-   Steel blue interactive signal, terracotta rust place marks.
+   Cape Cod Palette: Salt-washed neutral paper, flat across the page, with the
+   sunrise concentrated into the header band alone — apricot on its sunward
+   corner. Steel blue interactive signal, terracotta rust place marks.
 
    The light neutrals INTENTIONALLY diverge from LACE Learning Hub
    app/globals.css, which still runs the warm cream ladder. Re-syncing this file
@@ -17,7 +17,10 @@
   --paper: #f5f5f1;
   --paper-deep: #e4e6e0;
   --paper-2: #ebece7;
-  --hover-tint: #f2f3ef;
+  /* Rows rest on flat --paper and LIFT to white on hover. This was #f2f3ef,
+     which was a lift back when rows rested on --paper-2; against a flat paper
+     page it read as the row dimming instead of being picked out. */
+  --hover-tint: #ffffff;
   --card: #ffffff;
   --line: #d9dbd4;
   --line-soft: #e4e6e0;
@@ -39,7 +42,7 @@
   --warm-deep: #9e5b0e;
   --warm-tint: #fdf5e6;
 
-  /* Skill hues — LACE studio palette for per-item accents & ambient canvas */
+  /* Skill hues — LACE studio palette for per-item accents */
   --hue-1: #1a5aa0;
   --hue-1-tint: #e8eff8;
   --hue-2: #0e7a80;
@@ -57,23 +60,16 @@
   --hue-8: #b84d32;
   --hue-8-tint: #f9ebe6;
 
-  /* Page canvas — Halcyon sunrise: one light source off the top-right corner.
-     Radii are absolute so the bloom stays concentrated at the fold instead of
-     stretching (and diluting) down a long page. Each layer is `fixed no-repeat`
-     so the light source is anchored to the window: scrolling the body box would
-     otherwise tile a second sunrise below a long page, or clip the wash flat on
-     a short one. */
-  --canvas-bg:
-    /* sun core — apricot, just off the top-right corner */
-    radial-gradient(760px 400px at 92% -70px, color-mix(in srgb, #f2a875 56%, transparent), transparent 70%) fixed no-repeat,
-    /* sky — peach across the top, kept high in lightness so it glows not muddies */
-    radial-gradient(1700px 780px at 60% -260px, color-mix(in srgb, #f6c8a2 72%, transparent), transparent 74%) fixed no-repeat,
-    /* cool aloft — the far side of the sky, still holding night */
-    radial-gradient(1000px 500px at 0% -150px, color-mix(in srgb, #7ba0bb 15%, transparent), transparent 72%) fixed no-repeat,
-    /* sea glass — silvery blue rising from the bottom-left, where the gold mud was */
-    radial-gradient(1240px 900px at -10% 92%, color-mix(in srgb, #93b8cc 24%, transparent), transparent 72%) fixed no-repeat,
-    var(--paper);
-  /* Hero band catches the bloom on its sunward corner; the rest stays paper-white */
+  /* Page canvas — flat paper. The sunrise now lives ONLY in the header band
+     (--hero-bg), which is the whole point: four fixed radial layers under the
+     page plus a wash in the band meant the light source competed with itself,
+     and every surface picked up a tint it had to be read against. One
+     deliberate gesture at the top beats an ambient one everywhere. The old
+     four-layer canvas is in git (see the commit that flattened this) if the
+     ambient version is ever wanted back. */
+  --canvas-bg: var(--paper);
+  /* Hero band holds the sunrise: paper-white at the left, apricot on its
+     sunward corner. This is the only gradient in the product. */
   --hero-bg: linear-gradient(112deg, var(--card) 42%, color-mix(in srgb, #f6c39c 26%, var(--card)) 100%);
 
   /* Status — lifecycle / Monday task states */
@@ -88,6 +84,8 @@
   --sans: "Geist", "Segoe UI Variable", "Segoe UI", "Inter", system-ui, sans-serif;
 
   /* Layout */
+  --layout-max: 1160px;
+  --layout-gutter: 24px;
   --radius: 12px;
   --radius-lg: 16px;
   /* Cool slate shadow: a brown shadow over a warm field was the other half of
@@ -135,10 +133,9 @@
     --hue-7-tint: #222631;
     --hue-8: #eb917a;
     --hue-8-tint: #361b15;
-    --canvas-bg:
-      radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #3d2317 35%, transparent), transparent),
-      radial-gradient(ellipse 75% 45% at 45% -5%, color-mix(in srgb, var(--brand) 8%, transparent), transparent),
-      var(--paper);
+    /* Flat here too, to match light. The band separates on tone alone:
+       --card #191c24 over --paper #13151b. */
+    --canvas-bg: var(--paper);
     --hero-bg: var(--card);
     --ok: #5fc9a8;
     --wait: #3b8ede;
@@ -188,10 +185,9 @@
   --hue-7-tint: #222631;
   --hue-8: #eb917a;
   --hue-8-tint: #361b15;
-  --canvas-bg:
-    radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #3d2317 35%, transparent), transparent),
-    radial-gradient(ellipse 75% 45% at 45% -5%, color-mix(in srgb, var(--brand) 8%, transparent), transparent),
-    var(--paper);
+  /* Flat here too, to match light. The band separates on tone alone:
+     --card #191c24 over --paper #13151b. */
+  --canvas-bg: var(--paper);
   --hero-bg: var(--card);
   --ok: #5fc9a8;
   --wait: #3b8ede;
