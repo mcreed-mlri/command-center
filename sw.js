@@ -1,9 +1,12 @@
 /* Training Unit — Command Center
    Caches the app shell so the launcher opens instantly and works offline.
    Bump CACHE when you change the files below. */
-const CACHE = "tu-shell-v30";
+const CACHE = "tu-shell-v31";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "favicon.ico", "icons/app/icon.svg",
+  // The focus pages carry their own baked-in task snapshot, so they are the
+  // pages most able to work offline. They have to be cached to get the chance.
+  "marlie/", "olivia/", "carolina/", "ashley/",
   "icons/app/icon-16.png", "icons/app/icon-24.png", "icons/app/icon-32.png", "icons/app/icon-44.png", "icons/app/icon-48.png",
   "icons/app/icon-64.png", "icons/app/icon-96.png", "icons/app/icon-128.png", "icons/app/icon-180.png", "icons/app/icon-192.png",
   "icons/app/icon-256.png", "icons/app/icon-512.png", "icons/app/icon-maskable-512.png",
@@ -29,8 +32,27 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
 
   // Network-first for navigations (so edits show up), cache fallback offline.
+  // The fallback has to be the page that was actually asked for: serving
+  // index.html for /marlie/ would render the launcher under the wrong path,
+  // where its relative icons/… URLs resolve to /marlie/icons/… and break.
   if (req.mode === "navigate") {
-    e.respondWith(fetch(req).catch(() => caches.match("index.html")));
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          // Refresh the offline copy of whichever page you actually visited,
+          // so an offline focus page shows a recent snapshot, not install-day.
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(async () => {
+          const c = await caches.open(CACHE);
+          return (
+            (await c.match(req, { ignoreSearch: true })) ||
+            (await c.match("index.html"))
+          );
+        })
+    );
     return;
   }
   // Cache-first for the shell assets.

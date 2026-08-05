@@ -21,27 +21,18 @@ const members = [
 function buildPage({ slug, name }) {
   let html = src;
 
-  /* Every newline below is \r?\n on purpose. An editor that rewrites
-     marlie/index.html as CRLF would otherwise silently stop these strips from
-     matching — the page still builds, it just quietly keeps the AI log. */
-
-  /* Drops the .log-card rule only. `.list-empty` deliberately sits outside
-     this block — the pins and list panels use it too. */
-  html = html.replace(
-    /\r?\n    \/\* ---- AI research log card[^\r\n]*\r?\n    \.log-card \{[\s\S]*?\r?\n    \}\r?\n/,
-    "\n"
-  );
-  html = html.replace(
-    /\r?\n        <section class="panel log-card">[\s\S]*?<\/section>\r?\n\r?\n/,
-    "\n"
-  );
-  html = html.replace("<!-- RIGHT: AI log + links -->", "<!-- RIGHT: links -->");
+  /* The AI research log panel used to live on marlie/index.html only, and three
+     replaces here stripped it out of the generated pages. It has since been
+     removed from the source, so those replaces matched nothing — dropped rather
+     than left in place looking load-bearing. If a marlie-only panel is ever
+     added back, strip it here and assert the replace actually fired. */
 
   html = html.replaceAll("Marlie", name);
   html = html.replaceAll("marlie-view-v2", `${slug}-view-v2`);
   /* Drives the localStorage key and the /api/data/<slug> endpoint, so each
      page reads and writes its own pins and list. */
   html = html.replace('const SLUG = "marlie";', `const SLUG = "${slug}";`);
+  html = html.replace('|| "marlie"', `|| "${slug}"`);
   html = html.replace(
     /content="[^"]*personal focus page[^"]*"/,
     `content="${name}'s personal focus page — Monday tasks and quick links."`

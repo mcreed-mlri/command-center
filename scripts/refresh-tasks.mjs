@@ -12,89 +12,29 @@
  *   --input <file>   read saved board records instead of calling the API
  *   --output <file>  save the fetched board records (makes an --input fixture)
  *
- * Each person's Monday user id is baked into FOCUS_PAGES below. These env vars
- * override them if an id ever changes, but nothing needs to be set to run:
- *   MONDAY_USER_ID_MARLIE, MONDAY_USER_ID_OLIVIA, MONDAY_USER_ID_CAROLINA,
- *   MONDAY_USER_ID_ASHLEY
- * MONDAY_USER_ID is a legacy alias for Marlie.
+ * Board config and transforms live in functions/_lib/monday-tasks.js (shared
+ * with the live /api/tasks/:slug endpoint).
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  BOARDS,
+  fetchAllBoards,
+  tasksForUser,
+  todayET,
+  userIdForSlug,
+} from "../functions/_lib/monday-tasks.js";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 
 const FOCUS_PAGES = [
-  {
-    slug: "marlie",
-    name: "Marlie",
-    userId: Number(process.env.MONDAY_USER_ID_MARLIE || process.env.MONDAY_USER_ID || 104326741),
-  },
-  {
-    slug: "olivia",
-    name: "Olivia",
-    userId: Number(process.env.MONDAY_USER_ID_OLIVIA || 103559830),
-  },
-  {
-    slug: "carolina",
-    name: "Carolina",
-    userId: Number(process.env.MONDAY_USER_ID_CAROLINA || 104326790),
-  },
-  {
-    slug: "ashley",
-    name: "Ashley",
-    userId: Number(process.env.MONDAY_USER_ID_ASHLEY || 104326737),
-  },
+  { slug: "marlie", name: "Marlie", userId: userIdForSlug("marlie") },
+  { slug: "olivia", name: "Olivia", userId: userIdForSlug("olivia") },
+  { slug: "carolina", name: "Carolina", userId: userIdForSlug("carolina") },
+  { slug: "ashley", name: "Ashley", userId: userIdForSlug("ashley") },
 ];
-
-const API_URL = "https://api.monday.com/v2";
-const API_VERSION = "2026-07"; // pinned; `query { versions }` lists what's current
-
-/* Board config. `people`/`status`/`date`/`timeline` are Monday column ids —
-   they are NOT guessable from column type, since several boards carry a second
-   status column ("Priority") and a Timeline alongside the date. The script
-   verifies every id still exists on its board and fails loudly if one moved.
-   `key` must match a key in the page's own BOARDS map. */
-const BOARDS = [
-  { key: "ops",     heading: "Operations",             id: "18418833001",
-    people: "multiple_person_mm4jktf9", status: "color_mm4v35ba", date: "date_mm4jybye",  timeline: "timerange_mm4jxj08" },
-  { key: "lms",     heading: "LMS",                    id: "18421080121",
-    people: "person",                   status: "status",         date: "date4",          timeline: "timerange_mm54mpqq" },
-  { key: "content", heading: "Content Design",         id: "18420946283",
-    people: "multiple_person_mm518x46", status: "color_mm513668", date: "date_mm51kh32",  timeline: "timerange_mm51x3zw" },
-  { key: "data",    heading: "Data & Evaluation",      id: "18421082069",
-    people: "person",                   status: "status",         date: "date4",          timeline: "timerange_mm54n315" },
-  { key: "comms",   heading: "Comms & Branding",       id: "18421083526",
-    people: "person",                   status: "status",         date: "date4",          timeline: "timerange_mm5fazhm" },
-  { key: "sustain", heading: "Sustainability Roadmap", id: "18424143459",
-    people: "multiple_person_mm5pbstd", status: "color_mm5pfhqn", date: "date_mm5p3hw2",  timeline: null },
-];
-
-/* Monday status label -> the page's three states. Unset counts as not started.
-   Done tasks stay in the snapshot and show in the week view's "Done this week". */
-const STATUS_MAP = {
-  "working on it": "work",
-  "waiting/paused": "wait",
-  "needs review": "wait",
-  "not started": "idle",
-  "": "idle",
-};
-const DONE = new Set(["done"]);
-
-/* Group titles run long in Monday; the page uses these short forms. */
-const CAT_ALIAS = {
-  "Pilot & Launch Readiness": "Pilot & Launch",
-  "Governance & Operations": "Governance & Ops",
-  "Platform and Administation": "Platform & Admin", // sic — the typo is in Monday
-  "Expansion Planning for Future": "Expansion Planning",
-  "LMS Build vs. Buy Research For Future": "LMS Build vs. Buy",
-};
-
-/* Hand-shortened display names, keyed by Monday item id. */
-const NAME_OVERRIDES = {
-  "12530495580": "Develop system of original and updated modules",
-};
 
 /* ---- args ------------------------------------------------------------- */
 const argv = process.argv.slice(2);
@@ -105,151 +45,6 @@ const INPUT = value("--input");
 const OUTPUT = value("--output");
 const HTML_ARG = value("--html");
 const USER_ID_ARG = value("--user-id") ? Number(value("--user-id")) : null;
-
-/* ---- Monday API ------------------------------------------------------- */
-const QUERY = `
-query ($boardId: ID!, $cols: [String!], $cursor: String) {
-  boards(ids: [$boardId]) {
-    columns { id }
-    items_page(limit: 500, cursor: $cursor) {
-      cursor
-      items {
-        id
-        name
-        group { title }
-        column_values(ids: $cols) { id text value }
-      }
-    }
-  }
-}`;
-
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function gql(variables, token) {
-  const ATTEMPTS = 3;
-  for (let attempt = 1; ; attempt++) {
-    let res, body;
-    try {
-      res = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-          "API-Version": API_VERSION,
-        },
-        body: JSON.stringify({ query: QUERY, variables }),
-      });
-      body = await res.json();
-    } catch (err) {
-      if (attempt >= ATTEMPTS) throw err;
-      await sleep(attempt * 2000);
-      continue;
-    }
-    const problem = !res.ok || body.errors || body.error_message;
-    if (problem) {
-      const msg =
-        body?.errors?.map((e) => e.message).join("; ") ||
-        body?.error_message ||
-        `HTTP ${res.status}`;
-      const retryable = res.status === 429 || res.status >= 500;
-      if (retryable && attempt < ATTEMPTS) { await sleep(attempt * 5000); continue; }
-      throw new Error(`Monday API: ${msg}`);
-    }
-    return body.data;
-  }
-}
-
-/* Fetches one board and flattens it to plain records (the same shape --input
-   takes), so the transform below is testable without an API call. */
-async function fetchBoard(board, token) {
-  const cols = [board.people, board.status, board.date, board.timeline].filter(Boolean);
-  const records = [];
-  let cursor = null;
-  let verified = false;
-
-  do {
-    const data = await gql({ boardId: board.id, cols, cursor }, token);
-    const live = data.boards?.[0];
-    if (!live) throw new Error(`Board ${board.heading} (${board.id}) is not visible to this token`);
-
-    if (!verified) {
-      const present = new Set(live.columns.map((c) => c.id));
-      const missing = cols.filter((c) => !present.has(c));
-      if (missing.length) {
-        throw new Error(
-          `Board ${board.heading}: column(s) ${missing.join(", ")} no longer exist — ` +
-            `update BOARDS in scripts/refresh-tasks.mjs`
-        );
-      }
-      verified = true;
-    }
-
-    for (const item of live.items_page.items) {
-      const col = (id) => item.column_values.find((c) => c.id === id) || {};
-      let people = [];
-      try {
-        people = (JSON.parse(col(board.people).value || "{}").personsAndTeams || [])
-          .filter((p) => p.kind === "person")
-          .map((p) => Number(p.id));
-      } catch { /* malformed people cell — treat as unassigned */ }
-
-      let timelineTo = null;
-      if (board.timeline) {
-        try { timelineTo = JSON.parse(col(board.timeline).value || "{}").to || null; } catch { /* ignore */ }
-      }
-
-      records.push({
-        id: item.id,
-        name: item.name,
-        group: item.group?.title || "",
-        status: col(board.status).text || "",
-        date: col(board.date).text || "",
-        timelineTo,
-        people,
-      });
-    }
-    cursor = live.items_page.cursor;
-  } while (cursor);
-
-  return records;
-}
-
-/* ---- transform -------------------------------------------------------- */
-const ISO = /^\d{4}-\d{2}-\d{2}$/;
-
-function toTask(rec, board, userId, unmapped) {
-  if (!rec.people.includes(userId)) return null;
-
-  const label = (rec.status || "").trim();
-  const isDone = DONE.has(label.toLowerCase());
-  let s = isDone ? "done" : STATUS_MAP[label.toLowerCase()];
-  if (!s) { unmapped.add(`${board.heading}: "${label}"`); s = "idle"; }
-
-  const date = (rec.date || "").trim();
-  const due = ISO.test(date) ? date : ISO.test(rec.timelineTo || "") ? rec.timelineTo : null;
-
-  return {
-    b: board.key,
-    cat: CAT_ALIAS[rec.group] || rec.group,
-    n: NAME_OVERRIDES[rec.id] || rec.name,
-    s,
-    due,
-    id: rec.id,
-    shared: rec.people.length > 1,
-  };
-}
-
-/* Board order, then due date (undated last), then name — deterministic so the
-   nightly commit only shows real changes. The page re-sorts client-side. */
-function ordered(tasks) {
-  const rank = new Map(BOARDS.map((b, i) => [b.key, i]));
-  return [...tasks].sort(
-    (a, b) =>
-      rank.get(a.b) - rank.get(b.b) ||
-      (a.due === b.due ? 0 : a.due === null ? 1 : b.due === null ? -1 : a.due < b.due ? -1 : 1) ||
-      a.n.localeCompare(b.n)
-  );
-}
 
 /* JSON.stringify leaves "</script" intact, which would close the inline
    <script> early if an item name ever contained it. */
@@ -286,8 +81,6 @@ function readBlock(html, htmlPath) {
   return { bodyStart, bodyEnd, body: html.slice(bodyStart, bodyEnd) };
 }
 
-/* Light parse of the block already on the page, so the run can report what
-   actually changed rather than just "the file differs". */
 function parseBlock(body) {
   const out = new Map();
   const line = /\{\s*b:"([^"]+)",\s*cat:"((?:[^"\\]|\\.)*)",\s*n:"((?:[^"\\]|\\.)*)",\s*s:"(\w+)",\s*due:(null|"[\d-]+"),\s*id:"(\d+)"(,\s*shared:true)?\s*\}/g;
@@ -320,22 +113,6 @@ function summarize(before, after) {
   return { added, removed, changed };
 }
 
-const todayET = () =>
-  new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
-
-function tasksForUser(byBoard, userId, unmapped) {
-  return ordered(
-    BOARDS.flatMap((board) =>
-      (byBoard[board.key] || []).map((rec) => toTask(rec, board, userId, unmapped)).filter(Boolean)
-    )
-  );
-}
-
 function refreshPage({ slug, name, userId }, byBoard, date, unmapped) {
   const htmlPath = join(ROOT, slug, "index.html");
   let html = readFileSync(htmlPath, "utf8");
@@ -344,7 +121,9 @@ function refreshPage({ slug, name, userId }, byBoard, date, unmapped) {
     [...(html.match(/const BOARDS = \{[\s\S]*?\n {4}\};/)?.[0] || "").matchAll(/^\s{6}(\w+):\s*\{/gm)].map((m) => m[1])
   );
 
-  const tasks = tasksForUser(byBoard, userId, unmapped);
+  const { tasks, unmapped: pageUnmapped } = tasksForUser(byBoard, userId);
+  for (const u of pageUnmapped) unmapped.add(u);
+
   const orphan = [...new Set(tasks.map((t) => t.b))].filter((k) => !pageBoards.has(k));
   if (orphan.length) {
     throw new Error(
@@ -412,9 +191,7 @@ if (HTML_ARG) {
 
 const byBoard = INPUT
   ? JSON.parse(readFileSync(INPUT, "utf8"))
-  : Object.fromEntries(
-      await Promise.all(BOARDS.map(async (b) => [b.key, await fetchBoard(b, token)]))
-    );
+  : await fetchAllBoards(token);
 
 if (OUTPUT) writeFileSync(OUTPUT, JSON.stringify(byBoard, null, 1) + "\n");
 

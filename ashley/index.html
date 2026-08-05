@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Ashley · Focus Page</title>
+  <title>Ashley Â· Focus Page</title>
   <meta name="description" content="Ashley's personal focus page — Monday tasks and quick links." />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="theme-color" content="#f7f3ec" />
@@ -14,30 +14,39 @@
     :root {
       --paper:#f7f3ec; --paper-2:#f1ebdf; --card:#ffffff; --line:#e7e0d3;
       --ink:#1c1a17; --muted:#6b6459; --faint:#6f675c; --terracotta:#b4531f;
-      --ok:#2f855a; --wait:#2b6cb0; --idle:#8a8172;
+      --ok:#276749; --wait:#2b6cb0; --idle:#8a8172;
+      --overdue:#b3261e; --danger:#c0392b; --working:#b07c0a;
+      --terracotta-deep:#9c4519; --on-accent:#ffffff;
       --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
       --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
       --radius:12px; --radius-lg:16px;
       --shadow:0 1px 2px rgba(28,26,23,.04),0 6px 20px -6px rgba(28,26,23,.10);
+      --shadow-lg:0 2px 4px rgba(28,26,23,.05),0 14px 36px -10px rgba(28,26,23,.14);
     }
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme="light"]) {
         --paper:#0e1119; --paper-2:#171d29; --card:#1b222f; --line:#303a4c;
-        --ink:#eef2f9; --muted:#9aa8bc; --faint:#6d7d92; --terracotta:#e6873f;
+        --ink:#eef2f9; --muted:#9aa8bc; --faint:#8494a8; --terracotta:#e6873f;
         --ok:#4ade80; --wait:#60a5fa; --idle:#6d7d92;
+        --overdue:#f4776b; --danger:#ff9b8f; --working:#e0a52e;
+        --terracotta-deep:#e6873f; --on-accent:#101620;
+        --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 16px 40px -12px rgba(0,0,0,.6);
         --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px -8px rgba(0,0,0,.5);
       }
     }
     :root[data-theme="dark"] {
       --paper:#0e1119; --paper-2:#171d29; --card:#1b222f; --line:#303a4c;
-      --ink:#eef2f9; --muted:#9aa8bc; --faint:#6d7d92; --terracotta:#e6873f;
+      --ink:#eef2f9; --muted:#9aa8bc; --faint:#8494a8; --terracotta:#e6873f;
       --ok:#4ade80; --wait:#60a5fa; --idle:#6d7d92;
+      --overdue:#f4776b; --danger:#ff9b8f; --working:#e0a52e;
+      --terracotta-deep:#e6873f; --on-accent:#101620;
+      --shadow-lg:0 2px 4px rgba(0,0,0,.4),0 16px 40px -12px rgba(0,0,0,.6);
       --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px -8px rgba(0,0,0,.5);
     }
 
     * { box-sizing:border-box; }
     html { -webkit-text-size-adjust:100%; }
-    html,body { overflow-x:hidden; }
+    html,body { overflow-x:clip; }
     body {
       margin:0; font-family:var(--sans); color:var(--ink); line-height:1.5;
       background:radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb,var(--terracotta) 8%,transparent), transparent), var(--paper);
@@ -46,6 +55,13 @@
     }
     .wrap { max-width:1100px; margin:0 auto; }
     a { color:inherit; }
+    .skip-link {
+      position:absolute; left:16px; top:-100%; z-index:100; padding:10px 14px;
+      border-radius:var(--radius); background:var(--card); color:var(--ink);
+      font-weight:650; border:1px solid var(--line); box-shadow:var(--shadow);
+      text-decoration:none;
+    }
+    .skip-link:focus { position:fixed; top:max(16px,env(safe-area-inset-top)); left:16px; outline:none; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
     /* ---- header ---------------------------------------------------- */
@@ -141,7 +157,7 @@
     .bucket-count { margin-left:auto; font-size:12.5px; color:var(--muted); background:var(--card);
       border-radius:999px; padding:2px 9px; font-variant-numeric:tabular-nums; }
     .bucket-dot { width:9px; height:9px; border-radius:50%; flex:none; }
-    .bucket.b-overdue .bucket-dot { background:#d64545; }
+    .bucket.b-overdue .bucket-dot { background:var(--overdue); }
     .bucket.b-soon .bucket-dot { background:var(--terracotta); }
     .bucket.b-next .bucket-dot { background:var(--wait); }
     .bucket.b-later .bucket-dot { background:var(--idle); }
@@ -162,11 +178,11 @@
     .t-area .t-cat { display:block; font-size:13px; font-weight:600; color:var(--ink); line-height:1.3; }
     .t-area .t-board-sub { display:block; font-size:11.5px; color:var(--faint); }
     .t-due { white-space:nowrap; font-variant-numeric:tabular-nums; font-size:13.5px; color:var(--muted); }
-    .t-due.od { color:#d64545; font-weight:650; }
-    .t-due.warn { color:var(--terracotta); font-weight:600; }
+    .t-due.od { color:var(--overdue); font-weight:650; }
+    .t-due.warn { color:var(--terracotta-deep); font-weight:600; }
     .status-pill { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; }
     .status-pill .sd { width:8px; height:8px; border-radius:50%; flex:none; }
-    .st-work .sd { background:#e0a52e; } .st-work { color:var(--ink); }
+    .st-work .sd { background:var(--working); } .st-work { color:var(--ink); }
     .st-wait .sd { background:var(--wait); }
     .st-idle .sd { background:var(--idle); }
     .st-done .sd { background:var(--ok); } .st-done { color:var(--ok); }
@@ -178,9 +194,12 @@
     /* ---- view toggle (List / Board) -------------------------------- */
     .head-tools { margin-left:auto; display:flex; align-items:center; gap:12px; }
     .head-tools .panel-note { margin-left:0; }
+    .snap-row { display:flex; align-items:center; gap:6px; flex-shrink:0; }
+    @keyframes task-spin { to { transform: rotate(360deg); } }
+    .mini-btn.spinning svg { animation: task-spin 0.85s linear infinite; }
     .view-toggle { display:inline-flex; background:var(--paper-2); border:1px solid var(--line); border-radius:999px; padding:3px; }
     .vbtn { font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; border:0; background:none; color:var(--muted); padding:5px 12px; border-radius:999px; transition:background .15s, color .15s; }
-    .vbtn[aria-pressed="true"] { background:var(--terracotta); color:#fff; }
+    .vbtn[aria-pressed="true"] { background:var(--terracotta); color:var(--on-accent); }
     @media (max-width:520px){ .head-tools { width:100%; justify-content:space-between; } .vbtn { padding:5px 10px; font-size:12px; } }
 
     /* ---- week view (focused: just this week) ----------------------- */
@@ -209,7 +228,7 @@
     .wk-day-n { margin-left:auto; font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
     .wk-group.is-today .wk-dow { color:var(--terracotta); }
     .wk-group.is-today .wk-day-head { border-bottom-color:color-mix(in srgb,var(--terracotta) 45%,var(--line)); }
-    .wk-group.is-overdue .wk-dow { color:#d64545; }
+    .wk-group.is-overdue .wk-dow { color:var(--overdue); }
     .wk-group.is-done .wk-dow { color:var(--ok); }
     .wk-group.is-done .wk-day-head { border-bottom-color:color-mix(in srgb,var(--ok) 35%,var(--line)); }
 
@@ -232,7 +251,7 @@
     .wk-meta { display:block; font-size:12px; color:var(--muted); margin-top:2px; }
     .wk-right { flex:none; text-align:right; }
     .wk-due { display:block; font-size:12px; color:var(--faint); margin-top:3px; font-variant-numeric:tabular-nums; }
-    .wk-due.od { color:#d64545; font-weight:650; }
+    .wk-due.od { color:var(--overdue); font-weight:650; }
 
     .wk-ongoing { margin-top:18px; border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; background:var(--paper-2); }
     .wk-ongoing > summary {
@@ -267,7 +286,7 @@
     .kcol-head .kd { width:9px; height:9px; border-radius:50%; flex:none; }
     .kcol-head .kn { margin-left:auto; background:var(--card); border-radius:999px; padding:1px 8px;
       font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
-    .kcol.k-work .kd { background:#e0a52e; } .kcol.k-wait .kd { background:var(--wait); } .kcol.k-idle .kd { background:var(--idle); }
+    .kcol.k-work .kd { background:var(--working); } .kcol.k-wait .kd { background:var(--wait); } .kcol.k-idle .kd { background:var(--idle); }
     .kcard { display:block; text-decoration:none; color:inherit; background:var(--card);
       border:1px solid var(--line); border-left:3px solid var(--accent,var(--line)); border-radius:10px;
       padding:10px 12px; margin-bottom:8px; transition:transform .13s, border-color .13s, box-shadow .13s; }
@@ -277,7 +296,7 @@
     .kcard-meta { display:flex; align-items:flex-start; gap:8px; margin-top:7px; font-size:12px; color:var(--muted); }
     .kcard-board { min-width:0; flex:1; line-height:1.35; }
     .kcard-due { margin-left:auto; flex:none; white-space:nowrap; font-variant-numeric:tabular-nums; }
-    .kcard-due.od { color:#d64545; font-weight:650; } .kcard-due.warn { color:var(--terracotta); font-weight:600; }
+    .kcard-due.od { color:var(--overdue); font-weight:650; } .kcard-due.warn { color:var(--terracotta); font-weight:600; }
     .kcol-empty { color:var(--faint); font-size:13px; text-align:center; padding:14px 6px; }
 
     /* ---- calendar view --------------------------------------------- */
@@ -326,14 +345,6 @@
     .cal-undated-list .ud-board { font-size:12px; color:var(--muted); white-space:nowrap; }
     @media (max-width:720px){ .cal-day { min-height:58px; } .cal-task { font-size:10px; } }
 
-    .btn {
-      font:inherit; font-size:14px; font-weight:650; cursor:pointer; border:1px solid var(--terracotta);
-      background:var(--terracotta); color:#fff; border-radius:var(--radius); padding:10px 16px; white-space:nowrap;
-      transition:transform .14s, opacity .14s; text-decoration:none; display:inline-block;
-    }
-    .btn:hover { transform:translateY(-1px); }
-
-
     /* ---- shared empty state (pins, list, tasks) --------------------- */
     .list-empty { color:var(--faint); font-size:14px; text-align:center; padding:16px 8px; }
 
@@ -373,15 +384,19 @@
     /* ---- my pins ---------------------------------------------------- */
     .pin-row { display:flex; align-items:center; gap:8px; }
     .pin-row .links { flex:1; min-width:0; }
-    .pin-actions { display:flex; gap:4px; flex:none; }
+    .pin-actions { display:flex; gap:6px; flex:none; }
     .mini-btn {
       font:inherit; font-size:12px; font-weight:650; cursor:pointer; color:var(--muted);
       background:var(--paper-2); border:1px solid var(--line); border-radius:8px;
       padding:5px 9px; line-height:1.2; transition:border-color .15s, color .15s;
     }
     .mini-btn:hover { color:var(--ink); border-color:color-mix(in srgb,var(--terracotta) 40%,var(--line)); }
-    .mini-btn[aria-pressed="true"] { color:var(--terracotta); border-color:color-mix(in srgb,var(--terracotta) 45%,var(--line)); }
-    .mini-btn.icon-only { padding:5px 7px; }
+    .mini-btn[aria-pressed="true"] { color:var(--terracotta-deep); border-color:color-mix(in srgb,var(--terracotta) 45%,var(--line)); }
+    .mini-btn.icon-only {
+      display:inline-flex; align-items:center; justify-content:center;
+      line-height:0; min-width:28px; min-height:28px; padding:5px 7px;
+    }
+    .mini-btn.icon-only svg { width:14px; height:14px; display:block; flex-shrink:0; }
     .head-actions { margin-left:auto; display:flex; gap:6px; align-items:center; }
 
     .pin-manage { display:flex; align-items:center; gap:6px; padding:6px 0; }
@@ -412,9 +427,9 @@
     .icon-pick[aria-pressed="true"] { color:var(--terracotta); border-color:var(--terracotta); background:color-mix(in srgb,var(--terracotta) 10%,var(--card)); }
     .form-actions { display:flex; gap:8px; align-items:center; }
     .btn-sm { font:inherit; font-size:13px; font-weight:650; cursor:pointer; border-radius:8px; padding:7px 13px; }
-    .btn-primary { background:var(--terracotta); border:1px solid var(--terracotta); color:#fff; }
+    .btn-primary { background:var(--terracotta); border:1px solid var(--terracotta); color:var(--on-accent); }
     .btn-ghost { background:transparent; border:1px solid var(--line); color:var(--muted); }
-    .btn-danger { background:transparent; border:1px solid var(--line); color:#c0392b; margin-left:auto; }
+    .btn-danger { background:transparent; border:1px solid var(--line); color:var(--danger); margin-left:auto; }
 
     /* ---- my list ----------------------------------------------------- */
     .todo-add { display:flex; gap:8px; margin-bottom:12px; }
@@ -432,7 +447,7 @@
     .todo:hover { border-color:color-mix(in srgb,var(--terracotta) 30%,var(--line)); }
     .todo-check {
       flex:none; width:18px; height:18px; margin-top:1px; border-radius:5px; cursor:pointer; padding:0;
-      border:1.5px solid var(--idle); background:transparent; display:grid; place-items:center; color:#fff;
+      border:1.5px solid var(--idle); background:transparent; display:grid; place-items:center; color:var(--on-accent);
     }
     .todo-check svg { width:12px; height:12px; opacity:0; }
     .todo.done .todo-check { background:var(--ok); border-color:var(--ok); }
@@ -447,9 +462,9 @@
       font:inherit; font-size:14px; flex:1; min-width:0; color:var(--ink);
       background:var(--card); border:1px solid var(--terracotta); border-radius:6px; padding:3px 6px;
     }
-    .todo-edit:focus { outline:none; }
+    .todo-edit:focus { outline:none; box-shadow:0 0 0 3px color-mix(in srgb,var(--terracotta) 35%,transparent); }
     .todo-actions {
-      flex:none; display:flex; align-items:center; gap:2px;
+      flex:none; display:flex; align-items:center; gap:6px;
       opacity:0; transition:opacity .15s;
     }
     .todo:hover .todo-actions, .todo-actions:focus-within { opacity:1; }
@@ -458,7 +473,7 @@
       flex:none; background:none; border:0; cursor:pointer; color:var(--faint);
       font-size:15px; line-height:1; padding:2px 4px; border-radius:6px; transition:color .15s;
     }
-    .todo-del:hover { color:#c0392b; }
+    .todo-del:hover { color:var(--danger); }
     .todo-foot { display:flex; align-items:center; gap:10px; margin-top:12px; font-size:12.5px; color:var(--faint); }
     .todo-foot[hidden] { display:none; }  /* display:flex would otherwise beat [hidden] */
     .link-btn { font:inherit; font-size:12.5px; background:none; border:0; padding:0; cursor:pointer;
@@ -471,7 +486,7 @@
     .sync-note[data-state="saving"] .sync-dot { background:var(--wait); }
     .sync-note[data-state="saved"]  .sync-dot { background:var(--ok); }
     .sync-note[data-state="local"]  .sync-dot { background:var(--idle); }
-    .sync-note[data-state="error"]  .sync-dot { background:#c0392b; }
+    .sync-note[data-state="error"]  .sync-dot { background:var(--danger); }
 
     footer { margin-top:28px; padding-top:18px; border-top:1px solid var(--line); color:var(--muted); font-size:13.5px; text-align:center; }
     footer a { color:var(--ink); font-weight:650; text-decoration:underline; text-underline-offset:2px; }
@@ -482,7 +497,52 @@
       header.hero { grid-template-columns:1fr; gap:12px; padding:16px; }
       .head-meta { text-align:left; }
       .panel { padding:14px 12px; }
+      .todo, .wk-task, .kcard, .links a, .cal-undated-list a { min-height:48px; }
+      .vbtn { padding:7px 12px; }
     }
+    /* ---- focus states ------------------------------------------------ */
+    /* One ring for every control, matching the Command Center. Each item's
+       own --accent tints it, so the ring belongs to the thing you focused. */
+    .vbtn:focus-visible, .mini-btn:focus-visible, .btn-sm:focus-visible,
+    .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
+    .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
+    .wk-nav button:focus-visible, .cal-nav button:focus-visible,
+    .wk-empty .wk-jump:focus-visible, .wk-task:focus-visible,
+    .kcard:focus-visible, .cal-task:focus-visible, .t-name a:focus-visible,
+    .cal-undated-list a:focus-visible, .bucket > summary:focus-visible,
+    .wk-ongoing > summary:focus-visible, .cal-undated > summary:focus-visible {
+      outline:none;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--terracotta)) 35%,transparent);
+    }
+    /* Pins carry their colour on --link-accent rather than --accent. */
+    .links a:focus-visible {
+      outline:none;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--link-accent) 40%,transparent);
+    }
+    .todo-text:focus-visible {
+      outline:none; border-radius:6px;
+      box-shadow:0 0 0 3px color-mix(in srgb,var(--terracotta) 35%,transparent);
+    }
+    .filter-select:focus-visible { box-shadow:0 0 0 3px color-mix(in srgb,var(--terracotta) 30%,transparent); }
+
+    /* ---- touch ------------------------------------------------------- */
+    /* The row actions are revealed by hover on pointer devices. Touch has no
+       hover, so without this they stay invisible while still being tappable â€”
+       an invisible delete button sitting under your thumb. */
+    @media (hover: none) {
+      .todo-actions { opacity:1; }
+      .wk-task:hover, .kcard:hover, .links a:hover, .icon-btn:hover,
+      .wk-nav button:hover, .cal-nav button:hover { transform:none; }
+    }
+    /* Small controls keep their drawn size and gain a 24px hit area. */
+    .todo-check, .todo-del, .todo-actions .mini-btn, .pin-actions .mini-btn { position:relative; }
+    .todo-check::after, .todo-del::after,
+    .todo-actions .mini-btn::after, .pin-actions .mini-btn::after {
+      content:""; position:absolute; inset:-3px;
+    }
+    .mini-btn:disabled { opacity:.45; cursor:default; }
+    .mini-btn:disabled:hover { color:var(--muted); border-color:var(--line); }
+
     @media (prefers-reduced-motion: reduce){ * { transition:none !important; } }
   </style>
   <script>
@@ -490,10 +550,11 @@
   </script>
 </head>
 <body>
+  <a class="skip-link" href="#focus-main">Skip to your tasks</a>
   <div class="wrap">
     <header class="hero">
       <div>
-        <p class="eyebrow"><span class="tick" aria-hidden="true"></span> Personal · MLRI Training Unit</p>
+        <p class="eyebrow"><span class="tick" aria-hidden="true"></span> Personal Â· MLRI Training Unit</p>
         <h1>Ashley's Focus Page</h1>
       </div>
       <div class="head-right">
@@ -512,7 +573,7 @@
       </a>
     </div>
 
-    <div class="cols">
+    <main class="cols" id="focus-main">
       <!-- LEFT: tasks -->
       <div class="col">
         <section class="panel">
@@ -525,7 +586,13 @@
                 <button class="vbtn" type="button" data-view="board" aria-pressed="false">Board</button>
                 <button class="vbtn" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
               </div>
-              <span class="panel-note" id="snapNote"></span>
+              <span class="snap-row">
+                <button class="mini-btn icon-only" type="button" id="taskRefresh"
+                        title="Refresh from Monday" aria-label="Refresh tasks from Monday">
+                  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+                </button>
+                <span class="panel-note" id="snapNote"></span>
+              </span>
             </div>
           </div>
           <div class="filter-bar">
@@ -552,10 +619,10 @@
         <section class="panel">
           <div class="panel-head">
             <h2 class="panel-title">My List</h2>
-            <span class="panel-note" id="todoCount"></span>
+            <span class="panel-note" id="todoCount" role="status" aria-live="polite"></span>
           </div>
           <form class="todo-add" id="todoAdd">
-            <input id="todoInput" type="text" placeholder="Add something…" maxlength="300"
+            <input id="todoInput" type="text" placeholder="Add somethingâ€¦" maxlength="300"
                    autocomplete="off" aria-label="Add a list item" />
             <button class="btn-sm btn-primary" type="submit">Add</button>
           </form>
@@ -576,26 +643,29 @@
           <div id="pinEditor"></div>
         </section>
       </div>
-    </div>
+    </main>
 
     <footer>
       Private focus page
-      <span id="syncSlot"></span>
+      <span id="syncSlot" role="status" aria-live="polite"></span>
     </footer>
   </div>
 
   <script>
     /* =====================================================================
-       MY MONDAY TASKS — generated from the shared LACE boards (Operations,
+       MY MONDAY TASKS â€” generated from the shared LACE boards (Operations,
        LMS, Content Design, Data & Evaluation, Comms & Branding,
        Sustainability Roadmap) by scripts/refresh-tasks.mjs, which runs
-       nightly via .github/workflows/refresh-tasks.yml.
+       nightly via .github/workflows/refresh-tasks.yml. Use the refresh
+       button (or GET /api/tasks/:slug) to pull live data between runs.
 
-       Don't hand-edit the TASKS block below — the next run overwrites it.
+       Don't hand-edit the TASKS block below â€” the next run overwrites it.
        To shorten a task name or a category label, or to teach it a new
        Monday status, edit the maps at the top of the script instead.
        ===================================================================== */
     const SNAPSHOT_DATE = "2026-08-04";
+    let snapshotDate = SNAPSHOT_DATE;
+    let snapshotLive = false;
 
     const BOARDS = {
       ops:     { label: "Operations",       id: "18418833001" },
@@ -609,7 +679,7 @@
 
     // status: "work" | "wait" | "idle" | "done"   due: ISO date or null   shared: true if co-owned
     // cat: the Monday board group ("category") the item sits in
-    const TASKS = [
+    let TASKS = [
       // >>> TASKS-START — generated by scripts/refresh-tasks.mjs, do not hand-edit
       // ---- Operations ----
       { b:"ops", cat:"Admin", n:"Complete Brightspace training session hours", s:"work", due:null, id:"12362756557", shared:true },
@@ -647,22 +717,22 @@
     function parseDue(iso){ if(!iso) return null; const [y,m,d]=iso.split("-").map(Number); return new Date(y, m-1, d); }
     function daysOut(iso){ const dt=parseDue(iso); return dt ? Math.round((dt - today)/MS_DAY) : null; }
     function fmtDue(iso){
-      if(!iso) return "—";
+      if(!iso) return "â€”";
       const dt = parseDue(iso);
       const s = dt.toLocaleDateString(undefined, { month:"short", day:"numeric" });
       const n = daysOut(iso);
-      if (n < 0) return s + " · overdue";
-      if (n === 0) return s + " · today";
-      if (n <= 30) return s + " · " + n + "d";
+      if (n < 0) return s + " Â· overdue";
+      if (n === 0) return s + " Â· today";
+      if (n <= 30) return s + " Â· " + n + "d";
       return s;
     }
     function toIso(d){
       return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
     }
-    const STATUS_COLOR = { work:"#e0a52e", wait:"var(--wait)", idle:"var(--idle)", done:"var(--ok)" };
+    const STATUS_COLOR = { work:"var(--working)", wait:"var(--wait)", idle:"var(--idle)", done:"var(--ok)" };
     const TODAY_ISO = toIso(today);
     function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
-    // Weeks run Monday → Sunday.
+    // Weeks run Monday â†’ Sunday.
     function startOfWeek(d){ return addDays(d, -((d.getDay() + 6) % 7)); }
     const THIS_WEEK = startOfWeek(today);
     function weekIndexOf(iso){
@@ -673,7 +743,7 @@
     const BUCKETS = [
       { key:"overdue", cls:"b-overdue", label:"Overdue",   open:true,  test:n => n!==null && n<0 },
       { key:"soon",    cls:"b-soon",    label:"Due soon",  open:true,  test:n => n!==null && n>=0 && n<=30, note:"next 30 days" },
-      { key:"next",    cls:"b-next",    label:"Coming up", open:true,  test:n => n!==null && n>30 && n<=90, note:"31–90 days" },
+      { key:"next",    cls:"b-next",    label:"Coming up", open:true,  test:n => n!==null && n>30 && n<=90, note:"31â€“90 days" },
       { key:"later",   cls:"b-later",   label:"Later",     open:false, test:n => n!==null && n>90 },
       { key:"none",    cls:"b-none",    label:"No due date",open:false, test:n => n===null },
     ];
@@ -684,7 +754,7 @@
     let view = "week";
     let calMonth = today.getMonth();
     let calYear = today.getFullYear();
-    let weekOffset = 0;               // 0 = this week, 1 = next week, …
+    let weekOffset = 0;               // 0 = this week, 1 = next week, â€¦
     try {
       const saved = localStorage.getItem("ashley-view-v2");
       if (VIEWS.includes(saved)) view = saved;
@@ -789,8 +859,8 @@
         const sum = document.createElement("summary");
         sum.innerHTML =
           '<span class="bucket-dot" aria-hidden="true"></span>' +
-          '<span class="bucket-chev" aria-hidden="true">›</span>' +
-          '<span>' + bk.label + (bk.note ? ' <span style="color:var(--faint);font-weight:400;font-size:12.5px;">· '+bk.note+'</span>' : '') + '</span>' +
+          '<span class="bucket-chev" aria-hidden="true">â€º</span>' +
+          '<span>' + bk.label + (bk.note ? ' <span style="color:var(--faint);font-weight:400;font-size:12.5px;">Â· '+bk.note+'</span>' : '') + '</span>' +
           '<span class="bucket-count">' + items.length + '</span>';
         d.appendChild(sum);
 
@@ -832,7 +902,7 @@
         bucketsEl.appendChild(d);
       }
       if (!shown){
-        bucketsEl.innerHTML = '<p class="list-empty">Nothing in this filter. 🎉</p>';
+        bucketsEl.innerHTML = '<p class="list-empty">Nothing in this filter. ðŸŽ‰</p>';
       }
     }
 
@@ -864,7 +934,7 @@
         '</span>';
       a.querySelector(".wk-name").textContent = t.n;
       a.querySelector(".wk-meta").textContent =
-        t.cat + " · " + BOARDS[t.b].label + (t.shared ? " · shared" : "");
+        t.cat + " Â· " + BOARDS[t.b].label + (t.shared ? " Â· shared" : "");
       if (opts && opts.showDue) a.querySelector(".wk-due").textContent = fmtDue(t.due);
       return a;
     }
@@ -909,13 +979,13 @@
       const titles = document.createElement("div");
       titles.className = "wk-titles";
       const sameMonth = start.getMonth() === end.getMonth();
-      const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " – " +
+      const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " â€“ " +
         end.toLocaleDateString(undefined, sameMonth ? { day:"numeric" } : { month:"short", day:"numeric" });
       const count = overdue.length + inWeek.length;
       titles.innerHTML = '<div class="wk-range"></div><div class="wk-rel"></div>';
       titles.querySelector(".wk-range").textContent = range;
       titles.querySelector(".wk-rel").innerHTML =
-        '<b>' + relWeekLabel(weekOffset) + '</b> · ' +
+        '<b>' + relWeekLabel(weekOffset) + '</b> Â· ' +
         (count ? count + (count === 1 ? " task" : " tasks") + (isCurrent ? " to do" : " due") : "nothing due");
       const nav = document.createElement("div");
       nav.className = "wk-nav";
@@ -926,10 +996,10 @@
         nav.appendChild(nowBtn);
       }
       const prev = document.createElement("button");
-      prev.type = "button"; prev.setAttribute("aria-label", "Previous week"); prev.textContent = "‹";
+      prev.type = "button"; prev.setAttribute("aria-label", "Previous week"); prev.textContent = "â€¹";
       prev.addEventListener("click", () => { weekOffset--; renderWeek(); });
       const next = document.createElement("button");
-      next.type = "button"; next.setAttribute("aria-label", "Next week"); next.textContent = "›";
+      next.type = "button"; next.setAttribute("aria-label", "Next week"); next.textContent = "â€º";
       next.addEventListener("click", () => { weekOffset++; renderWeek(); });
       nav.append(prev, next);
       head.append(titles, nav);
@@ -956,12 +1026,12 @@
         ));
       }
 
-      /* empty state — offer a jump to the next week that has anything */
+      /* empty state â€” offer a jump to the next week that has anything */
       if (!overdue.length && !inWeek.length){
         const empty = document.createElement("div");
         empty.className = "wk-empty";
         const p = document.createElement("p");
-        p.textContent = weekOffset < 0 ? "Nothing was due this week." : "Nothing due this week. 🎉";
+        p.textContent = weekOffset < 0 ? "Nothing was due this week." : "Nothing due this week. ðŸŽ‰";
         empty.appendChild(p);
         const upcoming = tasks.filter(t => t.due && t.due > endIso).sort(byDue)[0];
         if (upcoming){
@@ -969,7 +1039,7 @@
           jump.type = "button"; jump.className = "wk-jump";
           const target = weekIndexOf(upcoming.due);
           jump.textContent = "Next up: " + parseDue(upcoming.due)
-            .toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " →";
+            .toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " â†’";
           jump.addEventListener("click", () => { weekOffset = target; renderWeek(); });
           empty.appendChild(jump);
         }
@@ -977,17 +1047,17 @@
       }
 
       if (doneInWeek.length){
-        weekEl.appendChild(weekGroup("is-done", "Done this week", "checked off ✓", doneInWeek, { showDue:true }));
+        weekEl.appendChild(weekGroup("is-done", "Done this week", "checked off âœ“", doneInWeek, { showDue:true }));
       }
 
-      /* things in flight with no date — current week only */
+      /* things in flight with no date â€” current week only */
       if (ongoing.length){
         const det = document.createElement("details");
         det.className = "wk-ongoing";
         det.open = false;
         const sum = document.createElement("summary");
-        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span>' +
-          '<span>In progress · no due date</span>' +
+        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">â€º</span>' +
+          '<span>In progress Â· no due date</span>' +
           '<span class="bucket-count">' + ongoing.length + '</span>';
         det.appendChild(sum);
         const list = document.createElement("div");
@@ -1002,7 +1072,7 @@
     const COLS = [
       { k:"idle", label:"Not started",   cls:"k-idle", color:"var(--idle)" },
       { k:"wait", label:"Waiting",       cls:"k-wait", color:"var(--wait)" },
-      { k:"work", label:"Working on it", cls:"k-work", color:"#e0a52e" },
+      { k:"work", label:"Working on it", cls:"k-work", color:"var(--working)" },
     ];
     function renderKanban(){
       kanbanEl.innerHTML = "";
@@ -1032,7 +1102,7 @@
             '<div class="kcard-meta"><span class="kcard-board"></span>' +
             '<span class="kcard-due ' + dueCls + '"></span></div>';
           a.querySelector(".kcard-name").textContent = t.n;
-          a.querySelector(".kcard-board").textContent = t.cat + " · " + BOARDS[t.b].label + (t.shared ? " · shared" : "");
+          a.querySelector(".kcard-board").textContent = t.cat + " Â· " + BOARDS[t.b].label + (t.shared ? " Â· shared" : "");
           a.querySelector(".kcard-due").textContent = fmtDue(t.due);
           c.appendChild(a);
         }
@@ -1049,7 +1119,7 @@
       calendarEl.innerHTML = "";
       const tasks = visibleTasks();
       if (!tasks.length){
-        calendarEl.innerHTML = '<p class="list-empty">Nothing in this filter. 🎉</p>';
+        calendarEl.innerHTML = '<p class="list-empty">Nothing in this filter. ðŸŽ‰</p>';
         return;
       }
 
@@ -1063,14 +1133,14 @@
       const nav = document.createElement("div");
       nav.className = "cal-nav";
       const prev = document.createElement("button");
-      prev.type = "button"; prev.setAttribute("aria-label", "Previous month"); prev.textContent = "‹";
+      prev.type = "button"; prev.setAttribute("aria-label", "Previous month"); prev.textContent = "â€¹";
       prev.addEventListener("click", () => {
         calMonth--;
         if (calMonth < 0){ calMonth = 11; calYear--; }
         renderCalendar();
       });
       const next = document.createElement("button");
-      next.type = "button"; next.setAttribute("aria-label", "Next month"); next.textContent = "›";
+      next.type = "button"; next.setAttribute("aria-label", "Next month"); next.textContent = "â€º";
       next.addEventListener("click", () => {
         calMonth++;
         if (calMonth > 11){ calMonth = 0; calYear++; }
@@ -1139,7 +1209,7 @@
         det.className = "cal-undated";
         det.open = undated.length <= 8;
         const sum = document.createElement("summary");
-        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span><span>No due date</span><span class="bucket-count">' + undated.length + '</span>';
+        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">â€º</span><span>No due date</span><span class="bucket-count">' + undated.length + '</span>';
         det.appendChild(sum);
         const ul = document.createElement("ul");
         ul.className = "cal-undated-list";
@@ -1177,12 +1247,49 @@
     document.querySelectorAll(".vbtn").forEach(b =>
       b.addEventListener("click", () => setView(b.dataset.view)));
 
-    /* ---- snapshot note --------------------------------------------- */
-    (function(){
-      const [y,m,d] = SNAPSHOT_DATE.split("-").map(Number);
+    /* ---- snapshot note + live refresh ------------------------------ */
+    const snapNote = document.getElementById("snapNote");
+    const taskRefreshBtn = document.getElementById("taskRefresh");
+    const pageSlug = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "ashley";
+
+    function paintSnapNote(){
+      const [y,m,d] = snapshotDate.split("-").map(Number);
       const label = new Date(y, m-1, d).toLocaleDateString(undefined, { month:"long", day:"numeric" });
-      document.getElementById("snapNote").textContent = "snapshot · " + label;
-    })();
+      snapNote.textContent = (snapshotLive ? "live Â· " : "snapshot Â· ") + label;
+    }
+    paintSnapNote();
+
+    taskRefreshBtn.addEventListener("click", async () => {
+      if (taskRefreshBtn.disabled) return;
+      taskRefreshBtn.disabled = true;
+      taskRefreshBtn.classList.add("spinning");
+      const prevNote = snapNote.textContent;
+      snapNote.textContent = "refreshingâ€¦";
+      try {
+        const res = await fetch("/api/tasks/" + pageSlug, { cache: "no-store" });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(data.error || ("HTTP " + res.status));
+        }
+        TASKS.length = 0;
+        TASKS.push(...data.tasks);
+        snapshotDate = data.snapshotDate || snapshotDate;
+        snapshotLive = true;
+        paintSnapNote();
+        refreshTasks();
+      } catch (err) {
+        snapNote.textContent = "refresh failed";
+        taskRefreshBtn.title = String(err.message || err);
+        setTimeout(() => {
+          paintSnapNote();
+          taskRefreshBtn.title = "Refresh from Monday";
+        }, 4000);
+      } finally {
+        taskRefreshBtn.disabled = false;
+        taskRefreshBtn.classList.remove("spinning");
+        if (snapNote.textContent === "refreshingâ€¦") snapNote.textContent = prevNote;
+      }
+    });
 
     /* ---- theme toggle (shares tu-theme with the main site) --------- */
     const root = document.documentElement;
@@ -1217,13 +1324,13 @@
     })();
 
     /* =================================================================
-       My Pins + My List — local-first, synced to Cloudflare KV.
+       My Pins + My List â€” local-first, synced to Cloudflare KV.
 
        localStorage is what the UI renders from, so it paints instantly and
        keeps working offline or before the KV binding exists. KV is the sync
        layer: pull once on load, debounced push on change, last-write-wins on
        the `updated` stamp. Rendering from local rather than from the network
-       is also what sidesteps KV's eventual consistency — we never wait on a
+       is also what sidesteps KV's eventual consistency â€” we never wait on a
        read that might still be serving the previous value.
 
        Everything degrades to local-only if /api/data/* is missing.
@@ -1288,7 +1395,7 @@
     const rid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4);
     const nowISO = () => new Date().toISOString();
 
-    /* A pin url becomes an href, so anything but http(s) is dropped — the
+    /* A pin url becomes an href, so anything but http(s) is dropped â€” the
        same gate the Worker applies, repeated here because data can also
        arrive straight from localStorage. */
     function safeUrl(v) {
@@ -1334,7 +1441,81 @@
     syncEl.className = "sync-note";
     syncEl.hidden = true;
     syncEl.innerHTML = '<span class="sync-dot"></span><span class="sync-text"></span>';
-    document.getElementById("syncSlot").append(" · ", syncEl);
+    document.getElementById("syncSlot").append(" Â· ", syncEl);
+
+    function dataEqual(a, b) {
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function mergeTodos(local, remote, localWins) {
+      const byId = new Map();
+      for (const t of remote) byId.set(t.id, { ...t });
+      for (const t of local) {
+        const r = byId.get(t.id);
+        if (!r) { byId.set(t.id, { ...t }); continue; }
+        byId.set(t.id, {
+          id: t.id,
+          text: localWins ? (t.text || r.text) : (r.text || t.text),
+          done: r.done || t.done,
+          created: r.created || t.created,
+        });
+      }
+      const out = [];
+      const seen = new Set();
+      for (const t of local) {
+        if (byId.has(t.id)) { out.push(byId.get(t.id)); seen.add(t.id); }
+      }
+      for (const t of remote) {
+        if (!seen.has(t.id)) out.push(byId.get(t.id));
+      }
+      return out;
+    }
+
+    function mergePins(local, remote, localWins) {
+      const byId = new Map();
+      for (const p of remote) byId.set(p.id, { ...p });
+      for (const p of local) {
+        const r = byId.get(p.id);
+        if (!r) { byId.set(p.id, { ...p }); continue; }
+        byId.set(p.id, {
+          id: p.id,
+          label: localWins ? (p.label || r.label) : (r.label || p.label),
+          url: localWins ? (p.url || r.url) : (r.url || p.url),
+          icon: localWins ? (p.icon || r.icon) : (r.icon || p.icon),
+          color: localWins ? (p.color || r.color) : (r.color || p.color),
+        });
+      }
+      const out = [];
+      const seen = new Set();
+      for (const p of local) {
+        if (byId.has(p.id)) { out.push(byId.get(p.id)); seen.add(p.id); }
+      }
+      for (const p of remote) {
+        if (!seen.has(p.id)) out.push(byId.get(p.id));
+      }
+      return out;
+    }
+
+    function mergeData(local, remote) {
+      const localWins = (local.updated || "") >= (remote.updated || "");
+      return normalize({
+        v: 1,
+        pins: mergePins(local.pins, remote.pins, localWins),
+        todos: mergeTodos(local.todos, remote.todos, localWins),
+        updated: [local.updated, remote.updated].filter(Boolean).sort().pop() || null,
+      });
+    }
+
+    function applyData(next, opts) {
+      const prev = JSON.stringify(myData);
+      myData = next;
+      if (JSON.stringify(myData) === prev) return false;
+      if (opts && opts.bump) myData.updated = nowISO();
+      saveLocal();
+      renderPins();
+      renderTodos();
+      return true;
+    }
 
     function setSync(state, text) {
       if (remoteLive === false && state !== "local") return;
@@ -1352,13 +1533,19 @@
       myData.updated = nowISO();
       saveLocal();
       clearTimeout(pushTimer);
-      if (remoteLive !== false) setSync("saving", "Saving…");
+      if (remoteLive !== false) setSync("saving", "Savingâ€¦");
       pushTimer = setTimeout(push, PUSH_DELAY);
     }
 
     async function push() {
       if (remoteLive === false) return;
       try {
+        const getRes = await fetch(API_URL, { headers: { "Accept": "application/json" } });
+        if (getRes.ok) {
+          const remote = normalize(await getRes.json());
+          const merged = mergeData(myData, remote);
+          if (!dataEqual(merged, myData)) applyData(merged, { bump: true });
+        }
         const res = await fetch(API_URL, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -1370,7 +1557,7 @@
       } catch (e) {
         if (remoteLive === null && !pullDone) return;
         if (remoteLive === null) { remoteLive = false; setSync("local", "Saved on this device only"); }
-        else setSync("error", "Couldn't sync — will retry");
+        else setSync("error", "Couldn't sync â€” will retry");
       }
     }
 
@@ -1380,12 +1567,14 @@
         if (!res.ok) throw new Error("HTTP " + res.status);
         const remote = normalize(await res.json());
         remoteLive = true;
-        // Only take the remote copy when it is genuinely newer than ours.
-        if (remote.updated && (!myData.updated || remote.updated > myData.updated)) {
-          myData = remote;
-          saveLocal();
-          renderPins();
-          renderTodos();
+        const merged = mergeData(myData, remote);
+        const differsFromLocal = !dataEqual(merged, myData);
+        const differsFromRemote = !dataEqual(merged, remote);
+        if (differsFromLocal) applyData(merged, { bump: differsFromRemote });
+        if (differsFromLocal && differsFromRemote) {
+          clearTimeout(pushTimer);
+          if (remoteLive !== false) setSync("saving", "Savingâ€¦");
+          pushTimer = setTimeout(push, PUSH_DELAY);
         }
         setSync("saved", "Synced across devices");
       } catch (e) {
@@ -1418,7 +1607,7 @@
       const arr = document.createElement("span");
       arr.className = "larr";
       arr.setAttribute("aria-hidden", "true");
-      arr.textContent = "↗";
+      arr.textContent = "â†—";
       a.append(icon, name, arr);
       return a;
     }
@@ -1431,7 +1620,6 @@
       b.title = title;
       b.setAttribute("aria-label", title);
       b.disabled = Boolean(disabled);
-      if (disabled) b.style.opacity = ".35";
       b.addEventListener("click", onClick);
       return b;
     }
@@ -1442,7 +1630,7 @@
       if (!myData.pins.length && !manageMode) {
         const li = document.createElement("li");
         li.className = "list-empty";
-        li.textContent = "No pins yet — hit Manage to add one.";
+        li.textContent = "No pins yet â€” hit Manage to add one.";
         pinsEl.appendChild(li);
       }
 
@@ -1461,10 +1649,10 @@
           const actions = document.createElement("span");
           actions.className = "pin-actions";
           actions.append(
-            miniBtn("↑", "Move up", () => movePin(i, -1), i === 0),
-            miniBtn("↓", "Move down", () => movePin(i, 1), i === myData.pins.length - 1),
-            miniBtn("✎", "Edit " + p.label, () => openEditor(p.id)),
-            miniBtn("✕", "Delete " + p.label, () => deletePin(p.id))
+            miniBtn("â†‘", "Move up", () => movePin(i, -1), i === 0),
+            miniBtn("â†“", "Move down", () => movePin(i, 1), i === myData.pins.length - 1),
+            miniBtn("âœŽ", "Edit " + p.label, () => openEditor(p.id)),
+            miniBtn("âœ•", "Delete " + p.label, () => deletePin(p.id))
           );
           li.append(dot, label, actions);
         }
@@ -1526,7 +1714,7 @@
       const urlInput = document.createElement("input");
       urlInput.type = "url";
       urlInput.value = draft.url;
-      urlInput.placeholder = "https://…";
+      urlInput.placeholder = "https://â€¦";
 
       const iconLabel = document.createElement("label");
       iconLabel.textContent = "Icon";
@@ -1591,7 +1779,7 @@
 
       const err = document.createElement("p");
       err.className = "list-empty";
-      err.style.cssText = "padding:6px 0 0;text-align:left;color:#c0392b";
+      err.style.cssText = "padding:6px 0 0;text-align:left;color:var(--danger)";
       err.hidden = true;
 
       form.addEventListener("submit", (e) => {
@@ -1664,21 +1852,33 @@
 
         const text = document.createElement("span");
         text.className = "todo-text";
+        text.dataset.id = t.id;
         text.textContent = t.text;
         text.title = "Click to edit";
+        /* A span with a click handler is mouse-only. Make it a real control so
+           the list can be edited without a pointer. */
+        text.tabIndex = 0;
+        text.setAttribute("role", "button");
+        text.setAttribute("aria-label", "Edit: " + t.text);
         text.addEventListener("click", () => startEdit(li, text, t));
+        text.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            startEdit(li, text, t);
+          }
+        });
 
         const actions = document.createElement("span");
         actions.className = "todo-actions";
         actions.append(
-          miniBtn("↑", "Move up", () => moveTodo(t.id, -1), i === 0),
-          miniBtn("↓", "Move down", () => moveTodo(t.id, 1), i === section.length - 1),
+          miniBtn("â†‘", "Move up", () => moveTodo(t.id, -1), i === 0),
+          miniBtn("â†“", "Move down", () => moveTodo(t.id, 1), i === section.length - 1),
         );
 
         const del = document.createElement("button");
         del.type = "button";
         del.className = "todo-del";
-        del.textContent = "✕";
+        del.textContent = "âœ•";
         del.title = "Delete";
         del.setAttribute("aria-label", "Delete: " + t.text);
         del.addEventListener("click", () => {
@@ -1730,6 +1930,11 @@
         const next = clip(input.value, 300);
         if (commit && next && next !== todo.text) { todo.text = next; changed(); }
         renderTodos();
+        /* renderTodos() rebuilds the list, so put the caret back where the
+           person left it instead of dropping focus to the top of the page. */
+        const back = Array.from(todosEl.querySelectorAll(".todo-text"))
+          .find((el) => el.dataset.id === todo.id);
+        if (back) back.focus();
       };
       input.addEventListener("keydown", (e) => {
         if (e.key === "Enter") { e.preventDefault(); finish(true); }
@@ -1767,6 +1972,7 @@
     // A pending debounce would otherwise be lost when the tab closes.
     addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && pushTimer) { clearTimeout(pushTimer); push(); }
+      else if (document.visibilityState === "visible" && pullDone) pull();
     });
   </script>
 </body>
