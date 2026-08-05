@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "title": "Design System: Training Unit Command Center",
+  "extensions": {
+    "colorMeta": {
+      "brand": {
+        "role": "primary",
+        "displayName": "Studio Blue",
+        "canonical": "#1a5aa0",
+        "dark": "#7fb3ee",
+        "note": "Synced with LACE Learning Hub --brand. Interactive signal: links, focus rings, panel ticks, primary buttons.",
+        "tonalRamp": ["oklch(15% 0.13 255)", "oklch(26% 0.13 255)", "oklch(37% 0.13 255)", "oklch(48% 0.13 255)", "oklch(59% 0.13 255)", "oklch(70% 0.13 255)", "oklch(82% 0.13 255)", "oklch(95% 0.13 255)"]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#f7f6f2",
+        "dark": "#15171c",
+        "tonalRamp": ["oklch(15% 0.012 85)", "oklch(26% 0.012 85)", "oklch(37% 0.012 85)", "oklch(48% 0.012 85)", "oklch(59% 0.012 85)", "oklch(70% 0.012 85)", "oklch(82% 0.012 85)", "oklch(96.5% 0.012 85)"]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Surface Sunken",
+        "canonical": "#efede7",
+        "dark": "#262a33",
+        "tonalRamp": ["oklch(15% 0.018 88)", "oklch(26% 0.018 88)", "oklch(37% 0.018 88)", "oklch(48% 0.018 88)", "oklch(59% 0.018 88)", "oklch(70% 0.018 88)", "oklch(82% 0.018 88)", "oklch(94% 0.018 88)"]
+      },
+      "card": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#ffffff",
+        "dark": "#1c1f26",
+        "tonalRamp": ["oklch(15% 0 0)", "oklch(26% 0 0)", "oklch(37% 0 0)", "oklch(48% 0 0)", "oklch(59% 0 0)", "oklch(70% 0 0)", "oklch(85% 0 0)", "oklch(100% 0 0)"]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#e2ded6",
+        "dark": "#2e333d",
+        "tonalRamp": ["oklch(15% 0.02 88)", "oklch(26% 0.02 88)", "oklch(37% 0.02 88)", "oklch(48% 0.02 88)", "oklch(59% 0.02 88)", "oklch(70% 0.02 88)", "oklch(80% 0.02 88)", "oklch(90% 0.02 88)"]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#171511",
+        "dark": "#f3f4f6",
+        "tonalRamp": ["oklch(15% 0.007 70)", "oklch(22% 0.007 70)", "oklch(33% 0.007 70)", "oklch(44% 0.007 70)", "oklch(56% 0.007 70)", "oklch(68% 0.007 70)", "oklch(82% 0.007 70)", "oklch(95% 0.007 70)"]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Ink Muted",
+        "canonical": "#575148",
+        "dark": "#a3a9b5",
+        "tonalRamp": ["oklch(15% 0.017 75)", "oklch(26% 0.017 75)", "oklch(36% 0.017 75)", "oklch(47% 0.017 75)", "oklch(58% 0.017 75)", "oklch(70% 0.017 75)", "oklch(82% 0.017 75)", "oklch(95% 0.017 75)"]
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "#6d675e",
+        "dark": "#8991a1",
+        "tonalRamp": ["oklch(15% 0.017 76)", "oklch(26% 0.017 76)", "oklch(37% 0.017 76)", "oklch(48.5% 0.017 76)", "oklch(59% 0.017 76)", "oklch(70% 0.017 76)", "oklch(82% 0.017 76)", "oklch(95% 0.017 76)"]
+      },
+      "on-accent": {
+        "role": "neutral",
+        "displayName": "Chalk",
+        "canonical": "#ffffff",
+        "dark": "#14161b",
+        "note": "The foreground for anything on an accent fill. Synced with LACE Learning Hub.",
+        "tonalRamp": ["oklch(15% 0.01 250)", "oklch(26% 0.01 250)", "oklch(37% 0.01 250)", "oklch(48% 0.01 250)", "oklch(60% 0.01 250)", "oklch(72% 0.01 250)", "oklch(86% 0.01 250)", "oklch(100% 0 0)"]
+      },
+      "ok": {
+        "role": "tertiary",
+        "displayName": "Green",
+        "canonical": "#179a72",
+        "dark": "#5fc9a8",
+        "tonalRamp": ["oklch(15% 0.11 155)", "oklch(26% 0.11 155)", "oklch(37% 0.11 155)", "oklch(46% 0.11 155)", "oklch(58% 0.11 155)", "oklch(70% 0.11 155)", "oklch(83% 0.11 155)", "oklch(95% 0.11 155)"]
+      },
+      "wait": {
+        "role": "tertiary",
+        "displayName": "Blue",
+        "canonical": "#1c63b0",
+        "dark": "#3b8ede",
+        "tonalRamp": ["oklch(15% 0.13 255)", "oklch(26% 0.13 255)", "oklch(37% 0.13 255)", "oklch(51% 0.13 255)", "oklch(62% 0.13 255)", "oklch(73% 0.13 255)", "oklch(84% 0.13 255)", "oklch(95% 0.13 255)"]
+      },
+      "idle": {
+        "role": "tertiary",
+        "displayName": "Graphite",
+        "canonical": "#8b909d",
+        "dark": "#a9b2c0",
+        "tonalRamp": ["oklch(15% 0.02 80)", "oklch(26% 0.02 80)", "oklch(37% 0.02 80)", "oklch(48% 0.02 80)", "oklch(57% 0.02 80)", "oklch(70% 0.02 80)", "oklch(82% 0.02 80)", "oklch(95% 0.02 80)"]
+      },
+      "overdue": {
+        "role": "tertiary",
+        "displayName": "Changed Red",
+        "canonical": "#c8493b",
+        "dark": "#e8957a",
+        "tonalRamp": ["oklch(15% 0.18 27)", "oklch(26% 0.18 27)", "oklch(37% 0.18 27)", "oklch(45% 0.18 27)", "oklch(58% 0.18 27)", "oklch(70% 0.18 27)", "oklch(82% 0.18 27)", "oklch(95% 0.18 27)"]
+      },
+      "working": {
+        "role": "tertiary",
+        "displayName": "Amber",
+        "canonical": "#c8791b",
+        "dark": "#e0a552",
+        "tonalRamp": ["oklch(15% 0.13 80)", "oklch(26% 0.13 80)", "oklch(37% 0.13 80)", "oklch(48% 0.13 80)", "oklch(60% 0.13 80)", "oklch(75% 0.13 80)", "oklch(86% 0.13 80)", "oklch(95% 0.13 80)"]
+      },
+      "danger": {
+        "role": "tertiary",
+        "displayName": "Danger",
+        "canonical": "#c8493b",
+        "dark": "#e8957a",
+        "tonalRamp": ["oklch(15% 0.18 28)", "oklch(26% 0.18 28)", "oklch(37% 0.18 28)", "oklch(51% 0.18 28)", "oklch(62% 0.18 28)", "oklch(73% 0.18 28)", "oklch(84% 0.18 28)", "oklch(95% 0.18 28)"]
+      },
+      "brand-deep": {
+        "role": "primary",
+        "displayName": "Deep Blue",
+        "canonical": "#12447c",
+        "dark": "#7fb3ee",
+        "note": "Brand accent darkened for warn-state due dates on hovered rows. Synced with LACE --brand-ink.",
+        "tonalRamp": ["oklch(15% 0.14 45)", "oklch(26% 0.14 45)", "oklch(37% 0.14 45)", "oklch(45% 0.14 45)", "oklch(57% 0.14 45)", "oklch(70% 0.14 45)", "oklch(82% 0.14 45)", "oklch(95% 0.14 45)"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "The page name, once per page. Geist sans with tight tracking." },
+      "headline": { "displayName": "Headline", "purpose": "The week range and calendar month on focus pages." },
+      "title": { "displayName": "Title", "purpose": "Tool and tile names. Steps down to 15px for document rows, 14.5px for task names." },
+      "body": { "displayName": "Body", "purpose": "Descriptions, table cells, todo text." },
+      "label": { "displayName": "Label", "purpose": "Panel titles. Uppercase, tracked, always preceded by the brand tick." },
+      "eyebrow": { "displayName": "Eyebrow", "purpose": "The brand-blue line above every page title. Widest tracking in the system." },
+      "meta": { "displayName": "Meta", "purpose": "Counts, dates, board names, staleness notes, sync status. Always tabular figures." }
+    },
+    "themes": {
+      "note": "Light is canonical in tokens.css, synced with LACE Learning Hub globals.css. Dark uses LACE's near-black studio palette. Both selectors must be authored together so the in-page toggle beats the OS preference in both directions.",
+      "darkSelectors": ["@media (prefers-color-scheme: dark) { :root:not([data-theme=\"light\"]) }", ":root[data-theme=\"dark\"]"],
+      "storageKey": "tu-theme",
+      "appliedBeforePaint": true
+    },
+    "contrast": {
+      "binding": "WCAG 2.1 AA — 4.5:1 for text, 3:1 for meaningful non-text, per PRODUCT.md",
+      "verifiedOn": "2026-08-04",
+      "method": "Every foreground/background pair that actually occurs, computed from the token values in both themes. All 52 pass.",
+      "measured": [
+        { "pair": "ink on paper", "light": 15.7, "dark": 16.81, "needs": 4.5, "passes": true },
+        { "pair": "muted on card", "light": 5.85, "dark": 6.61, "needs": 4.5, "passes": true },
+        { "pair": "muted on paper-2", "light": 4.92, "dark": 6.99, "needs": 4.5, "passes": true },
+        { "pair": "faint on card", "light": 5.57, "dark": 5.15, "needs": 4.5, "passes": true },
+        { "pair": "faint on paper-2", "light": 4.69, "dark": 5.45, "needs": 4.5, "passes": true },
+        { "pair": "brand on paper", "light": 5.2, "dark": 7.1, "needs": 4.5, "passes": true },
+        { "pair": "brand-deep on paper-2", "light": 5.8, "dark": 6.35, "needs": 4.5, "passes": true },
+        { "pair": "overdue on card", "light": 6.54, "dark": 5.85, "needs": 4.5, "passes": true },
+        { "pair": "overdue on paper-2", "light": 5.51, "dark": 6.19, "needs": 4.5, "passes": true },
+        { "pair": "danger on paper-2", "light": 4.58, "dark": 8.31, "needs": 4.5, "passes": true },
+        { "pair": "ok on paper-2", "light": 5.66, "dark": 9.69, "needs": 4.5, "passes": true },
+        { "pair": "wait on card", "light": 5.42, "dark": 6.27, "needs": 4.5, "passes": true },
+        { "pair": "on-accent on brand fill", "light": 5.0, "dark": 6.83, "needs": 4.5, "passes": true },
+        { "pair": "on-accent on ok fill (checkmark)", "light": 6.73, "dark": 10.41, "needs": 3.0, "passes": true },
+        { "pair": "working dot on card", "light": 3.66, "dark": 7.29, "needs": 3.0, "passes": true },
+        { "pair": "working dot on paper-2", "light": 3.09, "dark": 7.71, "needs": 3.0, "passes": true },
+        { "pair": "idle dot on card", "light": 3.84, "dark": 3.8, "needs": 3.0, "passes": true }
+      ],
+      "tightest": "working dot on paper-2 at 3.09:1 (light) — re-measure if either surface changes."
+    },
+    "shadows": [
+      { "name": "ambient", "value": "0 1px 2px rgba(28,26,23,.04), 0 6px 20px -6px rgba(28,26,23,.10)", "purpose": "Panels, header band, results bar, announcement banner. Present at rest and meant to go unnoticed; it marks a container's outer edge, never hierarchy." },
+      { "name": "ambient-dark", "value": "0 1px 2px rgba(0,0,0,.35), 0 8px 24px -8px rgba(0,0,0,.5)", "purpose": "The same role in dark mode, with much stronger alphas because a dark ground swallows a 4% shadow." },
+      { "name": "overlay", "value": "0 2px 4px rgba(28,26,23,.05), 0 14px 36px -10px rgba(28,26,23,.14)", "purpose": "Defined once, used once: the focus-page dropdown. The only genuinely floating element in the product." },
+      { "name": "accent-bloom", "value": "0 4px 14px -6px color-mix(in srgb, var(--link-accent) 35%, transparent)", "purpose": "Pin and quick-link rows on hover. A tinted glow in the item's own pigment rather than a neutral shadow." },
+      { "name": "focus-ring", "value": "0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent)", "purpose": "The universal focus-visible treatment. Replaces the default outline and is always paired with the element's hover treatment." },
+      { "name": "focus-ring-inset", "value": "inset 0 0 0 2px color-mix(in srgb, var(--accent, var(--brand)) 45%, transparent)", "purpose": "Focus for elements that cannot afford an outer ring — accordion summaries and drill-down sublinks inside a clipped container." }
+    ],
+    "motion": [
+      { "name": "state", "value": "170ms ease", "purpose": "The default for tiles, rows, and icon buttons: transform, border-color, background, box-shadow." },
+      { "name": "state-quick", "value": "130-150ms ease", "purpose": "Smaller objects and controls — task rows, kanban cards, pills, selects, mini buttons." },
+      { "name": "reveal", "value": "160ms ease", "purpose": "The search panel's opacity and 6px translate, and chevron rotation." },
+      { "name": "lift", "value": "translateY(-1px) to translateY(-2px)", "purpose": "Hover for tiles, buttons, and app tiles. 2px for primary tiles, 1px for everything smaller." },
+      { "name": "slide", "value": "translateX(2px) to translateX(3px)", "purpose": "Hover for list rows and pin links, which move toward the reader rather than up. Arrows slide 3px independently." },
+      { "name": "reduced", "value": "* { transition: none !important; }", "purpose": "A blanket reset under prefers-reduced-motion. Because it strips every transition in the product, no state may be communicated by motion alone." }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "400px", "purpose": "App grid drops to 2 columns; count pills hide; header actions stack." },
+      { "name": "sm", "value": "520px", "purpose": "LMS grid goes single-column; view toggle tightens and spans full width." },
+      { "name": "compact", "value": "560px", "purpose": "Week task rows stack vertically; subfolder columns collapse to one." },
+      { "name": "md", "value": "600px", "purpose": "Task table hides its board column." },
+      { "name": "touch", "value": "640px", "purpose": "The main mobile breakpoint: 48px row minimums, 12px body padding, containers drop from 16px to 12px radius, search panel goes edge-pinned, nav pills go full width." },
+      { "name": "lg", "value": "720px", "purpose": "Kanban goes single-column; calendar cells shrink to 58px." },
+      { "name": "focus-split", "value": "900px", "purpose": "Focus-page two-column split collapses." },
+      { "name": "board-split", "value": "960px", "purpose": "Launcher two-column split collapses." },
+      { "name": "container", "value": "1160px", "purpose": "Launcher max width. Focus pages cap at 1100px." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Tool Tile",
+      "kind": "card",
+      "refersTo": "tile",
+      "description": "The primary launcher object: a monogram chip, a name, a truncated description, and an arrow. Rests on Kraft and inverts to Fresh Sheet on hover while its border mixes toward the item's own accent.",
+      "html": "<a class=\"ds-tile\" style=\"--accent:#2f855a\" href=\"#\"><span class=\"ds-mono\">G</span><span class=\"ds-tile-body\"><span class=\"ds-tile-name\">Google Drive</span><span class=\"ds-tile-desc\">Shared files and folders</span></span><span class=\"ds-tile-arrow\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></span></a>",
+      "css": ".ds-tile { display:flex; align-items:center; gap:14px; text-decoration:none; color:var(--ink,#171511); background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); border-radius:var(--radius,12px); padding:14px 16px; transition:transform .17s ease, border-color .17s ease, background .17s ease, box-shadow .17s ease; } .ds-tile:hover { transform:translateY(-2px); background:var(--card,#fff); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 55%, var(--line,#e2ded6)); } .ds-tile:focus-visible { transform:translateY(-2px); background:var(--card,#fff); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 55%, var(--line,#e2ded6)); outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 35%, transparent); } .ds-mono { flex:none; width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-family:var(--sans,\"Geist\",\"Segoe UI\",system-ui,sans-serif); font-weight:700; font-size:18px; color:var(--accent, var(--brand,#1a5aa0)); background:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 12%, var(--card,#fff)); } .ds-tile-body { min-width:0; } .ds-tile-name { display:block; font-weight:650; font-size:16.5px; } .ds-tile-desc { display:block; color:var(--muted,#575148); font-size:14px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .ds-tile-arrow { margin-left:auto; flex:none; color:var(--muted,#575148); transition:transform .17s, color .17s; } .ds-tile-arrow svg { width:18px; height:18px; display:block; } .ds-tile:hover .ds-tile-arrow { color:var(--accent, var(--brand,#1a5aa0)); transform:translateX(3px); }"
+    },
+    {
+      "name": "App Tile",
+      "kind": "card",
+      "refersTo": "app-tile",
+      "description": "The compact quick-access tile from the Quick Links grid: a centred logo or monogram over a label, three across on desktop and two below 400px.",
+      "html": "<a class=\"ds-app-tile\" style=\"--accent:#611f69\" href=\"#\"><span class=\"ds-mono-sm\">S</span><span class=\"ds-app-label\">Slack</span></a>",
+      "css": ".ds-app-tile { display:flex; flex-direction:column; align-items:center; gap:10px; padding:16px 10px; border-radius:var(--radius,12px); text-decoration:none; text-align:center; color:var(--ink,#171511); background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); transition:transform .17s ease, border-color .17s ease, background .17s ease; } .ds-app-tile:hover { transform:translateY(-1px); background:var(--card,#fff); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 45%, var(--line,#e2ded6)); } .ds-app-tile:focus-visible { outline:none; background:var(--card,#fff); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 45%, var(--line,#e2ded6)); box-shadow:0 0 0 3px color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 35%, transparent); } .ds-mono-sm { width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-family:var(--sans,\"Geist\",\"Segoe UI\",system-ui,sans-serif); font-weight:700; font-size:18px; color:var(--accent, var(--brand,#1a5aa0)); background:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 12%, var(--card,#fff)); } .ds-app-label { font-size:14px; font-weight:650; line-height:1.3; width:100%; }"
+    },
+    {
+      "name": "Document Row",
+      "kind": "nav",
+      "refersTo": "doc-row",
+      "description": "The lightest list object: borderless at rest, it gains a Kraft ground and slides 2px toward the reader on hover. Used for standing documents and LMS links.",
+      "html": "<a class=\"ds-doc-row\" style=\"--accent:#1a5aa0\" href=\"#\"><span class=\"ds-doc-body\"><span class=\"ds-doc-name\">Weekly Meeting Agenda</span><span class=\"ds-doc-desc\">Standing agenda for Monday check-ins</span></span><span class=\"ds-doc-arrow\">→</span></a>",
+      "css": ".ds-doc-row { display:flex; align-items:center; gap:12px; padding:11px 12px; border-radius:var(--radius,12px); text-decoration:none; color:var(--ink,#171511); border:1px solid transparent; transition:background .17s ease, border-color .17s ease, transform .17s ease; } .ds-doc-row:hover { background:var(--paper-2,#efede7); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 30%, var(--line,#e2ded6)); transform:translateX(2px); } .ds-doc-row:focus-visible { background:var(--paper-2,#efede7); border-color:color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 30%, var(--line,#e2ded6)); outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--accent, var(--brand,#1a5aa0)) 35%, transparent); } .ds-doc-body { flex:1; min-width:0; } .ds-doc-name { display:block; font-size:15px; font-weight:600; } .ds-doc-desc { display:block; font-size:13px; color:var(--muted,#575148); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .ds-doc-arrow { font-size:15px; opacity:.75; color:var(--muted,#575148); } .ds-doc-row:hover .ds-doc-arrow { opacity:1; color:var(--accent, var(--brand,#1a5aa0)); }"
+    },
+    {
+      "name": "Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "Every section on every surface. Fresh Sheet at 16px radius with ambient shadow, opened by a ticked uppercase title over a 1px rule, with an optional right-aligned note.",
+      "html": "<section class=\"ds-panel\"><div class=\"ds-panel-head\"><h2 class=\"ds-panel-title\">My Monday Tasks</h2><span class=\"ds-panel-note\">Updated Aug 4</span></div><p class=\"ds-panel-copy\">Panel contents sit below the rule.</p></section>",
+      "css": ".ds-panel { background:var(--card,#fff); border:1px solid var(--line,#e2ded6); border-radius:var(--radius-lg,16px); box-shadow:0 1px 2px rgba(28,26,23,.04), 0 6px 20px -6px rgba(28,26,23,.10); padding:18px; } .ds-panel-head { margin:0 0 14px; padding-bottom:12px; border-bottom:1px solid var(--line,#e2ded6); display:flex; align-items:center; gap:10px; flex-wrap:wrap; } .ds-panel-title { display:flex; align-items:center; gap:8px; font-size:14px; font-weight:650; letter-spacing:.04em; text-transform:uppercase; color:var(--muted,#575148); margin:0; } .ds-panel-title::before { content:\"\"; flex-shrink:0; width:4px; height:12px; border-radius:2px; background:var(--brand,#1a5aa0); } .ds-panel-note { font-size:12px; color:var(--faint,#6d675e); margin-left:auto; } .ds-panel-copy { margin:0; font-size:14.5px; color:var(--ink,#171511); }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The only filled brand-blue surface in the product besides the active toggle segment.",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">Add</button>",
+      "css": ".ds-btn-primary { font:inherit; font-size:13px; font-weight:650; cursor:pointer; border-radius:8px; padding:7px 13px; background:var(--brand,#1a5aa0); border:1px solid var(--brand,#1a5aa0); color:#fff; transition:transform .14s ease, filter .14s ease; } .ds-btn-primary:hover { transform:translateY(-1px); filter:brightness(1.05); } .ds-btn-primary:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand,#1a5aa0) 35%, transparent); }"
+    },
+    {
+      "name": "Mini Button",
+      "kind": "button",
+      "refersTo": "button-mini",
+      "description": "The workhorse secondary control — Manage, Edit, Clear. Sunken ground, muted text, and a brand text-and-border state when pressed rather than a fill.",
+      "html": "<button class=\"ds-btn-mini\" type=\"button\" aria-pressed=\"false\">Manage</button> <button class=\"ds-btn-mini\" type=\"button\" aria-pressed=\"true\">Manage</button>",
+      "css": ".ds-btn-mini { font:inherit; font-size:12px; font-weight:650; cursor:pointer; color:var(--muted,#575148); background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); border-radius:8px; padding:5px 9px; line-height:1.2; transition:border-color .15s, color .15s; } .ds-btn-mini:hover { color:var(--ink,#171511); border-color:color-mix(in srgb, var(--brand,#1a5aa0) 40%, var(--line,#e2ded6)); } .ds-btn-mini[aria-pressed=\"true\"] { color:var(--brand,#1a5aa0); border-color:color-mix(in srgb, var(--brand,#1a5aa0) 45%, var(--line,#e2ded6)); } .ds-btn-mini:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand,#1a5aa0) 35%, transparent); }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input-text",
+      "description": "Sunken surface at rest, lifting to card with a solid brand border on focus.",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Add something…\" aria-label=\"Add a list item\" />",
+      "css": ".ds-input { font:inherit; font-size:14px; width:100%; color:var(--ink,#171511); background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); border-radius:var(--radius,12px); padding:10px 12px; transition:border-color .15s, background .15s; } .ds-input::placeholder { color:var(--faint,#6d675e); } .ds-input:focus { outline:none; border-color:var(--brand,#1a5aa0); background:var(--card,#fff); }"
+    },
+    {
+      "name": "View Toggle",
+      "kind": "nav",
+      "refersTo": "view-toggle-button",
+      "description": "A sunken pill track holding pill segments; the pressed segment fills brand with on-accent text.",
+      "html": "<div class=\"ds-view-toggle\" role=\"group\" aria-label=\"View mode\"><button class=\"ds-vbtn\" type=\"button\" aria-pressed=\"true\">Week</button><button class=\"ds-vbtn\" type=\"button\" aria-pressed=\"false\">List</button><button class=\"ds-vbtn\" type=\"button\" aria-pressed=\"false\">Board</button><button class=\"ds-vbtn\" type=\"button\" aria-pressed=\"false\">Calendar</button></div>",
+      "css": ".ds-view-toggle { display:inline-flex; background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); border-radius:999px; padding:3px; } .ds-vbtn { font:inherit; font-size:12.5px; font-weight:650; cursor:pointer; border:0; background:none; color:var(--muted,#575148); padding:5px 12px; border-radius:999px; transition:background .15s, color .15s; } .ds-vbtn:hover { color:var(--ink,#171511); } .ds-vbtn[aria-pressed=\"true\"] { background:var(--brand,#1a5aa0); color:#fff; } .ds-vbtn:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand,#1a5aa0) 35%, transparent); }"
+    },
+    {
+      "name": "Task Row",
+      "kind": "custom",
+      "refersTo": "task-row",
+      "description": "The week view's atom: a 10px card with a 3px accent left rule carrying its board's colour, a 600-weight name, a muted board-and-category line, and a tabular due value that turns Red Ochre when overdue. Slides 2px toward the reader on hover.",
+      "html": "<a class=\"ds-task\" style=\"--accent:#ff3d57\" href=\"#\"><span class=\"ds-task-main\"><span class=\"ds-task-name\">Draft pilot launch checklist</span><span class=\"ds-task-meta\">Operations · Pilot &amp; Launch</span></span><span class=\"ds-task-right\"><span class=\"ds-status\"><span class=\"ds-sd\"></span>Working on it</span><span class=\"ds-task-due\">Aug 6</span></span></a>",
+      "css": ".ds-task { display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--ink,#171511); background:var(--paper-2,#efede7); border:1px solid var(--line,#e2ded6); border-left:3px solid var(--accent,var(--line,#e2ded6)); border-radius:10px; padding:10px 13px; transition:transform .13s, border-color .13s, box-shadow .13s; } .ds-task:hover { transform:translateX(2px); box-shadow:0 1px 2px rgba(28,26,23,.04), 0 6px 20px -6px rgba(28,26,23,.10); border-color:color-mix(in srgb, var(--brand,#1a5aa0) 40%, var(--line,#e2ded6)); border-left-color:var(--accent,var(--line,#e2ded6)); } .ds-task:focus-visible { outline:none; box-shadow:0 0 0 3px color-mix(in srgb, var(--brand,#1a5aa0) 35%, transparent); } .ds-task-main { min-width:0; flex:1; } .ds-task-name { display:block; font-size:14.5px; font-weight:600; line-height:1.35; } .ds-task-meta { display:block; font-size:12px; color:var(--muted,#575148); margin-top:2px; } .ds-task-right { flex:none; text-align:right; } .ds-status { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; } .ds-sd { width:8px; height:8px; border-radius:50%; flex:none; background:#e0a52e; } .ds-task-due { display:block; font-size:12px; color:var(--faint,#6d675e); margin-top:3px; font-variant-numeric:tabular-nums; }"
+    },
+    {
+      "name": "Count Pill",
+      "kind": "chip",
+      "refersTo": "pill-count",
+      "description": "Reports a quantity and never acts. Pushed right with margin-left:auto, tabular figures, and hidden entirely below 400px where the label matters more than the number.",
+      "html": "<span class=\"ds-pill-count\">7 folders</span>",
+      "css": ".ds-pill-count { display:inline-block; font-size:13px; color:var(--muted,#575148); background:var(--paper-2,#efede7); border-radius:999px; padding:3px 10px; font-variant-numeric:tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Studio",
+    "overview": "Warm, precise, unhurried — shared with the LACE Learning Hub. The page is a warm paper field lit by a soft steel-blue wash at the top edge, and everything on it is an object pinned to that field. Per-item accent inheritance drives the wall metaphor; --brand is the fallback for items without their own pigment. Geist sans throughout. Tokens live in tokens.css, synced with LACE globals.css.",
+    "keyCharacteristics": [
+      "Warm cream paper field (#f7f6f2) with a radial brand-blue wash at 8% at the top of every page",
+      "Per-item --accent inheritance into four fixed slots: monogram tint, hover border, arrow, focus ring",
+      "A three-surface tonal ladder — page → resting object → raised object — that inverts on hover",
+      "Hairline 1px borders as the primary structural device; shadow is atmosphere, not hierarchy",
+      "Geist sans for all text, including page titles and monogram letters",
+      "Uppercase, tracked, 650-weight micro-labels; tabular figures on every count and date",
+      "Motion is small and directional: 1–3px lifts and slides over 130–170ms",
+      "Full dark counterpart aligned with LACE's near-black studio palette"
+    ],
+    "rules": [
+      { "name": "The Four Slots Rule", "body": "An item's --accent may appear in exactly four places: the monogram chip's tint (12–16% mixed into the card colour), the hover and focus border (30–55% mixed into --line), the arrow or chevron on hover, and the focus ring (35% at 3px). Anywhere else — filled backgrounds, body text, icon strokes at rest, decorative bars — is off the wall.", "section": "colors" },
+      { "name": "The Status-Isn't-Brand Rule", "body": "Pine, Ink Blue, Dry Clay, Red Ochre, and Raw Amber encode Monday task state. They never appear as decoration, never as a category colour, and never on the launcher board, which has no task state to express.", "section": "colors" },
+      { "name": "The Warm-Light, Cool-Dark Rule", "body": "Light surfaces are warm (hue ~85°) and dark surfaces are cool (hue ~250°), while the accent moves the other way — warmer and lighter in the dark theme. Never port a light-mode neutral into the dark palette by darkening it; the two ladders are separately authored.", "section": "colors" },
+      { "name": "The On-Accent Rule", "body": "Never hard-code white on an accent fill. Because the accent lightens in dark mode, white-on-accent inverts from 5.0:1 to 2.7:1 — the label disappears exactly where it used to be strongest. Use --on-accent, which flips to dark ink with the theme.", "section": "colors" },
+      { "name": "The Every-Colour-Is-A-Token Rule", "body": "A colour that lives as a hex literal in a rule will never get a dark-mode counterpart, because the dark blocks only redefine tokens. Every one of this system's AA failures came from a literal. If a value is worth writing twice, it is a token.", "section": "colors" },
+      { "name": "The Sans-Only Rule", "body": "Geist sans is used for all text, including page titles, week/month frames, and monogram letters. There is no serif voice in this system.", "section": "typography" },
+      { "name": "The Tracked-Caps Rule", "body": "Any text at 12px or below that functions as a label is uppercase, tracked 0.04–0.14em, and weight 650–700. Small lowercase text is content, never a label. The inverse also holds: nothing above 14px is ever uppercase.", "section": "typography" },
+      { "name": "The Tabular Rule", "body": "Every count, date, due value, and item tally carries font-variant-numeric: tabular-nums. Numbers in this system align in columns even when they aren't in a table.", "section": "typography" },
+      { "name": "The 300px Floor Rule", "body": "The narrow column never goes below 300px. Below that the layout goes single-column instead of squeezing — a 250px sidebar would break every pin row and task card in it.", "section": "layout" },
+      { "name": "The 48px Target Rule", "body": "At 640px and below, every tile, row, accordion summary, and sublink takes min-height: 48px, monograms grow to 36px, and hover transforms are disabled outright under @media (hover: none). Touch gets more room, not the same room.", "section": "layout" },
+      { "name": "The Line-Not-Shadow Rule", "body": "Structure is drawn with a 1px --line border. If two elements need visual separation, they get a rule or a tonal step — never a heavier shadow.", "section": "elevation" },
+      { "name": "The Invert-On-Hover Rule", "body": "An interactive object rests on --paper-2 and becomes --card on hover and focus, while its border mixes toward its own accent. The surface brightening is the affordance; a colour-only hover reads as broken here.", "section": "elevation" },
+      { "name": "The One Overlay Rule", "body": "--shadow-lg belongs to the single dropdown menu. A new floating panel needs a real justification, not a shadow token.", "section": "elevation" },
+      { "name": "The Tick Rule", "body": "Every panel title is preceded by a 4×12px brand bar with a 2px radius, and every page eyebrow by the same mark. It is the product's signature — a pin pushed into the wall. A panel title without it is not a panel title.", "section": "shapes" },
+      { "name": "The Radius-Is-Rank Rule", "body": "16px containers hold 12px objects hold 10px rows hold 8px controls. A radius larger than its parent's is always wrong.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do declare an --accent on any new item that represents a distinct tool, project, folder, person, or pin, and let it flow to the four permitted slots only.",
+      "Do build hover borders with color-mix(in srgb, var(--accent, var(--brand)) N%, var(--line)) — 30% for document rows, 45% for accordions and app tiles, 55% for primary tiles.",
+      "Do pair every :hover with a matching :focus-visible that adds box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent, var(--brand)) 35%, transparent) and removes the default outline. Keyboard users see the pointer treatment plus a ring, never less.",
+      "Do rest interactive objects on --paper-2 and raise them to --card, so the tonal ladder stays intact.",
+      "Do put font-variant-numeric: tabular-nums on every count, date, and tally.",
+      "Do precede every panel title with the 4×12px brand tick.",
+      "Do author both dark-mode selectors together — @media (prefers-color-scheme: dark) { :root:not([data-theme=\"light\"]) } and :root[data-theme=\"dark\"] — because the toggle must beat the OS in both directions.",
+      "Do give rows min-height: 48px below 640px and neutralise hover transforms under @media (hover: none).",
+      "Do mark a not-yet-live destination with the soon pattern: 55–62% opacity, a soon tag, and no href at all.",
+      "Do reach for a semantic token — --overdue, --danger, --working, --ok, --wait, --on-accent, --brand-deep — instead of a hex literal, and give it a value in all three token blocks (light, prefers-color-scheme: dark, and [data-theme=\"dark\"]).",
+      "Do give hover-revealed controls a @media (hover: none) fallback that keeps them visible. An opacity: 0 control still occupies its box and still takes taps.",
+      "Do keep a small control's drawn size and grow only its hit area, using a ::after pseudo-element at inset: -3px, so an 18px checkbox is still a 24px target.",
+      "Do re-measure both themes when a colour changes. Every AA failure this system has had was dark-mode-only and invisible from a light-mode screenshot."
+    ],
+    "donts": [
+      "Don't use a status pigment for anything but Monday task state.",
+      "Don't create resting hierarchy with shadow. Two elements at the same tonal step are at the same level, whatever their shadows say.",
+      "Don't fill an area with brand beyond the primary button and the active toggle segment. It marks; it does not cover.",
+      "Don't set a label lowercase below 12px, and don't set anything uppercase above 14px.",
+      "Don't give a child a larger radius than its parent.",
+      "Don't treat --faint as a lighter --muted. Choose between them by role, not by appearance.",
+      "Don't put a bare outline: none on a :focus rule without a replacement indicator.",
+      "Don't let motion be the only carrier of a state change.",
+      "Don't add a second dashed border. The dashed --line box means \"nothing here yet\" and nothing else.",
+      "Don't introduce a second accent colour system. Shared tokens live in tokens.css and stay synced with LACE globals.css."
+    ]
+  }
+}

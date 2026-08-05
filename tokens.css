@@ -1,0 +1,182 @@
+/* ============================================================================
+   Training Unit Command Center — shared design tokens
+   Studio & Halcyon Palette: Warm paper field, luminous golden-peach studio bloom,
+   steel blue interactive signal, terracotta rust place marks.
+   Synced with LACE Learning Hub app/globals.css.
+   ========================================================================= */
+:root {
+  /* Neutrals — warm studio paper ladder */
+  --paper: #f7f5ef;
+  --paper-deep: #eae5da;
+  --paper-2: #efebe2;
+  --hover-tint: #f8f6f0;
+  --card: #ffffff;
+  --line: #ded8cd;
+  --line-soft: #e8e2d7;
+  --ink: #171511;
+  --muted: #544e45;
+  --faint: #6e675d;
+
+  /* Brand — steel blue (interactive signal ONLY: focus, links, toggles, primary buttons) */
+  --brand: #1a5aa0;
+  --brand-deep: #12447c;
+  --brand-tint: #e8eff8;
+  --on-accent: #ffffff;
+
+  /* Earth — terra cotta rust (structural warmth: panel ticks, eyebrows, notices) */
+  --earth: #b84d32;
+  --earth-deep: #9e3e27;
+  --earth-tint: #f9ebe6;
+  --warm: #c47414;
+  --warm-deep: #9e5b0e;
+  --warm-tint: #fdf5e6;
+
+  /* Skill hues — LACE studio palette for per-item accents & ambient canvas */
+  --hue-1: #1a5aa0;
+  --hue-1-tint: #e8eff8;
+  --hue-2: #0e7a80;
+  --hue-2-tint: #e3f3f3;
+  --hue-3: #5c7326;
+  --hue-3-tint: #f0f4e4;
+  --hue-4: #c47414;
+  --hue-4-tint: #fdf5e6;
+  --hue-5: #179a72;
+  --hue-5-tint: #e4f5ee;
+  --hue-6: #3a8ec9;
+  --hue-6-tint: #e8f4fc;
+  --hue-7: #414852;
+  --hue-7-tint: #ebedef;
+  --hue-8: #b84d32;
+  --hue-8-tint: #f9ebe6;
+
+  /* Page canvas — Halcyon golden-peach bloom top-right, steel blue wash aloft, sage hint left */
+  --canvas-bg:
+    radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #f2d2be 38%, transparent), transparent),
+    radial-gradient(ellipse 70% 40% at 45% -5%, color-mix(in srgb, var(--brand) 6%, transparent), transparent),
+    radial-gradient(ellipse 45% 35% at 5% 12%, color-mix(in srgb, var(--hue-3) 5%, transparent), transparent),
+    var(--paper);
+  --hero-bg: var(--card);
+
+  /* Status — lifecycle / Monday task states */
+  --ok: #179a72;
+  --wait: #1c63b0;
+  --idle: #8b909d;
+  --overdue: #c8493b;
+  --danger: #c8493b;
+  --working: #c8791b;
+
+  /* Typography */
+  --sans: "Geist", "Segoe UI Variable", "Segoe UI", "Inter", system-ui, sans-serif;
+
+  /* Layout */
+  --radius: 12px;
+  --radius-lg: 16px;
+  --shadow: 0 1px 3px rgba(28, 24, 18, 0.03), 0 8px 28px -6px rgba(28, 24, 18, 0.07);
+  --shadow-lg: 0 4px 16px rgba(28, 24, 18, 0.05), 0 20px 42px -10px rgba(28, 24, 18, 0.13);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #13151b;
+    --paper-deep: #0e0f14;
+    --paper-2: #212530;
+    --hover-tint: #282d38;
+    --card: #191c24;
+    --line: #2e3340;
+    --line-soft: #252934;
+    --ink: #f4f5f8;
+    --muted: #a2a8b7;
+    --faint: #7f8698;
+    --brand: #75a7f2;
+    --brand-deep: #75a7f2;
+    --brand-tint: #142848;
+    --on-accent: #0e0f14;
+    --earth: #eb917a;
+    --earth-deep: #eb917a;
+    --earth-tint: #361b15;
+    --warm: #e0a552;
+    --warm-deep: #e0a552;
+    --warm-tint: #332710;
+    --hue-1: #75a7f2;
+    --hue-1-tint: #142848;
+    --hue-2: #4fc3c3;
+    --hue-2-tint: #0e2f31;
+    --hue-3: #a9c06a;
+    --hue-3-tint: #222912;
+    --hue-4: #e0a552;
+    --hue-4-tint: #332710;
+    --hue-5: #5fc9a8;
+    --hue-5-tint: #122f27;
+    --hue-6: #7cc0ec;
+    --hue-6-tint: #122638;
+    --hue-7: #a2a8b7;
+    --hue-7-tint: #222631;
+    --hue-8: #eb917a;
+    --hue-8-tint: #361b15;
+    --canvas-bg:
+      radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #3d2317 35%, transparent), transparent),
+      radial-gradient(ellipse 75% 45% at 45% -5%, color-mix(in srgb, var(--brand) 8%, transparent), transparent),
+      var(--paper);
+    --hero-bg: var(--card);
+    --ok: #5fc9a8;
+    --wait: #3b8ede;
+    --idle: #a2a8b7;
+    --overdue: #eb917a;
+    --danger: #eb917a;
+    --working: #e0a552;
+    --shadow: 0 2px 6px rgba(0, 0, 0, 0.38), 0 8px 28px -6px rgba(0, 0, 0, 0.52);
+    --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.48), 0 20px 42px -10px rgba(0, 0, 0, 0.68);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #13151b;
+  --paper-deep: #0e0f14;
+  --paper-2: #212530;
+  --hover-tint: #282d38;
+  --card: #191c24;
+  --line: #2e3340;
+  --line-soft: #252934;
+  --ink: #f4f5f8;
+  --muted: #a2a8b7;
+  --faint: #7f8698;
+  --brand: #75a7f2;
+  --brand-deep: #75a7f2;
+  --brand-tint: #142848;
+  --on-accent: #0e0f14;
+  --earth: #eb917a;
+  --earth-deep: #eb917a;
+  --earth-tint: #361b15;
+  --warm: #e0a552;
+  --warm-deep: #e0a552;
+  --warm-tint: #332710;
+  --hue-1: #75a7f2;
+  --hue-1-tint: #142848;
+  --hue-2: #4fc3c3;
+  --hue-2-tint: #0e2f31;
+  --hue-3: #a9c06a;
+  --hue-3-tint: #222912;
+  --hue-4: #e0a552;
+  --hue-4-tint: #332710;
+  --hue-5: #5fc9a8;
+  --hue-5-tint: #122f27;
+  --hue-6: #7cc0ec;
+  --hue-6-tint: #122638;
+  --hue-7: #a2a8b7;
+  --hue-7-tint: #222631;
+  --hue-8: #eb917a;
+  --hue-8-tint: #361b15;
+  --canvas-bg:
+    radial-gradient(ellipse 65% 45% at 88% -5%, color-mix(in srgb, #3d2317 35%, transparent), transparent),
+    radial-gradient(ellipse 75% 45% at 45% -5%, color-mix(in srgb, var(--brand) 8%, transparent), transparent),
+    var(--paper);
+  --hero-bg: var(--card);
+  --ok: #5fc9a8;
+  --wait: #3b8ede;
+  --idle: #a2a8b7;
+  --overdue: #eb917a;
+  --danger: #eb917a;
+  --working: #e0a552;
+  --shadow: 0 2px 6px rgba(0, 0, 0, 0.38), 0 8px 28px -6px rgba(0, 0, 0, 0.52);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.48), 0 20px 42px -10px rgba(0, 0, 0, 0.68);
+}
