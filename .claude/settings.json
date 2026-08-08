@@ -39,9 +39,7 @@
       "Bash(python -c \"import yaml,sys; d=yaml.safe_load\\(open\\('.github/workflows/refresh-tasks.yml',encoding='utf-8'\\)\\); print\\('jobs:', list\\(d['jobs']\\)\\); print\\('cron:', d[True]['schedule'] if True in d else d['on']['schedule']\\); print\\('steps:', len\\(d['jobs']['refresh']['steps']\\)\\)\")",
       "Bash(git fetch *)",
       "Bash(git checkout *)",
-      "Bash(git merge *)",
-      "PowerShell(node \"C:\\\\Users\\\\mcreed\\\\.claude\\\\plugins\\\\cache\\\\impeccable\\\\impeccable\\\\4.0.4\\\\skills\\\\impeccable\\\\scripts\\\\context.mjs\")",
-      "Read(//c/Users/mcreed/.claude/plugins/cache/impeccable/impeccable/4.0.4/skills/impeccable/reference/**)"
+      "Bash(git merge *)"
     ]
   }
 }
