@@ -4,13 +4,13 @@ description: A warm paper wall of tool tiles and personal focus pages, sharing t
 colors:
   brand: "#1a5aa0"
   brand-deep: "#12447c"
-  paper: "#f8f7f4"
-  paper-2: "#f3f2ed"
+  paper: "#f5f5f1"
+  paper-2: "#ebece7"
   card: "#ffffff"
-  line: "#e3e0d8"
-  ink: "#171511"
-  muted: "#524d45"
-  faint: "#686259"
+  line: "#d9dbd4"
+  ink: "#151719"
+  muted: "#4f575c"
+  faint: "#6b747a"
   on-accent: "#ffffff"
   ok: "#179a72"
   wait: "#1c63b0"
@@ -197,8 +197,10 @@ are uppercase and tracked out. Every number is tabular. Depth is real but almost
 inaudible — the shadow token is a 4%-alpha whisper, and the only genuinely floating
 element in the entire product is one dropdown menu.
 
-Shared tokens live in [`tokens.css`](tokens.css), synced with LACE
-[`app/globals.css`](../../LACE/learning-hub/app/globals.css).
+Shared tokens live in [`tokens.css`](tokens.css). The brand, status, and dark-mode
+palette stay synced with LACE [`app/globals.css`](../../LACE/learning-hub/app/globals.css);
+the light neutral ladder deliberately diverged from LACE's warm cream into a cooler,
+salt-washed paper — re-syncing it wholesale would put the mud back.
 
 **Key Characteristics:**
 
@@ -238,19 +240,22 @@ legibility depends on items being individually recognisable by colour.
 
 ### Neutral
 
-- **Paper** (`#f7f6f2`): The page itself. Never used for an object, only the field.
-- **Surface Sunken** (`#efede7`): The resting surface of every interactive object —
+- **Paper** (`#f5f5f1`): The page itself, flat and salt-washed. Never used for an
+  object, only the field.
+- **Surface Sunken** (`#ebece7`): The resting surface of every interactive object —
   tiles, rows, task cards, inputs, pills, buckets. If something can be clicked, it
   starts here.
 - **Surface** (`#ffffff`): The raised surface. Panels sit on it permanently;
   tiles and rows arrive at it on hover. It is the top of the ladder, not a default.
-- **Line** (`#e2ded6`): Every border, divider, and rule in the product. Load-bearing.
-- **Ink** (`#171511`): Body and heading text. A warm near-black, never pure black.
-- **Ink Muted** (`#575148`): Secondary content — descriptions, counts, table
+- **Line** (`#d9dbd4`): Every border, divider, and rule in the product. Load-bearing.
+- **Ink** (`#151719`): Body and heading text. A cooled near-black, never pure black —
+  the neutral ladder was pulled off the old warm cream on purpose, and the ink
+  follows it.
+- **Ink Muted** (`#4f575c`): Secondary content — descriptions, counts, table
   meta, panel titles.
-- **Ink Soft** (`#6d675e`): Tertiary text — timestamps, empty-state prose, hints,
+- **Ink Soft** (`#6b747a`): Tertiary text — timestamps, empty-state prose, hints,
   the quietest labels.
-- **On Accent** (`#ffffff` light / `#14161b` dark): The foreground for anything
+- **On Accent** (`#ffffff` light / `#0e0f14` dark): The foreground for anything
   sitting *on* an accent fill.
 
 ### Tertiary
@@ -277,10 +282,11 @@ rest, decorative bars — is off the wall.
 encode Monday task state. They never appear as decoration, never as a category
 colour, and never on the launcher board, which has no task state to express.
 
-**The Warm-Light, Cool-Dark Rule.** Light surfaces are warm cream; dark surfaces use
-LACE's near-black studio palette (`#15171c` → `#262a33` → `#1c1f26`). Never port a
-light-mode neutral into the dark palette by darkening it; the two ladders are
-separately authored and synced with the Learning Hub.
+**The Warm-Sky, Cool-Ground Rule.** Light surfaces are a salt-washed cool neutral,
+not warm cream — the only warmth on the page lives in the hero band and in accents.
+Dark surfaces use a near-black studio palette (`#13151b` → `#212530` → `#191c24`).
+Never port a light-mode neutral into the dark palette by darkening it; the two
+ladders are separately authored.
 
 **The On-Accent Rule.** Never hard-code white on an accent fill. Because the accent
 *lightens* in dark mode, white-on-accent inverts from 5.0:1 to 2.7:1 — the label
@@ -335,12 +341,12 @@ standalone PWA, so it owns the whole window including the notch and home-indicat
 zones.
 
 **The asymmetric two-column split.** Both surfaces divide into a wide working column
-and a narrow companion column: `minmax(0, 62fr) / minmax(300px, 38fr)` on the
-launcher, `63fr / 37fr` on focus pages, both with a hard `300px` floor on the right.
-The wide side holds what you scan (tool sections, tasks); the narrow side holds what
-you keep (quick links, lists, pins). The split collapses to one column at 960px
-(launcher) and 900px (focus pages). Searching collapses it too — results go
-full-width, because a filtered set has no left/right meaning.
+and a narrow companion column: `minmax(0, 63fr) / minmax(300px, 37fr)`, unified across
+the launcher and focus pages, with a hard `300px` floor on the right. The wide side
+holds what you scan (tool sections, tasks); the narrow side holds what you keep
+(quick links, lists, pins). The split collapses to one column at 960px on both
+surfaces. Searching collapses it too — results go full-width, because a filtered set
+has no left/right meaning.
 
 **Rhythm.** A 2px-based scale where the load-bearing steps are 16px between panels
 and columns, 12px inside a tool grid, 8px between list rows, and 2px between
@@ -374,8 +380,8 @@ the most common way to break it.
 **The tonal ladder** answers *what layer am I on*. Three surfaces, always in the same
 order: `--paper` is the page and never an object; `--paper-2` is where every
 interactive object rests; `--card` is the raised state — permanent for panels,
-earned on hover for tiles and rows. In dark mode the ladder is `#15171c` → `#262a33`
-→ `#1c1f26`, the same three steps as the Learning Hub.
+earned on hover for tiles and rows. In dark mode the ladder is `#13151b` → `#212530`
+→ `#191c24`, aligned with LACE's near-black studio direction.
 
 **Ambient shadow** answers *where does this container end*. The shadow token is
 deliberately near-invisible: a 1px contact line at 4% alpha plus a wide 20px
@@ -389,8 +395,8 @@ slides — and disappears entirely under `prefers-reduced-motion`.
 ### Shadow Vocabulary
 
 - **Ambient** (`--shadow: 0 1px 2px rgba(38,54,63,.055), 0 9px 28px -9px rgba(38,54,63,.14)`): Panels, the header band, the head-meta chip, the results bar, the announcement banner. Present at rest, unnoticed. The tint is cool slate, not brown — a warm shadow over the sunrise reads as grime, a cool one as shade.
-- **Ambient, dark** (`box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 8px 24px -8px rgba(0,0,0,.5)`): The same role, much stronger alphas, because a dark ground swallows a 4% shadow.
-- **Overlay** (`box-shadow: 0 2px 4px rgba(28,26,23,.05), 0 14px 36px -10px rgba(28,26,23,.14)`): Defined once and used once — the focus-page dropdown on the launcher. It is the only element in the product that genuinely floats.
+- **Ambient, dark** (`box-shadow: 0 2px 6px rgba(0,0,0,.38), 0 8px 28px -6px rgba(0,0,0,.52)`): The same role, much stronger alphas, because a dark ground swallows a 4% shadow.
+- **Overlay** (`box-shadow: var(--shadow-lg)` — `0 3px 10px rgba(38,54,63,.08), 0 22px 46px -13px rgba(38,54,63,.20)`): Defined once and used once — the focus-page dropdown on the launcher. It is the only element in the product that genuinely floats.
 - **Accent bloom** (`box-shadow: 0 4px 14px -6px color-mix(in srgb, var(--link-accent) 35%, transparent)`): Pin and quick-link rows on hover only. A tinted glow in the item's own pigment, not a neutral shadow.
 
 ### Named Rules
