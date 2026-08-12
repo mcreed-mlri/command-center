@@ -432,6 +432,106 @@
       .dash-panel[data-section="LMS"] .doc-list > li:nth-last-child(2) .doc-row { border-bottom: 1px solid var(--line-soft); }
     }
 
+    /* ---- LMS Health & deploys (Live + CI) ---------------------------
+       Nested under the LMS panel. Collapsed by default; summary dot
+       goes red only when something is actually broken. Pattern ported
+       from teaching-cc (ebhcs-command-center). */
+    .sites-status {
+      margin-top: 8px; padding-top: 12px;
+      border-top: 1px solid var(--line-soft);
+    }
+    .sites-status.is-collapsed { padding-top: 10px; }
+    .sites-status-head {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sites-status.is-collapsed .sites-status-head { margin-bottom: 0; }
+    .sites-status:not(.is-collapsed) .sites-status-head { margin-bottom: 8px; }
+    .status-toggle {
+      display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0;
+      font: inherit; background: none; border: 0; padding: 2px 0; cursor: pointer; color: inherit;
+    }
+    .status-toggle:focus-visible {
+      outline: none; border-radius: 4px;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+    }
+    .sites-status-label {
+      font-size: 13px; font-weight: 500; color: var(--faint); letter-spacing: 0;
+      text-transform: none; transition: color .15s;
+    }
+    .status-toggle:hover .sites-status-label { color: var(--muted); }
+    .status-chevron {
+      flex: none; width: 14px; height: 14px; color: var(--faint);
+      transition: transform .15s;
+    }
+    .sites-status:not(.is-collapsed) .status-chevron { transform: rotate(180deg); }
+    .status-summary-dot {
+      flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--faint);
+    }
+    .status-summary-dot.is-ok { background: var(--ok); }
+    .status-summary-dot.is-fail { background: var(--danger); animation: ci-pulse 1.4s ease-in-out infinite; }
+    .status-summary-dot.is-pending { background: var(--hue-3); }
+    .ci-refresh {
+      flex: none; font-size: 12px; font-weight: 600; color: var(--faint);
+      background: none; border: 0; cursor: pointer; padding: 2px 4px; border-radius: 4px;
+    }
+    .sites-status.is-collapsed .ci-refresh { display: none; }
+    .ci-refresh:hover { color: var(--muted); background: var(--hover-tint); }
+    .ci-rows {
+      list-style: none; margin: 0; padding: 0;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 8px;
+    }
+    .sites-status.is-collapsed .ci-rows,
+    #ciStatus[hidden] { display: none; }
+    .ci-group {
+      grid-column: 1 / -1; padding: 7px 2px 2px;
+    }
+    .ci-group:first-child { padding-top: 0; }
+    .ci-group-label {
+      font-size: 9px; font-weight: 700; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--faint);
+    }
+    .ci-block--live {
+      grid-column: 1 / -1;
+      padding-bottom: 8px; margin-bottom: 2px;
+      border-bottom: 1px solid var(--line-soft);
+    }
+    .ci-block--live .ci-group-label { display: block; }
+    .ci-live-grid {
+      list-style: none; margin: 5px 0 0; padding: 0;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px;
+    }
+    .ci-row { min-width: 0; }
+    .ci-row--live .ci-row-main {
+      padding: 8px 10px;
+      background: var(--paper-2);
+      border: 1px solid var(--line-soft);
+      border-radius: 8px; gap: 8px;
+    }
+    .ci-row--live .ci-text {
+      flex-direction: row; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .ci-row--live .ci-name { font-size: 12px; font-weight: 650; }
+    .ci-row--live .ci-meta { flex: none; font-size: 10px; font-weight: 600; letter-spacing: .01em; }
+    .ci-row-main {
+      display: flex; align-items: center; gap: 6px; padding: 4px 2px;
+      text-decoration: none; color: inherit; border-radius: 5px; transition: background .15s;
+    }
+    a.ci-row-main:hover { background: var(--hover-tint); }
+    .ci-dot { flex: none; width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
+    .ci-dot.is-ok { background: var(--ok); }
+    .ci-dot.is-fail { background: var(--danger); }
+    .ci-dot.is-pending { background: var(--hue-3); animation: ci-pulse 1.4s ease-in-out infinite; }
+    .ci-dot.is-warn { background: var(--hue-3); }
+    @keyframes ci-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+    .ci-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0; }
+    .ci-name { font-size: 11.5px; font-weight: 650; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ci-meta { font-size: 10px; line-height: 1.2; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .ci-row.is-fail .ci-meta { color: var(--danger); }
+    @media (max-width: 520px) {
+      .ci-live-grid { grid-template-columns: 1fr; }
+      .ci-rows { grid-template-columns: 1fr; }
+    }
+
     /* ---- Quick Links (icon over label, laid out inline) ------------ */
     .app-grid {
       list-style: none; margin: 0; padding: 0;
@@ -1392,6 +1492,7 @@
         list.className = "doc-list";
         for (const item of items) renderDocRow(item, sec, list);
         body.appendChild(list);
+        if (sec === "LMS") body.appendChild(buildLmsStatusPanel());
       } else if (cfg.layout === "apps") {
         const grid = document.createElement("ul");
         grid.className = "app-grid";
@@ -1412,6 +1513,352 @@
     }
 
     board.append(leftCol, rightCol);
+
+    /* ---- LMS Health & deploys --------------------------------------
+       Collapsed under the LMS panel. Live probes prefer GET /api/status
+       (Pages function). CI prefers GET /api/ci, with a public GitHub API
+       fallback for local static serving. Cached 5 minutes. */
+    const STATUS_CACHE_KEY = "tu-lms-status-cache-v3";
+    const STATUS_TTL_MS = 5 * 60 * 1000;
+    const LIVE_SITES = [
+      {
+        id: "learning-hub",
+        label: "Learning Hub",
+        healthUrl: "https://lms-discovery.vercel.app/",
+        fallbackUrl: "https://lms-discovery.vercel.app/",
+        kind: "homepage",
+      },
+      {
+        id: "brightspace-manager",
+        label: "Brightspace Manager",
+        healthUrl: "https://brightspace-manager.vercel.app/",
+        fallbackUrl: "https://brightspace-manager.vercel.app/",
+        kind: "homepage",
+      },
+    ];
+    const CI_PUBLIC_PROJECTS = [
+      {
+        repo: "mcreed-mlri/lms-discovery",
+        label: "Learning Hub",
+        workflows: [
+          { file: "ci.yml", label: "CI" },
+          // Same workflow file; Monday cron is filtered via event=schedule.
+          { file: "ci.yml", label: "Weekly", event: "schedule" },
+        ],
+      },
+      {
+        repo: "mcreed-mlri/brightspace-manager",
+        label: "Brightspace Manager",
+        workflows: [
+          { file: "ci.yml", label: "CI" },
+          { file: "ci.yml", label: "Weekly", event: "schedule" },
+          { file: "codeql.yml", label: "CodeQL" },
+        ],
+      },
+    ];
+
+    function buildLmsStatusPanel() {
+      const panel = document.createElement("div");
+      panel.className = "sites-status is-collapsed";
+      panel.id = "statusPanel";
+      panel.dataset.search = "health deploys ci deploy learning hub brightspace manager github status uptime";
+      panel.innerHTML =
+        '<div class="sites-status-head">' +
+          '<button class="status-toggle" type="button" id="statusToggle" aria-expanded="false" aria-controls="ciStatus">' +
+            '<span class="status-summary-dot is-pending" id="statusSummaryDot" aria-hidden="true"></span>' +
+            '<span class="sites-status-label">Health &amp; deploys</span>' +
+            '<svg class="status-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>' +
+          "</button>" +
+          '<button class="ci-refresh" type="button" id="ciRefresh">Refresh</button>' +
+        "</div>" +
+        '<ul class="ci-rows" id="ciStatus" hidden></ul>';
+      return panel;
+    }
+
+    function ciRelTime(iso) {
+      const mins = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+      if (mins < 1) return "just now";
+      if (mins < 60) return mins + "m ago";
+      const hrs = Math.round(mins / 60);
+      if (hrs < 24) return hrs + "h ago";
+      return Math.round(hrs / 24) + "d ago";
+    }
+
+    async function ciFetchRun(repo, file, event) {
+      const params = new URLSearchParams({ per_page: "1" });
+      if (event) params.set("event", event);
+      const res = await fetch(
+        "https://api.github.com/repos/" + repo + "/actions/workflows/" + file + "/runs?" + params,
+        { headers: { Accept: "application/vnd.github+json" } }
+      );
+      if (!res.ok) throw new Error(String(res.status));
+      const data = await res.json();
+      const run = data.workflow_runs && data.workflow_runs[0];
+      if (!run) return null;
+      return {
+        status: run.status,
+        conclusion: run.conclusion,
+        url: run.html_url,
+        updatedAt: run.updated_at,
+        event: run.event,
+      };
+    }
+
+    function ciStatusMeta(run) {
+      if (!run) return { cls: "is-unknown", label: "No runs yet" };
+      if (run.status !== "completed") {
+        return {
+          cls: "is-pending",
+          label: run.status === "in_progress" ? "Running…" : "Queued…",
+        };
+      }
+      if (run.conclusion === "success") return { cls: "is-ok", label: ciRelTime(run.updatedAt) };
+      if (["failure", "timed_out", "action_required"].includes(run.conclusion)) {
+        return { cls: "is-fail", label: "Failed · " + ciRelTime(run.updatedAt) };
+      }
+      return {
+        cls: "is-unknown",
+        label: (run.conclusion || "unknown") + " · " + ciRelTime(run.updatedAt),
+      };
+    }
+
+    function liveStatusMeta(site) {
+      if (!site || site.error) return { cls: "is-unknown", label: "Couldn't check" };
+      if (site.ok) {
+        const ms = typeof site.latencyMs === "number" ? site.latencyMs + "ms" : "";
+        return { cls: "is-ok", label: ms ? "Up · " + ms : "Up" };
+      }
+      return { cls: "is-fail", label: "Down" };
+    }
+
+    function liveRowHtml(site) {
+      const meta = liveStatusMeta(site);
+      const href = (site && site.url) || (site && site.fallbackUrl) || "#";
+      return (
+        '<li class="ci-row ci-row--live' + (meta.cls === "is-fail" ? " is-fail" : "") + '">' +
+          '<a class="ci-row-main" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">' +
+            '<span class="ci-dot ' + meta.cls + '" aria-hidden="true"></span>' +
+            '<span class="ci-text">' +
+              '<span class="ci-name">' + escapeHtml(site.label || "Site") + "</span>" +
+              '<span class="ci-meta">' + escapeHtml(meta.label) + "</span>" +
+            "</span>" +
+          "</a>" +
+        "</li>"
+      );
+    }
+
+    function ciRowHtml(project, w) {
+      const meta = w.error ? { cls: "is-unknown", label: "Couldn't check" } : ciStatusMeta(w.run);
+      const href = (w.run && w.run.url) || ("https://github.com/" + project.repo + "/actions");
+      return (
+        '<li class="ci-row' + (meta.cls === "is-fail" ? " is-fail" : "") + '">' +
+          '<a class="ci-row-main" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">' +
+            '<span class="ci-dot ' + meta.cls + '" aria-hidden="true"></span>' +
+            '<span class="ci-text">' +
+              '<span class="ci-name">' + escapeHtml(w.label) + "</span>" +
+              '<span class="ci-meta">' + escapeHtml(meta.label) + "</span>" +
+            "</span>" +
+          "</a>" +
+        "</li>"
+      );
+    }
+
+    function applyCiLabels(projects) {
+      const labelByKey = new Map();
+      CI_PUBLIC_PROJECTS.forEach((p) => {
+        p.workflows.forEach((w) => {
+          labelByKey.set(p.repo + ":" + w.file + ":" + (w.event || "") + ":" + w.label, w.label);
+        });
+      });
+      return (projects || []).map((p) => ({
+        ...p,
+        label: CI_PUBLIC_PROJECTS.find((c) => c.repo === p.repo)?.label || p.label,
+        workflows: (p.workflows || []).map((w) => ({
+          ...w,
+          label:
+            labelByKey.get(p.repo + ":" + w.file + ":" + (w.event || "") + ":" + w.label) ||
+            w.label,
+        })),
+      }));
+    }
+
+    function statusRender(el, sites, projects) {
+      const labeledProjects = applyCiLabels(projects);
+      const liveItems = (sites && sites.length
+        ? sites
+        : LIVE_SITES.map((s) => ({ ...s, error: true }))
+      )
+        .map(liveRowHtml)
+        .join("");
+      const liveHtml =
+        '<li class="ci-block ci-block--live">' +
+          '<span class="ci-group-label">Live</span>' +
+          '<ul class="ci-live-grid">' + liveItems + "</ul>" +
+        "</li>";
+      const ciHtml = labeledProjects
+        .map(
+          (p) =>
+            '<li class="ci-group"><span class="ci-group-label">' +
+            escapeHtml(p.label) +
+            "</span></li>" +
+            p.workflows.map((w) => ciRowHtml(p, w)).join("")
+        )
+        .join("");
+      el.innerHTML = liveHtml + ciHtml;
+      updateStatusSummary(sites, labeledProjects);
+      setStatusCollapsed(
+        document.getElementById("statusPanel")?.classList.contains("is-collapsed") ?? true
+      );
+    }
+
+    function computeStatusSummary(sites, projects) {
+      const classes = [];
+      (sites || []).forEach((s) => classes.push(liveStatusMeta(s).cls));
+      (projects || []).forEach((p) => {
+        p.workflows.forEach((w) => {
+          const meta = w.error ? { cls: "is-unknown" } : ciStatusMeta(w.run);
+          classes.push(meta.cls);
+        });
+      });
+      if (!classes.length) return "pending";
+      if (classes.some((c) => c === "is-fail" || c === "is-unknown")) return "fail";
+      if (classes.some((c) => c === "is-pending")) return "pending";
+      return "ok";
+    }
+
+    function updateStatusSummary(sites, projects) {
+      const dot = document.getElementById("statusSummaryDot");
+      if (!dot) return;
+      dot.className = "status-summary-dot is-" + computeStatusSummary(sites, projects);
+    }
+
+    function setStatusCollapsed(collapsed) {
+      const panel = document.getElementById("statusPanel");
+      const list = document.getElementById("ciStatus");
+      const toggle = document.getElementById("statusToggle");
+      if (!panel || !list || !toggle) return;
+      panel.classList.toggle("is-collapsed", collapsed);
+      list.hidden = collapsed;
+      toggle.setAttribute("aria-expanded", String(!collapsed));
+    }
+
+    async function probeLiveSiteClient(site) {
+      const started = Date.now();
+      try {
+        const res = await fetch(site.healthUrl, {
+          cache: "no-store",
+          mode: "no-cors",
+        });
+        return {
+          id: site.id,
+          label: site.label,
+          ok: res.type === "opaque" || res.ok || (res.status >= 300 && res.status < 400),
+          source: "homepage",
+          db: null,
+          latencyMs: Date.now() - started,
+          url: site.fallbackUrl,
+        };
+      } catch {
+        return {
+          id: site.id,
+          label: site.label,
+          ok: false,
+          source: "error",
+          db: null,
+          latencyMs: Date.now() - started,
+          url: site.fallbackUrl,
+          error: true,
+        };
+      }
+    }
+
+    async function fetchLiveSites() {
+      try {
+        const res = await fetch("/api/status", { cache: "no-store" });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data.sites)) return data.sites;
+        }
+      } catch {}
+      return Promise.all(LIVE_SITES.map(probeLiveSiteClient));
+    }
+
+    async function ciFetchProjectsClient() {
+      return Promise.all(
+        CI_PUBLIC_PROJECTS.map(async (project) => {
+          const workflows = await Promise.all(
+            project.workflows.map(async (w) => {
+              try {
+                return {
+                  ...w,
+                  run: await ciFetchRun(project.repo, w.file, w.event),
+                };
+              } catch {
+                return { ...w, run: null, error: true };
+              }
+            })
+          );
+          return { repo: project.repo, label: project.label, workflows };
+        })
+      );
+    }
+
+    async function ciFetchProjects() {
+      try {
+        const res = await fetch("/api/ci", { cache: "no-store" });
+        if (res.ok) return (await res.json()).projects;
+      } catch {}
+      return ciFetchProjectsClient();
+    }
+
+    async function loadStatusPanel(force) {
+      const el = document.getElementById("ciStatus");
+      if (!el) return;
+
+      let cache = null;
+      try {
+        cache = JSON.parse(localStorage.getItem(STATUS_CACHE_KEY) || "null");
+      } catch {}
+      const fresh = cache && Date.now() - cache.ts < STATUS_TTL_MS;
+
+      if (fresh && !force) {
+        statusRender(el, cache.sites, cache.projects);
+        return;
+      }
+      if (cache) statusRender(el, cache.sites, cache.projects);
+      else {
+        updateStatusSummary(null, null);
+        el.innerHTML =
+          '<li class="ci-row" style="grid-column:1/-1"><span class="ci-row-main">' +
+          '<span class="ci-dot is-pending" aria-hidden="true"></span>' +
+          '<span class="ci-text"><span class="ci-name">Checking status…</span></span></span></li>';
+        setStatusCollapsed(
+          document.getElementById("statusPanel")?.classList.contains("is-collapsed") ?? true
+        );
+      }
+
+      try {
+        const [sites, projects] = await Promise.all([fetchLiveSites(), ciFetchProjects()]);
+        localStorage.setItem(
+          STATUS_CACHE_KEY,
+          JSON.stringify({ ts: Date.now(), sites, projects })
+        );
+        statusRender(el, sites, projects);
+      } catch {
+        // Network down or rate-limited: leave stale cache showing.
+      }
+    }
+
+    document.getElementById("statusToggle")?.addEventListener("click", () => {
+      const panel = document.getElementById("statusPanel");
+      setStatusCollapsed(!panel?.classList.contains("is-collapsed"));
+    });
+    document.getElementById("ciRefresh")?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      loadStatusPanel(true);
+    });
+    setStatusCollapsed(true);
+    loadStatusPanel(false);
 
     /* ---- team avatar stack ----------------------------------------- */
     /* Each focus page is one avatar in the header. Past AVATAR_MAX the rest

@@ -20,6 +20,8 @@ Plain HTML/CSS/JS — **no build step, no dependencies**. Three files matter:
 | `index.html` | The whole app: styles, the link list, and the render logic. **This is the only file you normally edit.** |
 | `sw.js` | Service worker — caches the app so it loads instantly and works offline. |
 | `manifest.webmanifest` | PWA settings (name, icons, colors). Rarely touched. |
+| `functions/api/status.js` | Live prod probe for Learning Hub + Brightspace Manager. |
+| `functions/api/ci.js` | Latest GitHub Actions runs for Learning Hub + Brightspace Manager. |
 
 Everything you edit day-to-day lives in the **`EDIT HERE`** block near the
 bottom of `index.html` (search the file for `EDIT HERE`).
@@ -48,6 +50,25 @@ Each entry is one tile or chip. To add one, copy an existing line and change it:
 To remove a tile, delete its entry. That's it.
 
 After editing, **bump the cache** (see below) so everyone gets the change.
+
+---
+
+## LMS Health & deploys
+
+Under the LMS panel, a collapsed **Health & deploys** strip monitors:
+
+1. **Live** — are Learning Hub and Brightspace Manager reachable?
+   (`GET /api/status` hits their public homepages; deep `/api/health/*`
+   routes are auth-gated and not used here.)
+2. **CI** — GitHub Actions for both LMS apps:
+   - **Learning Hub** (`mcreed-mlri/lms-discovery`): **CI**, **Weekly**
+     (Monday cron on `ci.yml`)
+   - **Brightspace Manager** (`mcreed-mlri/brightspace-manager`): **CI**,
+     **Weekly** (Monday cron on `ci.yml`), **CodeQL** (incl. Sunday scan)
+
+Refresh rechecks both. Results cache in `localStorage` for 5 minutes.
+Local `python -m http.server` has no Pages functions, so the UI falls back
+to direct probes / the public GitHub API.
 
 ---
 
