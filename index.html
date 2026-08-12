@@ -522,6 +522,7 @@
     .ci-dot.is-fail { background: var(--danger); }
     .ci-dot.is-pending { background: var(--hue-3); animation: ci-pulse 1.4s ease-in-out infinite; }
     .ci-dot.is-warn { background: var(--hue-3); }
+    .ci-dot.is-idle { background: var(--faint); }
     @keyframes ci-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
     .ci-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 0; }
     .ci-name { font-size: 11.5px; font-weight: 650; line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -1518,7 +1519,7 @@
        Collapsed under the LMS panel. Live probes prefer GET /api/status
        (Pages function). CI prefers GET /api/ci, with a public GitHub API
        fallback for local static serving. Cached 5 minutes. */
-    const STATUS_CACHE_KEY = "tu-lms-status-cache-v4";
+    const STATUS_CACHE_KEY = "tu-lms-status-cache-v5";
     const STATUS_TTL_MS = 5 * 60 * 1000;
     const LIVE_SITES = [
       {
@@ -1604,7 +1605,9 @@
     }
 
     function ciStatusMeta(run) {
-      if (!run) return { cls: "is-unknown", label: "No runs yet" };
+      /* Scheduled rows (Weekly) start empty until the first cron — don't treat
+         that as a failure or the summary dot flashes red all week. */
+      if (!run) return { cls: "is-idle", label: "Waiting for first run" };
       if (run.status !== "completed") {
         return {
           cls: "is-pending",
@@ -1724,8 +1727,10 @@
         });
       });
       if (!classes.length) return "pending";
-      if (classes.some((c) => c === "is-fail" || c === "is-unknown")) return "fail";
-      if (classes.some((c) => c === "is-pending")) return "pending";
+      /* Only real failures flash red. Idle = waiting for first scheduled run;
+         unknown/pending stay amber so rate-limits don't look like outages. */
+      if (classes.some((c) => c === "is-fail")) return "fail";
+      if (classes.some((c) => c === "is-unknown" || c === "is-pending")) return "pending";
       return "ok";
     }
 
