@@ -1,9 +1,8 @@
 /**
  * Live site status probe for the Training Unit Command Center.
  *
- * GET /api/status — probes Learning Hub + Brightspace Manager production
- * reachability. Their /api/health/* routes are auth-gated, so we check the
- * public homepage (and follow redirects) rather than those operator endpoints.
+ * GET /api/status — probes production health (not CI).
+ * Prefer JSON /api/health when available; fall back to homepage reachability.
  */
 
 const SITES = [
@@ -17,9 +16,8 @@ const SITES = [
   {
     id: "brightspace-manager",
     label: "Brightspace Manager",
-    healthUrl: "https://brightspace-manager.vercel.app/",
+    healthUrl: "https://brightspace-manager.vercel.app/api/health/",
     fallbackUrl: "https://brightspace-manager.vercel.app/",
-    kind: "homepage",
   },
 ];
 
@@ -31,40 +29,86 @@ const json = (body, status = 200) =>
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 
+async function probeHomepage(site, signal) {
+  const homeStarted = Date.now();
+  const home = await fetch(site.fallbackUrl, {
+    method: "GET",
+    redirect: "follow",
+    signal,
+    headers: { "User-Agent": "training-unit-command-center" },
+  });
+  return {
+    id: site.id,
+    label: site.label,
+    ok: home.ok || (home.status >= 300 && home.status < 400),
+    source: "homepage",
+    db: null,
+    latencyMs: Date.now() - homeStarted,
+    url: site.fallbackUrl,
+    checkedAt: new Date().toISOString(),
+  };
+}
+
 async function probeSite(site) {
   const started = Date.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
 
   try {
+    if (site.kind === "homepage") {
+      return await probeHomepage(site, controller.signal);
+    }
+
     const res = await fetch(site.healthUrl, {
       method: "GET",
       redirect: "follow",
       signal: controller.signal,
-      headers: { "User-Agent": "training-unit-command-center" },
+      headers: {
+        Accept: "application/json",
+        "User-Agent": "training-unit-command-center",
+      },
     });
     const latencyMs = Date.now() - started;
+    const contentType = res.headers.get("content-type") || "";
 
-    // Homepage / redirect-to-app is enough — deep health routes need secrets.
-    if (site.kind === "homepage") {
-      return {
-        id: site.id,
-        label: site.label,
-        ok: res.ok || (res.status >= 300 && res.status < 400),
-        source: "homepage",
-        db: null,
-        latencyMs,
-        url: site.fallbackUrl,
-        checkedAt: new Date().toISOString(),
-      };
+    if (res.ok && contentType.includes("application/json")) {
+      let body = null;
+      try {
+        body = await res.json();
+      } catch {
+        body = null;
+      }
+      if (body && typeof body.ok === "boolean") {
+        return {
+          id: site.id,
+          label: site.label,
+          ok: body.ok === true && body.db !== "fail",
+          source: "health",
+          db: body.db ?? null,
+          latencyMs: typeof body.latencyMs === "number" ? body.latencyMs : latencyMs,
+          url: site.fallbackUrl,
+          checkedAt: new Date().toISOString(),
+        };
+      }
+    }
+
+    // Health route missing/old deploy — fall back to homepage reachability.
+    if (res.status === 404 || !contentType.includes("application/json")) {
+      const homeController = new AbortController();
+      const homeTimer = setTimeout(() => homeController.abort(), TIMEOUT_MS);
+      try {
+        return await probeHomepage(site, homeController.signal);
+      } finally {
+        clearTimeout(homeTimer);
+      }
     }
 
     return {
       id: site.id,
       label: site.label,
-      ok: res.ok,
+      ok: false,
       source: "health",
-      db: null,
+      db: "fail",
       latencyMs,
       url: site.fallbackUrl,
       checkedAt: new Date().toISOString(),

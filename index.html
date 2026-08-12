@@ -1518,7 +1518,7 @@
        Collapsed under the LMS panel. Live probes prefer GET /api/status
        (Pages function). CI prefers GET /api/ci, with a public GitHub API
        fallback for local static serving. Cached 5 minutes. */
-    const STATUS_CACHE_KEY = "tu-lms-status-cache-v3";
+    const STATUS_CACHE_KEY = "tu-lms-status-cache-v4";
     const STATUS_TTL_MS = 5 * 60 * 1000;
     const LIVE_SITES = [
       {
@@ -1531,9 +1531,8 @@
       {
         id: "brightspace-manager",
         label: "Brightspace Manager",
-        healthUrl: "https://brightspace-manager.vercel.app/",
+        healthUrl: "https://brightspace-manager.vercel.app/api/health/",
         fallbackUrl: "https://brightspace-manager.vercel.app/",
-        kind: "homepage",
       },
     ];
     const CI_PUBLIC_PROJECTS = [
@@ -1625,9 +1624,13 @@
     function liveStatusMeta(site) {
       if (!site || site.error) return { cls: "is-unknown", label: "Couldn't check" };
       if (site.ok) {
-        const ms = typeof site.latencyMs === "number" ? site.latencyMs + "ms" : "";
-        return { cls: "is-ok", label: ms ? "Up · " + ms : "Up" };
+        const parts = ["Up"];
+        if (site.db === "ok") parts.push("DB");
+        if (typeof site.latencyMs === "number") parts.push(site.latencyMs + "ms");
+        return { cls: "is-ok", label: parts.join(" · ") };
       }
+      if (site.db === "fail") return { cls: "is-fail", label: "DB down" };
+      if (site.db === "unconfigured") return { cls: "is-fail", label: "DB not configured" };
       return { cls: "is-fail", label: "Down" };
     }
 
@@ -1745,17 +1748,48 @@
     async function probeLiveSiteClient(site) {
       const started = Date.now();
       try {
-        const res = await fetch(site.healthUrl, {
-          cache: "no-store",
-          mode: "no-cors",
-        });
+        if (site.kind === "homepage") {
+          const res = await fetch(site.healthUrl, {
+            cache: "no-store",
+            mode: "no-cors",
+          });
+          return {
+            id: site.id,
+            label: site.label,
+            ok: res.type === "opaque" || res.ok || (res.status >= 300 && res.status < 400),
+            source: "homepage",
+            db: null,
+            latencyMs: Date.now() - started,
+            url: site.fallbackUrl,
+          };
+        }
+
+        const res = await fetch(site.healthUrl, { cache: "no-store" });
+        const latencyMs = Date.now() - started;
+        const contentType = res.headers.get("content-type") || "";
+        if (res.ok && contentType.includes("application/json")) {
+          const body = await res.json();
+          if (body && typeof body.ok === "boolean") {
+            return {
+              id: site.id,
+              label: site.label,
+              ok: body.ok === true && body.db !== "fail",
+              source: "health",
+              db: body.db ?? null,
+              latencyMs: typeof body.latencyMs === "number" ? body.latencyMs : latencyMs,
+              url: site.fallbackUrl,
+            };
+          }
+        }
+        const homeStarted = Date.now();
+        const home = await fetch(site.fallbackUrl, { cache: "no-store", mode: "no-cors" });
         return {
           id: site.id,
           label: site.label,
-          ok: res.type === "opaque" || res.ok || (res.status >= 300 && res.status < 400),
+          ok: home.type === "opaque" || home.ok,
           source: "homepage",
           db: null,
-          latencyMs: Date.now() - started,
+          latencyMs: Date.now() - homeStarted,
           url: site.fallbackUrl,
         };
       } catch {

@@ -58,8 +58,10 @@ After editing, **bump the cache** (see below) so everyone gets the change.
 Under the LMS panel, a collapsed **Health & deploys** strip monitors:
 
 1. **Live** — are Learning Hub and Brightspace Manager reachable?
-   (`GET /api/status` hits their public homepages; deep `/api/health/*`
-   routes are auth-gated and not used here.)
+   - Learning Hub: public homepage probe
+   - Brightspace Manager: `GET /api/health/` (includes Supabase `db`
+     status: ok / fail / unconfigured). Falls back to homepage if that
+     route is missing.
 2. **CI** — GitHub Actions for both LMS apps:
    - **Learning Hub** (`mcreed-mlri/lms-discovery`): **CI**, **Weekly**
      (Monday cron on `ci.yml`)
