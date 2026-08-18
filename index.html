@@ -1148,7 +1148,14 @@
             children: [
               { name: "Otter Meeting Summaries", url: "https://drive.google.com/drive/folders/1x0IBUlXj9JOqs30Ekp9CYPLPSGQq0DKu" },
             ] },
-          { name: "Open External Collaboration folder", lead: true, color: "#9aa0a6", url: "https://drive.google.com/drive/folders/0AKgEti2nIL4SUk9PVA" },
+          /* Its own shared drive, not a Training Unit project — the divider and the
+             grey dot keep that distinction visible while it still drills down. */
+          { name: "External Collaboration", divider: true, color: "#9aa0a6", url: "https://drive.google.com/drive/folders/0AKgEti2nIL4SUk9PVA",
+            children: [
+              { name: "Faculty Data docs", url: "https://drive.google.com/drive/folders/1kKqhqnGeOciLvnik_CNtL2pNc-3i7LW-" },
+              { name: "Meeting Notes", url: "https://drive.google.com/drive/folders/1MmkgU5Xp3vywsxtovoG7wp6oAyMWTIMF" },
+              { name: "Structure Development", url: "https://drive.google.com/drive/folders/1e6C7B1zdCTuyNSsEd3Ei-TndIXMwP0Jz" },
+            ] },
         ] },
       { section: "Planning & Collaboration", name: "Monday.com", icon: "icons/monday.svg", accent: "#ff3d57",
         count: "4 workspaces", open: true, openLabel: "Open workspace",
