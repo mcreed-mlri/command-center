@@ -890,7 +890,12 @@
     .subsublinks > li { min-width: 0; }
     @media (min-width: 560px) { .subsublinks { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
     .subsublink { font-size: 13.5px; }
-    .subsublink .sublink-tick { width: 5px; height: 5px; opacity: .55; }
+    /* Full-strength colour, one size down: a subfolder carries its project's
+       colour as plainly as the project row does, and the 5px keeps the tier
+       legible without dimming the dot into grey. */
+    .subsublink .sublink-tick { width: 5px; height: 5px; }
+    /* The shortcut row is not a folder, so its dot stays recessive. */
+    .subsublink-open .sublink-tick { opacity: .4; }
     .subsublink-open { color: var(--muted); }
     .subsublink-open .sublink-name { font-style: italic; }
     /* pinned "open whole drive" row at the top */
