@@ -8,6 +8,13 @@
  *
  * Learning Hub and Brightspace Manager both run CI on a Monday cron
  * (`event=schedule`). Manager also runs CodeQL (including a Sunday scan).
+ *
+ * The unfiltered CI rows are pinned to `main`: a green run on a PR branch says
+ * nothing about production, and the main-branch run doubles as the reference
+ * the dashboard uses to tell a live failure from a stale scheduled one. Each
+ * run therefore also reports `sha` and `createdAt` — re-running a scheduled run
+ * replays its original commit, so a cron failure can outlive its own fix and
+ * only those two fields can prove main has moved past it.
  */
 
 const PROJECTS = [
@@ -15,7 +22,7 @@ const PROJECTS = [
     repo: "mcreed-mlri/lms-discovery",
     label: "Learning Hub",
     workflows: [
-      { file: "ci.yml", label: "CI" },
+      { file: "ci.yml", label: "CI", branch: "main" },
       { file: "ci.yml", label: "Weekly", event: "schedule" },
     ],
   },
@@ -23,9 +30,9 @@ const PROJECTS = [
     repo: "mcreed-mlri/brightspace-manager",
     label: "Brightspace Manager",
     workflows: [
-      { file: "ci.yml", label: "CI" },
+      { file: "ci.yml", label: "CI", branch: "main" },
       { file: "ci.yml", label: "Weekly", event: "schedule" },
-      { file: "codeql.yml", label: "CodeQL" },
+      { file: "codeql.yml", label: "CodeQL", branch: "main" },
     ],
   },
 ];
@@ -36,9 +43,10 @@ const json = (body, status = 200) =>
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 
-async function fetchRun(repo, file, headers, event) {
+async function fetchRun(repo, file, headers, { event, branch } = {}) {
   const params = new URLSearchParams({ per_page: "1" });
   if (event) params.set("event", event);
+  if (branch) params.set("branch", branch);
   const res = await fetch(
     `https://api.github.com/repos/${repo}/actions/workflows/${file}/runs?${params}`,
     { headers }
@@ -51,8 +59,10 @@ async function fetchRun(repo, file, headers, event) {
     status: run.status,
     conclusion: run.conclusion,
     url: run.html_url,
+    createdAt: run.created_at,
     updatedAt: run.updated_at,
     event: run.event,
+    sha: run.head_sha,
   };
 }
 
@@ -70,13 +80,20 @@ export async function onRequestGet({ env }) {
         const workflows = await Promise.all(
           project.workflows.map(async (w) => {
             try {
-              const run = await fetchRun(project.repo, w.file, headers, w.event);
-              return { file: w.file, label: w.label, event: w.event || null, run };
+              const run = await fetchRun(project.repo, w.file, headers, w);
+              return {
+                file: w.file,
+                label: w.label,
+                event: w.event || null,
+                branch: w.branch || null,
+                run,
+              };
             } catch {
               return {
                 file: w.file,
                 label: w.label,
                 event: w.event || null,
+                branch: w.branch || null,
                 run: null,
                 error: true,
               };

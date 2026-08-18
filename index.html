@@ -1519,7 +1519,7 @@
        Collapsed under the LMS panel. Live probes prefer GET /api/status
        (Pages function). CI prefers GET /api/ci, with a public GitHub API
        fallback for local static serving. Cached 5 minutes. */
-    const STATUS_CACHE_KEY = "tu-lms-status-cache-v5";
+    const STATUS_CACHE_KEY = "tu-lms-status-cache-v6";
     const STATUS_TTL_MS = 5 * 60 * 1000;
     const LIVE_SITES = [
       {
@@ -1541,7 +1541,10 @@
         repo: "mcreed-mlri/lms-discovery",
         label: "Learning Hub",
         workflows: [
-          { file: "ci.yml", label: "CI" },
+          // Pinned to main: a green run on a PR branch says nothing about
+          // production, and this row is also the reference that tells a live
+          // failure from a stale scheduled one (see ciApplySupersede).
+          { file: "ci.yml", label: "CI", branch: "main" },
           // Same workflow file; Monday cron is filtered via event=schedule.
           { file: "ci.yml", label: "Weekly", event: "schedule" },
         ],
@@ -1550,9 +1553,9 @@
         repo: "mcreed-mlri/brightspace-manager",
         label: "Brightspace Manager",
         workflows: [
-          { file: "ci.yml", label: "CI" },
+          { file: "ci.yml", label: "CI", branch: "main" },
           { file: "ci.yml", label: "Weekly", event: "schedule" },
-          { file: "codeql.yml", label: "CodeQL" },
+          { file: "codeql.yml", label: "CodeQL", branch: "main" },
         ],
       },
     ];
@@ -1584,9 +1587,10 @@
       return Math.round(hrs / 24) + "d ago";
     }
 
-    async function ciFetchRun(repo, file, event) {
+    async function ciFetchRun(repo, file, { event, branch } = {}) {
       const params = new URLSearchParams({ per_page: "1" });
       if (event) params.set("event", event);
+      if (branch) params.set("branch", branch);
       const res = await fetch(
         "https://api.github.com/repos/" + repo + "/actions/workflows/" + file + "/runs?" + params,
         { headers: { Accept: "application/vnd.github+json" } }
@@ -1599,12 +1603,52 @@
         status: run.status,
         conclusion: run.conclusion,
         url: run.html_url,
+        createdAt: run.created_at,
         updatedAt: run.updated_at,
         event: run.event,
+        sha: run.head_sha,
       };
     }
 
-    function ciStatusMeta(run) {
+    /* Re-running a scheduled run replays the commit it was triggered on, so a
+       cron failure caused by something already fixed on main can never go
+       green again — the run stays red until the next Monday, days after the
+       fix. A newer passing run on main, on a newer commit, is the more recent
+       answer to the same question ("is main good?"), so the row takes that
+       colour instead of sitting red for a week. */
+    function ciApplySupersede(projects) {
+      return (projects || []).map((p) => {
+        const mainRuns = (p.workflows || []).filter(
+          (w) => w.branch && !w.event && w.run
+        );
+        return {
+          ...p,
+          workflows: (p.workflows || []).map((w) => {
+            const run = w.run;
+            if (!w.event || !run || run.status !== "completed") return w;
+            if (!["failure", "timed_out", "action_required"].includes(run.conclusion)) return w;
+            const ref = mainRuns.find(
+              (m) =>
+                m.file === w.file &&
+                m.run.conclusion === "success" &&
+                m.run.sha &&
+                m.run.sha !== run.sha &&
+                new Date(m.run.createdAt) > new Date(run.createdAt)
+            );
+            return ref ? { ...w, supersededBy: ref.run } : w;
+          }),
+        };
+      });
+    }
+
+    /* A weekly cron only carries information while it keeps firing, and GitHub
+       disables scheduled workflows on repos that go quiet. A green dot on a run
+       from three weeks ago is worse than no dot, so the row says so. Eight days
+       is the Monday cadence plus a day of slack. */
+    const CI_CRON_STALE_MS = 8 * 24 * 60 * 60 * 1000;
+
+    function ciStatusMeta(w) {
+      const run = w.run;
       /* Scheduled rows (Weekly) start empty until the first cron — don't treat
          that as a failure or the summary dot flashes red all week. */
       if (!run) return { cls: "is-idle", label: "Waiting for first run" };
@@ -1614,8 +1658,36 @@
           label: run.status === "in_progress" ? "Running…" : "Queued…",
         };
       }
+      /* Ahead of the conclusion on purpose: a cron that stopped firing hides
+         behind a stale green exactly as well as behind a stale red, and it is
+         the more urgent of the two problems. */
+      if (
+        w.event === "schedule" &&
+        Date.now() - new Date(run.createdAt).getTime() > CI_CRON_STALE_MS
+      ) {
+        return {
+          cls: "is-warn",
+          label: "Cron overdue · " + ciRelTime(run.createdAt),
+          title:
+            "The weekly cron last fired " +
+            ciRelTime(run.createdAt) +
+            ". GitHub disables scheduled workflows on repos with no recent activity — check the Actions tab.",
+        };
+      }
       if (run.conclusion === "success") return { cls: "is-ok", label: ciRelTime(run.updatedAt) };
       if (["failure", "timed_out", "action_required"].includes(run.conclusion)) {
+        if (w.supersededBy) {
+          return {
+            cls: "is-ok",
+            label: "Fixed since · " + ciRelTime(w.supersededBy.updatedAt),
+            title:
+              "This run failed " +
+              ciRelTime(run.updatedAt) +
+              " on an older commit. Main has passed since (" +
+              ciRelTime(w.supersededBy.updatedAt) +
+              "). Re-running replays the old commit, so the run itself stays red until the next cron.",
+          };
+        }
         return { cls: "is-fail", label: "Failed · " + ciRelTime(run.updatedAt) };
       }
       return {
@@ -1654,11 +1726,14 @@
     }
 
     function ciRowHtml(project, w) {
-      const meta = w.error ? { cls: "is-unknown", label: "Couldn't check" } : ciStatusMeta(w.run);
+      const meta = w.error
+        ? { cls: "is-unknown", label: "Couldn't check" }
+        : ciStatusMeta(w);
       const href = (w.run && w.run.url) || ("https://github.com/" + project.repo + "/actions");
+      const title = meta.title ? ' title="' + escapeHtml(meta.title) + '"' : "";
       return (
         '<li class="ci-row' + (meta.cls === "is-fail" ? " is-fail" : "") + '">' +
-          '<a class="ci-row-main" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer">' +
+          '<a class="ci-row-main" href="' + escapeHtml(href) + '" target="_blank" rel="noopener noreferrer"' + title + ">" +
             '<span class="ci-dot ' + meta.cls + '" aria-hidden="true"></span>' +
             '<span class="ci-text">' +
               '<span class="ci-name">' + escapeHtml(w.label) + "</span>" +
@@ -1689,7 +1764,7 @@
     }
 
     function statusRender(el, sites, projects) {
-      const labeledProjects = applyCiLabels(projects);
+      const labeledProjects = ciApplySupersede(applyCiLabels(projects));
       const liveItems = (sites && sites.length
         ? sites
         : LIVE_SITES.map((s) => ({ ...s, error: true }))
@@ -1722,15 +1797,19 @@
       (sites || []).forEach((s) => classes.push(liveStatusMeta(s).cls));
       (projects || []).forEach((p) => {
         p.workflows.forEach((w) => {
-          const meta = w.error ? { cls: "is-unknown" } : ciStatusMeta(w.run);
+          const meta = w.error ? { cls: "is-unknown" } : ciStatusMeta(w);
           classes.push(meta.cls);
         });
       });
       if (!classes.length) return "pending";
-      /* Only real failures flash red. Idle = waiting for first scheduled run;
-         unknown/pending stay amber so rate-limits don't look like outages. */
+      /* Only live failures flash red — a cron failure main has already moved
+         past reads green, since main passing later is the newer answer. Idle =
+         waiting for first scheduled run; unknown/pending stay amber so
+         rate-limits don't look like outages, and warn is a cron that has
+         stopped firing: worth a glance, not an alarm. */
       if (classes.some((c) => c === "is-fail")) return "fail";
-      if (classes.some((c) => c === "is-unknown" || c === "is-pending")) return "pending";
+      if (classes.some((c) => c === "is-unknown" || c === "is-pending" || c === "is-warn"))
+        return "pending";
       return "ok";
     }
 
@@ -1830,7 +1909,7 @@
               try {
                 return {
                   ...w,
-                  run: await ciFetchRun(project.repo, w.file, w.event),
+                  run: await ciFetchRun(project.repo, w.file, w),
                 };
               } catch {
                 return { ...w, run: null, error: true };
