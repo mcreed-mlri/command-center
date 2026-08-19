@@ -982,8 +982,11 @@
     };
 
     /* ---- date helpers ---------------------------------------------- */
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    /* Deliberately not consts. Installed as a PWA this page can sit open across
+       midnight -- nothing about resuming it reloads the document -- so "today"
+       has to be something syncToClock() can move forward in place. */
+    let now = new Date();
+    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const MS_DAY = 86400000;
     function parseDue(iso){ if(!iso) return null; const [y,m,d]=iso.split("-").map(Number); return new Date(y, m-1, d); }
     function daysOut(iso){ const dt=parseDue(iso); return dt ? Math.round((dt - today)/MS_DAY) : null; }
@@ -1001,12 +1004,12 @@
       return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
     }
     const STATUS_COLOR = { work:"var(--working)", wait:"var(--wait)", idle:"var(--idle)", done:"var(--ok)" };
-    const TODAY_ISO = toIso(today);
+    let TODAY_ISO = toIso(today);
     function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
     // Weeks run Monday → Sunday.
     /* Sunday-start, matching the week strip's Sun..Sat columns. */
     function startOfWeek(d){ return addDays(d, -d.getDay()); }
-    const THIS_WEEK = startOfWeek(today);
+    let THIS_WEEK = startOfWeek(today);
     function weekIndexOf(iso){
       return Math.round((startOfWeek(parseDue(iso)) - THIS_WEEK) / (7 * MS_DAY));
     }
@@ -1643,12 +1646,16 @@
       snapNote.textContent = "as of " + label;
     }
 
-    taskRefreshBtn.addEventListener("click", async () => {
+    /* Shared by the refresh button and by syncToClock() below. Quiet mode skips
+       the spinner and swallows failures: nobody asked for that fetch, so it has
+       no business reporting on itself. */
+    async function loadFreshTasks(opts){
+      const quiet = !!(opts && opts.quiet);
       if (taskRefreshBtn.disabled) return;
       taskRefreshBtn.disabled = true;
-      taskRefreshBtn.classList.add("spinning");
+      if (!quiet) taskRefreshBtn.classList.add("spinning");
       const prevNote = snapNote.textContent;
-      snapNote.textContent = "refreshing…";
+      if (!quiet) snapNote.textContent = "refreshing…";
       try {
         const res = await fetch("/api/tasks/" + pageSlug, { cache: "no-store" });
         const data = await res.json().catch(() => ({}));
@@ -1664,6 +1671,7 @@
         paintSnapNote();
         refreshTasks();
       } catch (err) {
+        if (quiet) return;
         snapNote.textContent = "refresh failed";
         taskRefreshBtn.title = String(err.message || err);
         setTimeout(() => {
@@ -1675,7 +1683,8 @@
         taskRefreshBtn.classList.remove("spinning");
         if (snapNote.textContent === "refreshing…") snapNote.textContent = prevNote;
       }
-    });
+    }
+    taskRefreshBtn.addEventListener("click", () => loadFreshTasks());
 
     /* ---- theme toggle (shares tu-theme with the main site) --------- */
     const root = document.documentElement;
@@ -1702,7 +1711,7 @@
     paintTheme();
 
     /* ---- greeting -------------------------------------------------- */
-    (function(){
+    function paintGreeting(){
       const h = now.getHours();
       // No name here -- the <h1> two inches to the left already says whose page
       // this is, and the band only has room for one line of meta.
@@ -1710,7 +1719,8 @@
       document.getElementById("greeting").textContent = greet;
       document.getElementById("today").textContent =
         now.toLocaleDateString(undefined, { weekday:"short", day:"numeric", month:"short" });
-    })();
+    }
+    paintGreeting();
 
     /* ---- whose page this is ---------------------------------------- */
     /* Keyed off the <h1>, which is the one place the page states whose it is
@@ -2381,9 +2391,68 @@
       }
     });
 
+    /* ---- keep the page honest about the time -------------------------
+       A hard refresh used to be the only thing that moved this page's clock.
+       Now the clock is re-read once a minute while the page is on screen, and
+       again every time the app comes back to the foreground. Crossing midnight
+       re-buckets every task, because "overdue", "today" and "this week" have
+       all shifted underneath the render. */
+    const RESUME_STALE_MS = 10 * 60 * 1000;
+
+    function refreshToday(){
+      now = new Date();
+      today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      TODAY_ISO = toIso(today);
+      THIS_WEEK = startOfWeek(today);
+    }
+
+    function syncToClock(opts){
+      const rolled = toIso(new Date()) !== TODAY_ISO;
+      refreshToday();
+      paintGreeting();
+      if (!taskRefreshBtn.disabled) paintSnapNote();   // don't talk over a live refresh
+      if (rolled){
+        /* A new day means the page has been idle since yesterday, so whichever
+           week or month you had paged to is stale context, not state worth
+           keeping. Land back on the present. */
+        weekOffset = 0;
+        calMonth = today.getMonth();
+        calYear = today.getFullYear();
+        refreshTasks();
+      }
+      const stale = lastSyncedAt === null || Date.now() - lastSyncedAt > RESUME_STALE_MS;
+      if ((rolled || (opts && opts.resumed)) && stale) loadFreshTasks({ quiet: true });
+    }
+
+    setInterval(() => { if (document.visibilityState === "visible") syncToClock(); }, 60000);
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") syncToClock({ resumed: true });
+    });
+
     /* ---- service worker --------------------------------------------- */
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js").catch(() => {}));
+      /* An installed PWA can go weeks without a navigation, and a navigation is
+         the only moment the browser looks for a new worker on its own. So ask on
+         every return to the foreground, and reload once the new worker takes
+         over -- that reload is what the hard refresh was standing in for.
+         Dropping an in-flight push is safe: every edit hits localStorage
+         synchronously first, and the next pull merges it back by timestamp. */
+      const hadController = !!navigator.serviceWorker.controller;
+      let reloading = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hadController || reloading) return;   // a first install is not an update
+        reloading = true;
+        location.reload();
+      });
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").then((reg) => {
+          const check = () => {
+            if (document.visibilityState === "visible") reg.update().catch(() => {});
+          };
+          addEventListener("visibilitychange", check);
+          setInterval(check, 15 * 60 * 1000);
+        }).catch(() => {});
+      });
     }
   </script>
 </body>

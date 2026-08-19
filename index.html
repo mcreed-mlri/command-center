@@ -2275,7 +2275,10 @@
     paintTheme();
 
     /* ---- greeting + date ------------------------------------------ */
-    (function () {
+    /* Repainted rather than stamped once. Installed as a PWA this page can be
+       resumed days after it loaded, and a resume reloads nothing -- so the clock
+       is re-read on a tick and on every return to the foreground. */
+    function paintGreeting() {
       const now = new Date();
       const h = now.getHours();
       const greet = h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
@@ -2283,11 +2286,37 @@
       const t = document.getElementById("today");
       if (g) g.textContent = greet + ".";
       if (t) t.textContent = now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
-    })();
+    }
+    paintGreeting();
+    setInterval(() => { if (document.visibilityState === "visible") paintGreeting(); }, 60000);
+    addEventListener("visibilitychange", () => {
+      if (document.visibilityState !== "visible") return;
+      paintGreeting();
+      loadStatusPanel(false);   // honours its own TTL, so a resume costs nothing
+    });
 
     /* ---- service worker ------------------------------------------- */
     if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+      /* An installed PWA can go weeks without a navigation, and a navigation is
+         the only moment the browser looks for a new worker on its own. So ask on
+         every return to the foreground, and reload once the new worker takes
+         over -- that reload is what the hard refresh was standing in for. */
+      const hadController = !!navigator.serviceWorker.controller;
+      let reloading = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hadController || reloading) return;   // a first install is not an update
+        reloading = true;
+        location.reload();
+      });
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("sw.js").then((reg) => {
+          const check = () => {
+            if (document.visibilityState === "visible") reg.update().catch(() => {});
+          };
+          addEventListener("visibilitychange", check);
+          setInterval(check, 15 * 60 * 1000);
+        }).catch(() => {});
+      });
     }
   </script>
 </body>
