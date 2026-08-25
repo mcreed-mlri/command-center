@@ -5,7 +5,13 @@
  *
  * Requires MONDAY_API_TOKEN as a Cloudflare Pages secret (same token as the
  * nightly GitHub Action). Optionally caches raw board data in KV for five
- * minutes so back-to-back refreshes don't hammer Monday.
+ * minutes so back-to-back refreshes don't hammer Monday. Pass ?fresh=1 to skip
+ * that read -- someone pressing the refresh button has usually just changed
+ * something in Monday, and serving them the cache shows them the world as it
+ * was before their own edit.
+ *
+ * fetchedAt is when the boards were really read from Monday, not when this
+ * response was assembled, so a cached answer can't claim to be a fresh pull.
  */
 
 import {
@@ -26,32 +32,31 @@ const store = (env) => env.FOCUS_KV || env.KV || null;
 const BOARDS_CACHE_KEY = "monday:boards:v1";
 const BOARDS_CACHE_MS = 5 * 60 * 1000;
 
-async function loadBoards(token, kv) {
-  if (kv) {
+async function loadBoards(token, kv, fresh) {
+  if (kv && !fresh) {
     try {
       const raw = await kv.get(BOARDS_CACHE_KEY);
       if (raw) {
         const cached = JSON.parse(raw);
         if (cached?.byBoard && cached.fetchedAt && Date.now() - Date.parse(cached.fetchedAt) < BOARDS_CACHE_MS) {
-          return { byBoard: cached.byBoard, cached: true };
+          return { byBoard: cached.byBoard, cached: true, fetchedAt: cached.fetchedAt };
         }
       }
     } catch { /* treat as miss */ }
   }
 
   const byBoard = await fetchAllBoards(token);
+  const fetchedAt = new Date().toISOString();
+  // A ?fresh=1 pull still refills the cache, so the next quiet sync stays cheap.
   if (kv) {
     try {
-      await kv.put(
-        BOARDS_CACHE_KEY,
-        JSON.stringify({ byBoard, fetchedAt: new Date().toISOString() })
-      );
+      await kv.put(BOARDS_CACHE_KEY, JSON.stringify({ byBoard, fetchedAt }));
     } catch { /* cache write is best-effort */ }
   }
-  return { byBoard, cached: false };
+  return { byBoard, cached: false, fetchedAt };
 }
 
-export async function onRequestGet({ params, env }) {
+export async function onRequestGet({ params, env, request }) {
   const slug = params.slug;
   if (!SLUG_RE.test(slug)) return json({ error: "bad slug" }, 400);
 
@@ -63,9 +68,9 @@ export async function onRequestGet({ params, env }) {
 
   try {
     const kv = store(env);
-    const { byBoard, cached } = await loadBoards(token, kv);
+    const fresh = new URL(request.url).searchParams.has("fresh");
+    const { byBoard, cached, fetchedAt } = await loadBoards(token, kv, fresh);
     const { tasks } = tasksForUser(byBoard, userId);
-    const fetchedAt = new Date().toISOString();
 
     return json({
       v: 1,

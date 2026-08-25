@@ -1656,7 +1656,11 @@
       const prevNote = snapNote.textContent;
       if (!quiet) snapNote.textContent = "refreshing…";
       try {
-        const res = await fetch("/api/tasks/" + pageSlug, { cache: "no-store" });
+        /* An explicit press means "I just changed something in Monday", so it
+           skips the five-minute board cache on the server. Quiet background
+           syncs still take the cache -- nobody is waiting on those. */
+        const url = "/api/tasks/" + pageSlug + (quiet ? "" : "?fresh=1");
+        const res = await fetch(url, { cache: "no-store" });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
           throw new Error(data.error || ("HTTP " + res.status));
@@ -1665,7 +1669,10 @@
         TASKS.push(...data.tasks);
         snapshotDate = data.snapshotDate || snapshotDate;
         snapshotLive = true;
-        lastSyncedAt = Date.now();
+        /* fetchedAt is when the boards were really read from Monday, which is
+           older than now if the server answered from its cache -- so the note
+           says "synced 3 min ago" instead of claiming a fresh pull. */
+        lastSyncedAt = Date.parse(data.fetchedAt) || Date.now();
         saveLiveTasks(data);
         paintSnapNote();
         refreshTasks();
