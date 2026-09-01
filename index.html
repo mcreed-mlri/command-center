@@ -1987,35 +1987,49 @@
       );
     }
 
-    /* /api/ci answers 200 even when GitHub refused every single call, so an ok
-       response is not proof of an answer. The unauthenticated GitHub quota is
-       charged per IP and the Pages Function shares its egress address with the
-       rest of the colo, so the proxy can be throttled while this browser still
-       has its own 60/hr untouched — worth a second try before settling for a
-       column of grey rows. */
-    function ciAllErrored(projects) {
-      const flat = (projects || []).reduce(
-        (acc, p) => acc.concat(p.workflows || []),
-        []
+    /* /api/ci answers 200 even when GitHub refused some of the five calls, so an
+       ok response is not proof of five answers. The unauthenticated GitHub quota
+       is charged per IP and the Pages Function shares its egress address with
+       the rest of the colo, so the proxy gets throttled in a way this browser
+       does not — its own 60/hr is spent by nobody else. */
+    function ciAnyErrored(projects) {
+      return (projects || []).some((p) => (p.workflows || []).some((w) => w.error));
+    }
+
+    /* Refusals arrive a few at a time, not all five at once — a throttled edge
+       IP still lets the odd call through. So the retry is per row: ask from here
+       only for the rows that came back empty, which both fills the panel and
+       keeps this browser's own small quota for the rows that need it. */
+    async function ciFillGapsClient(projects) {
+      return Promise.all(
+        projects.map(async (p) => ({
+          ...p,
+          workflows: await Promise.all(
+            (p.workflows || []).map(async (w) => {
+              if (!w.error) return w;
+              try {
+                const run = await ciFetchRun(p.repo, w.file, w);
+                return { ...w, run, error: false, errorStatus: null, errorMessage: "" };
+              } catch {
+                // Blocked here too — keep the proxy's message, which names the
+                // cause with a fix attached (a token on the Pages project).
+                return w;
+              }
+            })
+          ),
+        }))
       );
-      return flat.length > 0 && flat.every((w) => w.error);
     }
 
     async function ciFetchProjects() {
-      let proxied = null;
       try {
         const res = await fetch("/api/ci", { cache: "no-store" });
         if (res.ok) {
-          const data = await res.json();
-          const dead = data.degraded ?? ciAllErrored(data.projects);
-          if (!dead) return data.projects;
-          proxied = data.projects;
+          const projects = (await res.json()).projects || [];
+          return ciAnyErrored(projects) ? await ciFillGapsClient(projects) : projects;
         }
       } catch {}
-      const local = await ciFetchProjectsClient();
-      /* Both routes blocked: keep the proxy's rows, since its error message is
-         the one that names a cause the edge can actually fix. */
-      return proxied && ciAllErrored(local) ? proxied : local;
+      return ciFetchProjectsClient();
     }
 
     async function loadStatusPanel(force) {
