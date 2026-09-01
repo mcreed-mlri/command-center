@@ -1621,7 +1621,15 @@
         "https://api.github.com/repos/" + repo + "/actions/workflows/" + file + "/runs?" + params,
         { headers: { Accept: "application/vnd.github+json" } }
       );
-      if (!res.ok) throw new Error(String(res.status));
+      if (!res.ok) {
+        let message = "";
+        try {
+          message = (await res.json()).message || "";
+        } catch {}
+        const err = new Error(message || "HTTP " + res.status);
+        err.status = res.status;
+        throw err;
+      }
       const data = await res.json();
       const run = data.workflow_runs && data.workflow_runs[0];
       if (!run) return null;
@@ -1751,10 +1759,36 @@
       );
     }
 
+    /* "Couldn't check" is true of a revoked token, an exhausted quota and a
+       renamed workflow file alike, and each needs a different fix — so the row
+       names the one that happened and the tooltip carries GitHub's own words. */
+    function ciErrorMeta(w) {
+      const status = w.errorStatus;
+      const label =
+        status === 403 || status === 429
+          ? "Rate limited"
+          : status === 401
+            ? "Auth failed"
+            : status === 404
+              ? "Not found"
+              : "Couldn't check";
+      const parts = [];
+      if (status) parts.push("GitHub answered " + status + ".");
+      if (w.errorMessage) parts.push(w.errorMessage);
+      if (status === 403 || status === 429) {
+        parts.push(
+          "GitHub's anonymous limit is 60 requests/hour per IP. Setting GITHUB_TOKEN on the Pages project raises it to 5,000."
+        );
+      }
+      return {
+        cls: "is-unknown",
+        label: label,
+        title: parts.join(" ") || undefined,
+      };
+    }
+
     function ciRowHtml(project, w) {
-      const meta = w.error
-        ? { cls: "is-unknown", label: "Couldn't check" }
-        : ciStatusMeta(w);
+      const meta = w.error ? ciErrorMeta(w) : ciStatusMeta(w);
       const href = (w.run && w.run.url) || ("https://github.com/" + project.repo + "/actions");
       const title = meta.title ? ' title="' + escapeHtml(meta.title) + '"' : "";
       return (
@@ -1937,8 +1971,14 @@
                   ...w,
                   run: await ciFetchRun(project.repo, w.file, w),
                 };
-              } catch {
-                return { ...w, run: null, error: true };
+              } catch (err) {
+                return {
+                  ...w,
+                  run: null,
+                  error: true,
+                  errorStatus: (err && err.status) || null,
+                  errorMessage: (err && err.message) || "",
+                };
               }
             })
           );
@@ -1947,12 +1987,35 @@
       );
     }
 
+    /* /api/ci answers 200 even when GitHub refused every single call, so an ok
+       response is not proof of an answer. The unauthenticated GitHub quota is
+       charged per IP and the Pages Function shares its egress address with the
+       rest of the colo, so the proxy can be throttled while this browser still
+       has its own 60/hr untouched — worth a second try before settling for a
+       column of grey rows. */
+    function ciAllErrored(projects) {
+      const flat = (projects || []).reduce(
+        (acc, p) => acc.concat(p.workflows || []),
+        []
+      );
+      return flat.length > 0 && flat.every((w) => w.error);
+    }
+
     async function ciFetchProjects() {
+      let proxied = null;
       try {
         const res = await fetch("/api/ci", { cache: "no-store" });
-        if (res.ok) return (await res.json()).projects;
+        if (res.ok) {
+          const data = await res.json();
+          const dead = data.degraded ?? ciAllErrored(data.projects);
+          if (!dead) return data.projects;
+          proxied = data.projects;
+        }
       } catch {}
-      return ciFetchProjectsClient();
+      const local = await ciFetchProjectsClient();
+      /* Both routes blocked: keep the proxy's rows, since its error message is
+         the one that names a cause the edge can actually fix. */
+      return proxied && ciAllErrored(local) ? proxied : local;
     }
 
     async function loadStatusPanel(force) {

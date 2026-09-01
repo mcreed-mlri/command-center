@@ -43,15 +43,35 @@ const json = (body, status = 200) =>
     headers: { "Content-Type": "application/json", "Cache-Control": "no-store" },
   });
 
+/* GitHub answers a rejected call with a JSON `message`, and that message is the
+   whole diagnosis: "Bad credentials" is a token to replace, "API rate limit
+   exceeded" is a quota to raise. Losing it turns every cause into the same
+   blank "Couldn't check", so it travels back to the browser. */
+async function ghError(res) {
+  let message = "";
+  try {
+    message = (await res.json()).message || "";
+  } catch {}
+  const err = new Error(message || `HTTP ${res.status}`);
+  err.status = res.status;
+  err.detail = message;
+  return err;
+}
+
 async function fetchRun(repo, file, headers, { event, branch } = {}) {
   const params = new URLSearchParams({ per_page: "1" });
   if (event) params.set("event", event);
   if (branch) params.set("branch", branch);
-  const res = await fetch(
-    `https://api.github.com/repos/${repo}/actions/workflows/${file}/runs?${params}`,
-    { headers }
-  );
-  if (!res.ok) throw new Error(String(res.status));
+  const url = `https://api.github.com/repos/${repo}/actions/workflows/${file}/runs?${params}`;
+  let res = await fetch(url, { headers });
+  /* A token that has expired or been revoked is worse than no token at all:
+     both repos are public, so unauthenticated still answers. Drop the rejected
+     credential and ask again rather than reporting the repo as unreachable. */
+  if (res.status === 401 && headers.Authorization) {
+    const { Authorization, ...anon } = headers;
+    res = await fetch(url, { headers: anon });
+  }
+  if (!res.ok) throw await ghError(res);
   const data = await res.json();
   const run = data.workflow_runs?.[0];
   if (!run) return null;
@@ -88,7 +108,7 @@ export async function onRequestGet({ env }) {
                 branch: w.branch || null,
                 run,
               };
-            } catch {
+            } catch (err) {
               return {
                 file: w.file,
                 label: w.label,
@@ -96,6 +116,8 @@ export async function onRequestGet({ env }) {
                 branch: w.branch || null,
                 run: null,
                 error: true,
+                errorStatus: err.status || null,
+                errorMessage: err.detail || err.message || "",
               };
             }
           })
@@ -103,7 +125,19 @@ export async function onRequestGet({ env }) {
         return { repo: project.repo, label: project.label, workflows };
       })
     );
-    return json({ projects, updated: new Date().toISOString() });
+    /* The unauthenticated GitHub quota is charged per IP, and a Pages Function
+       shares its egress address with every other tenant in the colo — so this
+       proxy can be throttled while the same call from the browser's own IP
+       still has all 60/hr to itself. Saying so lets the client retry there
+       instead of rendering five grey rows. */
+    const flat = projects.flatMap((p) => p.workflows);
+    const degraded = flat.length > 0 && flat.every((w) => w.error);
+    return json({
+      projects,
+      degraded,
+      tokenUsed: Boolean(token),
+      updated: new Date().toISOString(),
+    });
   } catch {
     return json({ error: "fetch failed" }, 502);
   }
