@@ -496,6 +496,18 @@
       border-bottom: 1px solid var(--line-soft);
     }
     .ci-block--live .ci-group-label { display: block; }
+    .ci-live-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    }
+    .ci-db-link {
+      flex: none; font-size: 10px; font-weight: 600; color: var(--faint);
+      text-decoration: none; padding: 1px 2px; border-radius: 4px;
+    }
+    .ci-db-link:hover { color: var(--muted); background: var(--hover-tint); }
+    .ci-db-link:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 35%, transparent);
+    }
     .ci-live-grid {
       list-style: none; margin: 5px 0 0; padding: 0;
       display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px;
@@ -1547,6 +1559,8 @@
        fallback for local static serving. Cached 5 minutes. */
     const STATUS_CACHE_KEY = "tu-lms-status-cache-v6";
     const STATUS_TTL_MS = 5 * 60 * 1000;
+    /* Shared by Learning Hub and Brightspace Manager. */
+    const LMS_DB_URL = "https://supabase.com/dashboard/project/yvcwzlukvcfhlyyvkrre";
     const LIVE_SITES = [
       {
         id: "learning-hub",
@@ -1590,7 +1604,7 @@
       const panel = document.createElement("div");
       panel.className = "sites-status is-collapsed";
       panel.id = "statusPanel";
-      panel.dataset.search = "health deploys ci deploy learning hub brightspace manager github status uptime";
+      panel.dataset.search = "health deploys ci deploy learning hub brightspace manager github status uptime supabase database db";
       panel.innerHTML =
         '<div class="sites-status-head">' +
           '<button class="status-toggle" type="button" id="statusToggle" aria-expanded="false" aria-controls="ciStatus">' +
@@ -1833,7 +1847,10 @@
         .join("");
       const liveHtml =
         '<li class="ci-block ci-block--live">' +
-          '<span class="ci-group-label">Live</span>' +
+          '<div class="ci-live-head">' +
+            '<span class="ci-group-label">Live</span>' +
+            '<a class="ci-db-link" href="' + escapeHtml(LMS_DB_URL) + '" target="_blank" rel="noopener noreferrer" title="Learning Hub &amp; Brightspace Manager database">Database</a>' +
+          "</div>" +
           '<ul class="ci-live-grid">' + liveItems + "</ul>" +
         "</li>";
       const ciHtml = labeledProjects
