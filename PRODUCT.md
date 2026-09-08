@@ -55,11 +55,11 @@ items), refreshed automatically, while staying a static site with no login.
 
 **Tools the unit lives in**, all reachable from the board: Google Drive (project
 folders, drilled two levels deep), Monday.com (four workspaces and their boards),
-Slack, Otter.ai, Claude, Learning Hub, Brightspace Manager, Brightspace (D2L),
+Slack, Otter.ai, Claude, Zotero, Learning Hub, Brightspace Manager, Brightspace (D2L),
 D2L Academy.
 
-**Standing documents** on the board: LACE Project Planning, Meeting Notes, Weekly
-Meeting Agenda, Faculty Database, Curriculum Map.
+**Standing documents** on the board: Pedagogical Database, LACE Project Planning,
+Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map.
 
 **Projects** that organize the work, and whose color coding is consistent across
 the Drive and Monday tiles: LACE, Access to Counsel, Basic Benefits Trainings,
@@ -151,11 +151,11 @@ was confirmed as inviolable when asked, so neither outranks a good reason:
   focus page." Instructions are written for a colleague, not a developer. Match
   this; do not raise the register.
 - **Assets on hand:** `icons/` holds real vendor marks (Google Drive, Monday,
-  Slack, Otter, Claude, Brightspace, D2L, Learning Hub) and a full app icon set
+  Slack, Otter, Claude, Zotero, Brightspace, D2L, Learning Hub) and a full app icon set
   in `icons/app/` including a maskable 512. Inline Lucide (MIT) paths cover UI
   icons.
 - **Terminology, used as-is internally:** MLRI, Training Unit, LACE, Brightspace
-  / D2L, Monday, Otter, Learning Hub. No expansion needed for this audience.
+  / D2L, Monday, Otter, Zotero, Learning Hub. No expansion needed for this audience.
 
 Not established and not to be invented: no logo lockup, wordmark, brand
 guidelines, or type licence was named.

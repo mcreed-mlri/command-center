@@ -4,7 +4,7 @@
    installed PWA to reload itself: the pages watch for a new worker taking over
    and refresh on the spot, so an unbumped edit reaches browsers but not
    home-screen apps. */
-const CACHE = "tu-shell-v52";
+const CACHE = "tu-shell-v55";
 const SHELL = [
   "./", "index.html", "manifest.webmanifest", "favicon.ico", "icons/app/icon.svg",
   // The focus pages carry their own baked-in task snapshot, so they are the
@@ -15,7 +15,7 @@ const SHELL = [
   "icons/app/icon-256.png", "icons/app/icon-512.png", "icons/app/icon-maskable-512.png",
   "icons/slack.svg", "icons/monday.svg", "icons/otter.svg", "icons/google-drive.svg",
   "icons/gmail-icon.png", "icons/google-calendar-icon.png",
-  "icons/claude.svg", "icons/brightspace.png", "icons/brightspacemanager.svg",
+  "icons/claude.svg", "icons/zotero.png", "icons/brightspace.png", "icons/brightspacemanager.svg",
   "icons/D2L-Symbol.png", "icons/learning-hub.png",
 ];
 
