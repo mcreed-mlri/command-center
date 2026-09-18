@@ -1113,7 +1113,7 @@
 
     const LINKS = [
       { section: "Planning & Collaboration", name: "Google Drive", icon: "icons/google-drive.svg", accent: "#2f855a",
-        count: "9 folders", open: true,
+        count: "10 folders", open: true,
         keywords: "google drive docs sheets files storage folders shared",
         children: [
           /* `lead: true`  → a pinned row at the top (opens the whole Training Unit drive).
@@ -1136,32 +1136,18 @@
               { name: "Sustainability", url: "https://drive.google.com/drive/folders/1ntvqGctQs6Hz5tAuEn_nFarCWnAKzwSk" },
               { name: "Team Management & Professional Development", url: "https://drive.google.com/drive/folders/1YxtFBgOwTzj02I5O9yHYwsWvfy38O50c" },
             ] },
+          /* A staging area in the drive rather than a project, so it takes the
+             idle slate rather than a project colour, and pairs with no Monday
+             workspace. Inline like the External Collaboration rows below. */
+          { name: "LMS Sample Content - Unchecked", color: "#8b909d", url: "https://drive.google.com/drive/folders/1HmegceSF7YtrTDeyzGqdmz54cLRvWLrR" },
           { name: "MLRI Trainings", cat: "MLRI Trainings", url: "https://drive.google.com/drive/folders/1Z2cm71KuS98leMq0F50dMRxjFbZXQQgV" },
           { name: "Research", cat: "Research", url: "https://drive.google.com/drive/folders/1xMXM-U5ORtAkS0UJowm1nLC-KZMAWMkF",
             children: [
               { name: "AI", url: "https://drive.google.com/drive/folders/1H3F_B83_In4-b2lnOC4dC0rN01Muc6EH" },
-              { name: "Appeals — Dick Bauer Materials", url: "https://drive.google.com/drive/folders/122B73TAicFqApueuJkX5lboXYrpL2PTo" },
-              { name: "Case Management", url: "https://drive.google.com/drive/folders/13VCPT5y0Nc4XFS053sB7UqLyz2infbcN" },
-              { name: "Case Planning", url: "https://drive.google.com/drive/folders/1zT0hYeXfm92uGUKZWeXecCiHf_wMTUH6" },
-              { name: "Client Counseling", url: "https://drive.google.com/drive/folders/1pWwtgpwB619fFxoQnLwC5NdP-6uXeYz4" },
-              { name: "Closing Client Relationships", url: "https://drive.google.com/drive/folders/1DtUjXjqiPCVNOEXEIdaZa3imh70apXN_" },
-              { name: "Cultural Humility", url: "https://drive.google.com/drive/folders/1QzcisHSX0HbSHoMwFiVnS8b5NvVQDd1o" },
-              { name: "Curriculum Research", url: "https://drive.google.com/drive/folders/1BQhP95DoiXUryeV2R1ShhG-hqMHxH_-q" },
-              { name: "Ethics", url: "https://drive.google.com/drive/folders/1sfziZX7CXSuLlwanZFb4rufXp5XTn-aG" },
-              { name: "Evaluation", url: "https://drive.google.com/drive/folders/1WLvFdF5LrtdgD7bWelH59JeJbEbxTE3J" },
-              { name: "Fact Investigation", url: "https://drive.google.com/drive/folders/1MRkL1P1c1yHGcm2cLQbnjXmoMnNpPA10" },
-              { name: "Justice Strategies", url: "https://drive.google.com/drive/folders/1aqexoy-q4EFtDgyxzr3s7RekF1XA6Ov-" },
-              { name: "Learning a New Area of Law", url: "https://drive.google.com/drive/folders/1C6u7B9z2VJgoguZU7hS3xoNlwgCYs1q2" },
-              { name: "Legal Research", url: "https://drive.google.com/drive/folders/149sLClAYSOYSxgnW3gHGJCLKgZ0a7scH" },
-              { name: "Legal Writing", url: "https://drive.google.com/drive/folders/1OdHMNi7TynSdMxs0Wr67XmLjW09lJqp0" },
-              { name: "Mediation", url: "https://drive.google.com/drive/folders/1VMlnmD4tBy8JUdebK0BIPNnNYRhU12U8" },
-              { name: "Negotiation", url: "https://drive.google.com/drive/folders/1qWSQpwAmm2DpJWWuuFBYUBaOXlgQfoxb" },
-              { name: "Oral Advocacy", url: "https://drive.google.com/drive/folders/1d0I_UkFc732t01mDzvsq5MSr9TCEmPTl" },
-              { name: "Pedagogical Database", url: "https://drive.google.com/drive/folders/16VWYzxnzw6vcHSW8gGXqswuBf8XIEptV" },
-              { name: "Pedagogy Research", url: "https://drive.google.com/drive/folders/1c3O_U27BFd0-jzZTlDJk0OAV5gOW0yB4" },
-              { name: "Reflection & Collaboration", url: "https://drive.google.com/drive/folders/1DnTcfajwdh6VLS0Wwh-LR5D800DAbyf1" },
-              { name: "Trauma-Informed Advocacy", url: "https://drive.google.com/drive/folders/1rDnpuxtKQUT4ro_0vzbdOqk8m0ksFceR" },
-              { name: "Written Advocacy", url: "https://drive.google.com/drive/folders/18el69cTB5nWKE2sx9nn7QUBSySjn7XbJ" },
+              { name: "Legal Simulators and Tech", url: "https://drive.google.com/drive/folders/1uz-IC4lhgizhU4TMHPT7a5rgmrqJuIeH" },
+              { name: "Legal Skills", url: "https://drive.google.com/drive/folders/1RzpbnHD0V_zzXVBqQe7jtM7WAGhX-muh" },
+              { name: "Pedagogy", url: "https://drive.google.com/drive/folders/15IjBpN3eVEm8MZZ7aotLQRtVF4hH5rx3" },
+              { name: "Substantive Law", url: "https://drive.google.com/drive/folders/1g3B2C39XpxvRH3gXyMs8Z2_4Sz6wA4qS" },
             ] },
           { name: "Training Unit Operations", cat: "Training Unit", url: "https://drive.google.com/drive/folders/1tGXhdRgM8p3M3EYCHCG_ognpgLveVkc8",
             children: [
