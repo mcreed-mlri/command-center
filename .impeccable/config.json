@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "geist",
+        "createdAt": "2026-09-21T18:53:53.805Z",
+        "reason": "user confirmed: Geist is deliberate, matches the Learning Hub typeface per DESIGN.md:194 and is set across the token stack in tokens.css:84"
+      }
+    ]
+  }
+}
