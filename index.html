@@ -882,6 +882,10 @@
        its own two-column list has room. */
     .subfolder { min-width: 0; }
     .sublinks > li.subfolder-item:has(> .subfolder[open]) { grid-column: 1 / -1; }
+    /* Same rule one tier down: a subfolder that itself holds subfolders
+       (e.g. Legal Skills' topic folders) needs the same full-width treatment
+       when open, inside its own subsublinks grid. */
+    .subsublinks > li.subfolder-item:has(> .subfolder[open]) { grid-column: 1 / -1; }
     .sublink-parent { cursor: pointer; list-style: none; min-width: 0; }
     .sublink-parent::-webkit-details-marker { display: none; }
     /* --muted, not --faint: --faint sits at 3.9:1 on the --paper-2 pill. */
@@ -1127,9 +1131,16 @@
           { name: "LACE Project", cat: "LACE Project", url: "https://drive.google.com/drive/folders/1Dm_i7yKFwWMTtLHQ08hJLk_nMKgFmPkA",
             children: [
               { name: "Admin", url: "https://drive.google.com/drive/folders/1Ia1thkh3ydr3Xta0Wlw5i7Pxj6HfErAE" },
-              { name: "Branding", url: "https://drive.google.com/drive/folders/1DSObC7x9hZeLannzmiWYc4H3CcFWpset" },
+              { name: "Branding", url: "https://drive.google.com/drive/folders/1DSObC7x9hZeLannzmiWYc4H3CcFWpset",
+                children: [
+                  { name: "Accessibility", url: "https://drive.google.com/drive/folders/1hJMS4ba7FbnxwBVimDPz5SmONv_Uq5J_" },
+                ] },
               { name: "Content", url: "https://drive.google.com/drive/folders/1wg56p3uxW48Iyi_b0q59yoa4J8mP-tgS" },
-              { name: "Contracts", url: "https://drive.google.com/drive/folders/1ELz3wdvmietHMZi52IyjGgtQfHRXIpgM" },
+              { name: "Contracts", url: "https://drive.google.com/drive/folders/1ELz3wdvmietHMZi52IyjGgtQfHRXIpgM",
+                children: [
+                  { name: "Communication via Design", url: "https://drive.google.com/drive/folders/1XV6wv5nemeCCbp2tarE7HDC4Y_69fwYU" },
+                  { name: "D2L", url: "https://drive.google.com/drive/folders/1DFj58jgOrj8VZE06w25C7LCpbMJ1HcT8" },
+                ] },
               { name: "Evaluation", url: "https://drive.google.com/drive/folders/1hHtQ2ZEVXVxG9oFjBcmQFU6XStEyfLFG" },
               { name: "Faculty", url: "https://drive.google.com/drive/folders/1DiiuLMn0BsMPWg0R7TSglqMxD7MxXAuy" },
               { name: "LMS", url: "https://drive.google.com/drive/folders/1I4uRMPxo_B8Z0DN66ZppGUA72MkwrkfM" },
@@ -1143,15 +1154,53 @@
           { name: "MLRI Trainings", cat: "MLRI Trainings", url: "https://drive.google.com/drive/folders/1Z2cm71KuS98leMq0F50dMRxjFbZXQQgV" },
           { name: "Research", cat: "Research", url: "https://drive.google.com/drive/folders/1xMXM-U5ORtAkS0UJowm1nLC-KZMAWMkF",
             children: [
-              { name: "AI", url: "https://drive.google.com/drive/folders/1H3F_B83_In4-b2lnOC4dC0rN01Muc6EH" },
+              { name: "AI", url: "https://drive.google.com/drive/folders/1H3F_B83_In4-b2lnOC4dC0rN01Muc6EH",
+                children: [
+                  { name: "AI Comparisons", url: "https://drive.google.com/drive/folders/1o2oc2x3fPWCUgiZyd5O7IjPIxU1a70y_" },
+                  { name: "AI Use Policy", url: "https://drive.google.com/drive/folders/1NMj-Gw0NP5t9SJyF513PpZoU8cQHiz_l" },
+                  { name: "Claude", url: "https://drive.google.com/drive/folders/116eje_z55pS-T-g9-ioaIuzUhLKGgESZ" },
+                ] },
               { name: "Legal Simulators and Tech", url: "https://drive.google.com/drive/folders/1uz-IC4lhgizhU4TMHPT7a5rgmrqJuIeH" },
-              { name: "Legal Skills", url: "https://drive.google.com/drive/folders/1RzpbnHD0V_zzXVBqQe7jtM7WAGhX-muh" },
-              { name: "Pedagogy", url: "https://drive.google.com/drive/folders/15IjBpN3eVEm8MZZ7aotLQRtVF4hH5rx3" },
+              { name: "Legal Skills", url: "https://drive.google.com/drive/folders/1RzpbnHD0V_zzXVBqQe7jtM7WAGhX-muh",
+                children: [
+                  { name: "Appeals — Dick Bauer Materials", url: "https://drive.google.com/drive/folders/122B73TAicFqApueuJkX5lboXYrpL2PTo" },
+                  { name: "Case Management", url: "https://drive.google.com/drive/folders/13VCPT5y0Nc4XFS053sB7UqLyz2infbcN" },
+                  { name: "Case Planning", url: "https://drive.google.com/drive/folders/1zT0hYeXfm92uGUKZWeXecCiHf_wMTUH6" },
+                  { name: "Client Counseling", url: "https://drive.google.com/drive/folders/1pWwtgpwB619fFxoQnLwC5NdP-6uXeYz4" },
+                  { name: "Closing Client Relationships", url: "https://drive.google.com/drive/folders/1DtUjXjqiPCVNOEXEIdaZa3imh70apXN_" },
+                  { name: "Cultural Humility", url: "https://drive.google.com/drive/folders/1QzcisHSX0HbSHoMwFiVnS8b5NvVQDd1o" },
+                  { name: "Curriculum Research", url: "https://drive.google.com/drive/folders/1BQhP95DoiXUryeV2R1ShhG-hqMHxH_-q" },
+                  { name: "Ethics", url: "https://drive.google.com/drive/folders/1sfziZX7CXSuLlwanZFb4rufXp5XTn-aG" },
+                  { name: "Evaluation", url: "https://drive.google.com/drive/folders/1WLvFdF5LrtdgD7bWelH59JeJbEbxTE3J" },
+                  { name: "Fact Investigation", url: "https://drive.google.com/drive/folders/1MRkL1P1c1yHGcm2cLQbnjXmoMnNpPA10" },
+                  { name: "Justice Strategies", url: "https://drive.google.com/drive/folders/1aqexoy-q4EFtDgyxzr3s7RekF1XA6Ov-" },
+                  { name: "Learning a New Area of Law", url: "https://drive.google.com/drive/folders/1C6u7B9z2VJgoguZU7hS3xoNlwgCYs1q2" },
+                  { name: "Legal Research", url: "https://drive.google.com/drive/folders/149sLClAYSOYSxgnW3gHGJCLKgZ0a7scH" },
+                  { name: "Legal Writing", url: "https://drive.google.com/drive/folders/1OdHMNi7TynSdMxs0Wr67XmLjW09lJqp0" },
+                  { name: "Mediation", url: "https://drive.google.com/drive/folders/1VMlnmD4tBy8JUdebK0BIPNnNYRhU12U8" },
+                  { name: "Negotiation", url: "https://drive.google.com/drive/folders/1qWSQpwAmm2DpJWWuuFBYUBaOXlgQfoxb" },
+                  { name: "Oral Advocacy", url: "https://drive.google.com/drive/folders/1d0I_UkFc732t01mDzvsq5MSr9TCEmPTl" },
+                  { name: "Reflection & Collaboration", url: "https://drive.google.com/drive/folders/1DnTcfajwdh6VLS0Wwh-LR5D800DAbyf1" },
+                  { name: "Trauma-Informed Advocacy", url: "https://drive.google.com/drive/folders/1rDnpuxtKQUT4ro_0vzbdOqk8m0ksFceR" },
+                  { name: "Written Advocacy", url: "https://drive.google.com/drive/folders/18el69cTB5nWKE2sx9nn7QUBSySjn7XbJ" },
+                ] },
+              { name: "Pedagogy", url: "https://drive.google.com/drive/folders/15IjBpN3eVEm8MZZ7aotLQRtVF4hH5rx3",
+                children: [
+                  { name: "Pedagogical Database", url: "https://drive.google.com/drive/folders/16VWYzxnzw6vcHSW8gGXqswuBf8XIEptV" },
+                  { name: "Pedagogy Research", url: "https://drive.google.com/drive/folders/1c3O_U27BFd0-jzZTlDJk0OAV5gOW0yB4" },
+                ] },
               { name: "Substantive Law", url: "https://drive.google.com/drive/folders/1g3B2C39XpxvRH3gXyMs8Z2_4Sz6wA4qS" },
             ] },
           { name: "Training Unit Operations", cat: "Training Unit", url: "https://drive.google.com/drive/folders/1tGXhdRgM8p3M3EYCHCG_ognpgLveVkc8",
             children: [
-              { name: "Otter Meeting Summaries", url: "https://drive.google.com/drive/folders/1x0IBUlXj9JOqs30Ekp9CYPLPSGQq0DKu" },
+              { name: "Otter Meeting Summaries", url: "https://drive.google.com/drive/folders/1x0IBUlXj9JOqs30Ekp9CYPLPSGQq0DKu",
+                children: [
+                  { name: "AI Research Meetings", url: "https://drive.google.com/drive/folders/1UyRZN38ffWkkHU-4Kw-ilA10QKpEnyxU" },
+                  { name: "Monday.com Strategy Meetings", url: "https://drive.google.com/drive/folders/1wRl0Uld8jNL1f-k5uArvZHBdHl5SBZyr" },
+                  { name: "Outside Unit Meetings", url: "https://drive.google.com/drive/folders/1ZuCp6PEnurHrI9r5pTtJlqo0HkyPmEfV" },
+                  { name: "Strategic Overview Meetings", url: "https://drive.google.com/drive/folders/1bfB3xhTE82m_zu-tzHPP0VAqQeHLOIbx" },
+                  { name: "Training Unit Weekly Meetings", url: "https://drive.google.com/drive/folders/1dMn9QSL7w00XIJee-wP9yVDX_l_HRg0w" },
+                ] },
             ] },
           /* Its own shared drive, so it takes the same shape as the Training Unit
              drive above: a full-width row that opens the drive, then its folders
@@ -1310,9 +1359,9 @@
         d.open = startsOpen(item);
         d.dataset.default = d.open ? "open" : "closed";
       }
-      const childText = item.children
-        .flatMap(c => [c.name, ...(c.children ? c.children.map(g => g.name) : [])])
-        .join(" ");
+      const descendantNames = (children) =>
+        children.flatMap(c => [c.name, ...(c.children ? descendantNames(c.children) : [])]);
+      const childText = descendantNames(item.children).join(" ");
       d.dataset.search = searchKey(item, sec, childText);
 
       // No `desc` → a single-line row. The folder list underneath already says
@@ -1355,15 +1404,17 @@
         return li;
       };
 
-      for (const c of item.children) {
+      // A folder with its own subfolders becomes a nested drill-down; its
+      // subfolders go through the same logic, so a folder can drill down as
+      // many levels as the data actually nests (Legal Skills currently needs three).
+      const renderFolderRow = (c, list, nested) => {
         if (c.children && c.children.length) {
-          // A folder that contains subfolders → a nested drill-down.
           const sf = document.createElement("details");
           sf.className = "subfolder" + (c.divider ? " has-divider" : "");
           const sfDot = dotColor(c);
           if (sfDot) sf.style.setProperty("--accent", sfDot);  // dot + subfolders inherit it
           sf.dataset.search =
-            (c.name + " " + c.children.map(g => g.name).join(" ") + " " + item.name).toLowerCase();
+            (c.name + " " + descendantNames(c.children).join(" ") + " " + item.name).toLowerCase();
 
           const ss = document.createElement("summary");
           ss.className = "sublink sublink-parent";
@@ -1382,23 +1433,24 @@
           if (c.url && c.url !== "#") {
             inner.appendChild(makeLeaf(item.openLabel || "Open whole folder", c.url, "sublink subsublink subsublink-open", c.name));
           }
-          for (const g of c.children) inner.appendChild(makeLeaf(g.name, g.url, "sublink subsublink", c.name));
+          for (const g of c.children) renderFolderRow(g, inner, true);
           sf.appendChild(inner);
 
           const sfLi = document.createElement("li");
           sfLi.className = "subfolder-item";
           sfLi.appendChild(sf);
-          box.appendChild(sfLi);
+          list.appendChild(sfLi);
         } else {
-          let cls = "sublink";
+          let cls = nested ? "sublink subsublink" : "sublink";
           if (c.lead) cls += " sublink-lead";
           if (c.divider) cls += " sublink-divider";
           const leaf = makeLeaf(c.name, c.url, cls, "", c.cat);
           const dot = dotColor(c);
           if (dot) leaf.style.setProperty("--accent", dot);
-          box.appendChild(leaf);
+          list.appendChild(leaf);
         }
-      }
+      };
+      for (const c of item.children) renderFolderRow(c, box, false);
       d.appendChild(box);
       grid.appendChild(d);
     }
