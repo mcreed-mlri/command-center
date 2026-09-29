@@ -58,7 +58,7 @@ folders, drilled two levels deep), Monday.com (four workspaces and their boards)
 Slack, Otter.ai, Claude, Zotero, Learning Hub, Brightspace Manager, Brightspace (D2L),
 D2L Academy.
 
-**Standing documents** on the board: Pedagogical Database, TU Brainstorm,
+**Standing documents** on the board: Pedagogical Database, Training Unit Brainstorm Notebook,
 Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map.
 
 **Projects** that organize the work, and whose color coding is consistent across
