@@ -891,8 +891,8 @@
   <script>
     /* =====================================================================
        MY MONDAY TASKS — generated from the shared LACE boards (Operations,
-       LMS, Content Design, Data & Evaluation, Comms & Branding,
-       Sustainability Roadmap) by scripts/refresh-tasks.mjs, which runs
+       LMS, Content Design, Data & Evaluation, Comms & Branding) by
+       scripts/refresh-tasks.mjs, which runs
        nightly via .github/workflows/refresh-tasks.yml. Use the refresh
        button (or GET /api/tasks/:slug) to pull live data between runs.
 
@@ -944,7 +944,6 @@
       content: { label: "Content Design",   id: "18420946283" },
       data:    { label: "Data & Eval",      id: "18421082069" },
       comms:   { label: "Comms & Branding", id: "18421083526" },
-      sustain: { label: "Sustainability",   id: "18424143459" },
     };
     const pulse = (b, item) => "https://training-unit-hq.monday.com/boards/" + BOARDS[b].id + "/pulses/" + item;
 
@@ -1056,7 +1055,7 @@
     const filterPanel = document.getElementById("filterPanel");
     const filterSummary = document.getElementById("filterSummary");
     const taskToolbar = document.getElementById("taskToolbar");
-    const AREA_ORDER = ["ops", "lms", "content", "data", "comms", "sustain"];
+    const AREA_ORDER = ["ops", "lms", "content", "data", "comms"];
     const STATUS_FILTER_LABELS = {
       work: "Working on it",
       wait: "Waiting",

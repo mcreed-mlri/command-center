@@ -20,8 +20,6 @@ export const BOARDS = [
     people: "person", status: "status", date: "date4", timeline: "timerange_mm54n315" },
   { key: "comms", heading: "Comms & Branding", id: "18421083526",
     people: "person", status: "status", date: "date4", timeline: "timerange_mm5fazhm" },
-  { key: "sustain", heading: "Sustainability Roadmap", id: "18424143459",
-    people: "multiple_person_mm5pbstd", status: "color_mm5pfhqn", date: "date_mm5p3hw2", timeline: null },
 ];
 
 /** Default Monday user ids — env vars override in both Node and Workers. */

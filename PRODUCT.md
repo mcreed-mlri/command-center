@@ -65,8 +65,8 @@ Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map.
 the Drive and Monday tiles: LACE, Access to Counsel, Basic Benefits Trainings,
 MLRI Trainings, Training Unit Operations, Research.
 
-**The six LACE boards** that feed the focus pages: Operations, LMS, Content
-Design, Data & Evaluation, Comms & Branding, Sustainability Roadmap.
+**The five LACE boards** that feed the focus pages: Operations, LMS, Content
+Design, Data & Evaluation, Comms & Branding.
 
 **Rituals** the surfaces are shaped around: a weekly meeting with a standing
 agenda doc, nightly task refresh, and per-person daily task triage in Monday.
