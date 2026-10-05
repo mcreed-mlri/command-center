@@ -75,21 +75,20 @@ node .claude/skills/drive-sync/scripts/diff-drive.mjs board.json live.json
 ```
 
 It exits 0 when the board matches Drive and 1 when there is drift, and sorts
-what it finds into five buckets. The split matters because it decides what you
+what it finds into four buckets. The split matters because it decides what you
 may do on your own:
 
 **Routine — make the change, ship it, report afterwards:**
 
-- `NEW … (routine, a row fits)` — a folder whose parent is a drive root or a
-  top-level row, so an ordinary row shows it.
+- `NEW … (routine, a row fits)` — a folder whose parent is a drive root or
+  any folder already on the board. The renderer recurses, so a folder that
+  gains its first subfolder just gets a `children` array.
 - `RENAMED` — same folder id, new name in Drive. Follow Drive's spelling.
 
 **Structural — stop and ask before reshaping anything:**
 
 - `MOVED` — the folder still exists but now lives under a different parent.
   A reorganisation, and how the board should follow is the user's call.
-- `NEW BUT TOO DEEP` — the parent is already a subfolder, so showing this
-  would need a third drill-down level the renderer does not have.
 - `DEAD` — on the board, not found live. Could be a deletion, a permissions
   change, or a failed query. Confirm which before removing a row.
 

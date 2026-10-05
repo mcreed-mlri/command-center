@@ -37,17 +37,12 @@ const boardById = new Map(board.nodes.map((n) => [n.id, n]));
 const knownParents = new Set([...board.drives, ...board.nodes.map((n) => n.id)]);
 
 const dead = [];      // on the board, not found live → would be a dead link
-const added = [];     // new, and a row for it fits the board as it stands
-const tooDeep = [];   // new, but would need a 3rd drill-down level to show
+const added = [];     // new, under a folder the board already shows
 const renamed = [];   // same id, different title
 const moved = [];     // same id, different parent
 
-// The board's accordion renders exactly two levels: a folder row, and its
-// subfolders as leaves. So a new folder can be added as a row only if its
-// parent is a shared drive (depth -1) or a top-level row (depth 0). A parent
-// already at depth 1 would put the newcomer at depth 2, which the renderer
-// cannot draw — that needs a code change, not a data edit.
-const parentDepth = (id) => (board.drives.includes(id) ? -1 : boardById.get(id)?.depth ?? null);
+// No depth limit: the board's renderFolderRow recurses,
+// so a new folder under any board folder is just another row.
 
 for (const n of board.nodes) {
   const f = liveById.get(n.id);
@@ -61,7 +56,7 @@ for (const n of board.nodes) {
 for (const f of live) {
   if (boardById.has(f.id)) continue;
   if (!knownParents.has(f.parentId)) continue;   // below anything the board knows
-  (parentDepth(f.parentId) >= 1 ? tooDeep : added).push(f);
+  added.push(f);
 }
 
 const name = (id) => liveById.get(id)?.title ?? boardById.get(id)?.name ?? id;
@@ -85,11 +80,8 @@ section("MOVED — same folder, different parent in Drive (structural)", moved,
 section("NEW — in Drive, not on the board (routine, a row fits)", added,
   (f) => `${f.title}  under ${name(f.parentId)}  [${f.id}]`);
 
-section("NEW BUT TOO DEEP — would need a 3rd drill-down level (structural)", tooDeep,
-  (f) => `${f.title}  under ${name(f.parentId)}  [${f.id}]`);
-
-const drift = dead.length + renamed.length + moved.length + added.length + tooDeep.length;
+const drift = dead.length + renamed.length + moved.length + added.length;
 if (!drift) console.log("\nNo drift. The board matches Drive at every level it covers.");
-else console.log(`\n${drift} difference(s). Moves and anything needing a 3rd level are structural — ask before reshaping.`);
+else console.log(`\n${drift} difference(s). Moves and dead ids are structural — ask before reshaping.`);
 
 process.exit(drift ? 1 : 0);
