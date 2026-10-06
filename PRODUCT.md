@@ -59,7 +59,7 @@ Slack, Otter.ai, Claude, Zotero, Learning Hub, Brightspace Manager, Brightspace 
 D2L Academy.
 
 **Standing documents** on the board: Pedagogical Database, Training Unit Brainstorm Notebook,
-Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map.
+Meeting Notes, Weekly Meeting Agenda, Faculty Database, Curriculum Map Brainstorm.
 
 **Projects** that organize the work, and whose color coding is consistent across
 the Drive and Monday tiles: LACE, Access to Counsel, Basic Benefits Trainings,
