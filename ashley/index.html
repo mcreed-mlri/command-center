@@ -178,30 +178,65 @@
     }
     .monday-open:hover { text-decoration:underline; text-underline-offset:2px; }
 
-    /* ---- recently assigned banner (same family as the home page's
-       announcement banner: earth wash, 3px left rule) ------------------ */
+    /* ---- recently assigned card: earth-tinted header with a NEW pill,
+       then one row per task with its board chip and due date ----------- */
     .new-assign {
-      margin:0 0 12px; padding:10px 12px 10px 14px;
-      background:color-mix(in srgb, var(--earth) 10%, var(--card));
-      border:1px solid color-mix(in srgb, var(--earth) 24%, var(--line));
-      border-left:3px solid var(--earth);
+      margin:0 0 12px; overflow:hidden; background:var(--card);
+      border:1px solid color-mix(in srgb, var(--earth) 28%, var(--line));
       border-radius:12px; font-size:14px; color:var(--ink);
     }
-    .na-head { display:flex; align-items:center; gap:10px; }
-    .na-dot { flex:none; width:8px; height:8px; border-radius:50%; background:var(--earth); }
-    .na-title { font-weight:650; min-width:0; }
-    .na-x {
-      margin-left:auto; flex:none; display:grid; place-items:center;
-      width:28px; height:28px; border-radius:8px; cursor:pointer;
-      background:transparent; border:0; color:var(--faint); font-size:18px; line-height:1;
+    .na-head {
+      display:flex; align-items:center; gap:8px; padding:6px 8px 6px 14px;
+      background:color-mix(in srgb, var(--earth) 10%, var(--card));
+      border-bottom:1px solid color-mix(in srgb, var(--earth) 18%, var(--line));
     }
-    .na-x:hover { background:var(--hover-tint); color:var(--ink); }
-    .na-x:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
-    .na-list { list-style:none; margin:4px 0 0 18px; padding:0; }
-    .na-list li { padding:3px 0; min-width:0; overflow-wrap:anywhere; }
-    .na-list a { color:var(--ink); font-weight:550; text-decoration:none; }
-    .na-list a:hover, .na-list a:focus-visible { color:var(--brand); text-decoration:underline; text-underline-offset:2px; outline:none; }
-    .na-meta { display:block; font-size:12.5px; color:var(--muted); }
+    .na-pill {
+      flex:none; padding:4px 7px; border-radius:999px; line-height:1;
+      font-size:11px; font-weight:700; letter-spacing:.06em;
+      color:var(--on-accent); background:var(--earth);
+    }
+    .na-title { font-size:13px; font-weight:650; color:var(--earth-deep); min-width:0; }
+    .na-ok {
+      margin-left:auto; flex:none; min-height:32px; padding:0 10px; border-radius:8px; cursor:pointer;
+      background:transparent; border:0; font:inherit; font-size:13px; font-weight:600; color:var(--earth-deep);
+    }
+    .na-ok:hover { background:color-mix(in srgb, var(--earth) 12%, transparent); }
+    .na-ok:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
+    .na-list { list-style:none; margin:0; padding:0; }
+    .na-list li + li { border-top:1px solid var(--line-soft); }
+    /* Fixed chip and date columns so both line up from row to row. */
+    .na-list a {
+      display:grid; grid-template-columns:minmax(0,1fr) 10rem 6.5em; align-items:center; gap:4px 12px;
+      padding:10px 14px; color:var(--ink); text-decoration:none;
+    }
+    .na-list a:hover { background:color-mix(in srgb, var(--ink) 3%, var(--card)); }
+    .na-list a:hover .na-task { color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
+    .na-list a:focus-visible { outline:none; box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
+    .na-name { min-width:0; overflow-wrap:anywhere; }
+    .na-task { font-weight:600; }
+    .na-parent { margin-left:6px; font-size:13px; color:var(--faint); }
+    /* One hue per synced board. Every board sits in the LACE workspace, so the
+       home page's project colours would all be the same red. */
+    .na-chip {
+      --chip:var(--hue-7); --chip-tint:var(--hue-7-tint);
+      justify-self:end; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+      padding:2px 9px 2px 8px; border-radius:999px; font-size:12px; font-weight:600;
+      color:color-mix(in srgb, var(--chip) 72%, var(--ink)); background:var(--chip-tint);
+      border:1px solid color-mix(in srgb, var(--chip) 25%, var(--chip-tint));
+    }
+    .na-chip::before { content:""; flex:none; width:6px; height:6px; border-radius:50%; background:var(--chip); }
+    .na-chip.c-trial   { --chip:var(--hue-2); --chip-tint:var(--hue-2-tint); }
+    .na-chip.c-lms     { --chip:var(--hue-3); --chip-tint:var(--hue-3-tint); }
+    .na-chip.c-comms   { --chip:var(--hue-4); --chip-tint:var(--hue-4-tint); }
+    .na-chip.c-data    { --chip:var(--hue-5); --chip-tint:var(--hue-5-tint); }
+    .na-chip.c-content { --chip:var(--hue-6); --chip-tint:var(--hue-6-tint); }
+    .na-due { justify-self:end; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    @media (max-width:560px){
+      .na-list a { grid-template-columns:auto minmax(0,1fr); }
+      .na-name { grid-column:1 / -1; }
+      .na-parent { display:block; margin-left:0; }
+      .na-chip, .na-due { justify-self:start; }
+    }
 
     .monday-controls {
       display:flex; align-items:center; gap:10px 12px; flex-wrap:wrap;
@@ -1173,11 +1208,11 @@
       box.setAttribute("aria-label", "Recently assigned tasks");
       const head = document.createElement("div");
       head.className = "na-head";
-      head.innerHTML = '<span class="na-dot" aria-hidden="true"></span><span class="na-title"></span>' +
-        '<button class="na-x" type="button" aria-label="Dismiss recently assigned tasks">&times;</button>';
+      head.innerHTML = '<span class="na-pill">NEW</span><span class="na-title"></span>' +
+        '<button class="na-ok" type="button">Got it</button>';
       head.querySelector(".na-title").textContent =
-        fresh.length === 1 ? "New this week: 1 task assigned to you" : "New this week: " + fresh.length + " tasks assigned to you";
-      head.querySelector(".na-x").addEventListener("click", () => {
+        fresh.length === 1 ? "1 task assigned to you" : fresh.length + " tasks assigned to you";
+      head.querySelector(".na-ok").addEventListener("click", () => {
         fresh.forEach(t => seen.add(t.id));
         /* Only ids still in the window are worth keeping. */
         const keep = [...seen].filter(id => TASKS.some(t => t.id === id && t.a));
@@ -1191,15 +1226,26 @@
         const li = document.createElement("li");
         const a = document.createElement("a");
         a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-        a.textContent = t.n;
-        const meta = document.createElement("span");
-        meta.className = "na-meta";
-        const n = daysOut(t.a);
-        const when = n === 0 ? "today" : n === -1 ? "yesterday"
-          : parseDue(t.a).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
-        meta.textContent = BOARDS[t.b].label + (t.sub && t.p ? " · under " + t.p : "") +
-          " · assigned " + when + (t.due ? " · due " + fmtDue(t.due) : "");
-        li.append(a, meta);
+        const name = document.createElement("span");
+        name.className = "na-name";
+        const task = document.createElement("span");
+        task.className = "na-task";
+        task.textContent = t.n;
+        name.appendChild(task);
+        if (t.sub && t.p) {
+          const parent = document.createElement("span");
+          parent.className = "na-parent";
+          parent.textContent = "in " + t.p;
+          name.appendChild(parent);
+        }
+        const chip = document.createElement("span");
+        chip.className = "na-chip c-" + t.b;
+        chip.textContent = BOARDS[t.b].label;
+        const due = document.createElement("span");
+        due.className = "na-due";
+        if (t.due) due.textContent = "due " + parseDue(t.due).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+        a.append(name, chip, due);
+        li.appendChild(a);
         list.appendChild(li);
       });
       box.append(head, list);
