@@ -20,6 +20,11 @@ export const BOARDS = [
     people: "person", status: "status", date: "date4", timeline: "timerange_mm54n315" },
   { key: "comms", heading: "Comms & Branding", id: "18421083526",
     people: "person", status: "status", date: "date4", timeline: "timerange_mm5fazhm" },
+  /* No date column; "Team Lead" is the people column. Most of the actual
+     assignments on this board are subitems, which reach the pages only
+     through the recently-assigned banner (see subitemTasks). */
+  { key: "trial", heading: "Pre-Trial & Trial Skills", id: "18436276181",
+    people: "multiple_person_mm8a8zxc", status: "color_mm8az2hx", date: null, timeline: "timerange_mm8az2z5" },
 ];
 
 /** Default Monday user ids — env vars override in both Node and Workers. */
@@ -36,6 +41,10 @@ export const STATUS_MAP = {
   "needs review": "wait",
   "not started": "idle",
   "": "idle",
+  // Pre-Trial & Trial Skills board labels
+  "ongoing": "work",
+  "planning": "work",
+  "not started yet": "idle",
 };
 const DONE = new Set(["done"]);
 
@@ -64,6 +73,14 @@ query ($boardId: ID!, $cols: [String!], $cursor: String) {
         creator_id
         group { title }
         column_values(ids: $cols) { id text value }
+        subitems {
+          id
+          name
+          created_at
+          creator_id
+          board { id }
+          column_values(types: [people, status, date, timeline]) { id type text value }
+        }
       }
     }
   }
@@ -123,7 +140,7 @@ export async function gql(variables, token, query = QUERY) {
  */
 async function fetchAssignments(board, token) {
   const from = new Date(Date.now() - ASSIGN_LOOKBACK_DAYS * 86400000).toISOString();
-  const data = await gql({ boardId: board.id, cols: [board.people], from }, token, ACTIVITY_QUERY);
+  const data = await gql({ boardId: board.id, cols: board.people ? [board.people] : null, from }, token, ACTIVITY_QUERY);
   const out = {};
   for (const log of data.boards?.[0]?.activity_logs || []) {
     if (log.event !== "update_column_value") continue;
@@ -195,12 +212,54 @@ export async function fetchBoard(board, token) {
         createdAt: item.created_at || null,
         creatorId: Number(item.creator_id) || null,
         assignedAt: assignments[item.id] || {},
+        subitems: (item.subitems || []).map((sub) => subitemRecord(sub, item.name)),
       });
     }
     cursor = live.items_page.cursor;
   } while (cursor);
 
+  /* Subitems live on their own "Subitems of …" board, so who-added-whom comes
+     from that board's activity log. Every column on it is read: subitem
+     boards name their people column however they like. */
+  const subBoardIds = [...new Set(records.flatMap((r) => r.subitems.map((s) => s.boardId)).filter(Boolean))];
+  for (const id of subBoardIds) {
+    const subAssigned = await fetchAssignments({ id, heading: `${board.heading} subitems` }, token).catch((err) => {
+      console.warn(`Board ${board.heading} subitems: activity log unavailable (${err.message})`);
+      return {};
+    });
+    for (const r of records) for (const s of r.subitems) {
+      if (subAssigned[s.id]) s.assignedAt = subAssigned[s.id];
+    }
+  }
+
   return records;
+}
+
+/* Subitem columns are found by type rather than id: each subitem board has
+   its own ids, and they are not worth pinning in BOARDS for a banner. */
+function subitemRecord(sub, parentName) {
+  const ofType = (type) => (sub.column_values || []).find((c) => c.type === type) || {};
+  let people = [];
+  try {
+    people = (JSON.parse(ofType("people").value || "{}").personsAndTeams || [])
+      .filter((p) => p.kind === "person")
+      .map((p) => Number(p.id));
+  } catch { /* malformed people cell */ }
+  let timelineTo = null;
+  try { timelineTo = JSON.parse(ofType("timeline").value || "{}").to || null; } catch { /* ignore */ }
+  return {
+    id: sub.id,
+    name: sub.name,
+    parent: parentName,
+    boardId: sub.board?.id || null,
+    status: ofType("status").text || "",
+    date: ofType("date").text || "",
+    timelineTo,
+    people,
+    createdAt: sub.created_at || null,
+    creatorId: Number(sub.creator_id) || null,
+    assignedAt: {},
+  };
 }
 
 export async function fetchAllBoards(token) {
@@ -265,11 +324,38 @@ function ordered(tasks) {
   );
 }
 
+/* Subitems are steps under a milestone, not milestones, so the pages list
+   none of them -- except one someone else handed you this past week, which
+   rides along flagged sub:true for the "New this week" banner only. */
+function subitemTasks(rec, board, userId) {
+  return (rec.subitems || []).flatMap((sub) => {
+    if (!sub.people.includes(userId)) return [];
+    if (DONE.has((sub.status || "").trim().toLowerCase())) return [];
+    const a = recentlyAssigned(sub, userId);
+    if (!a) return [];
+    const date = (sub.date || "").trim();
+    return [{
+      b: board.key,
+      cat: CAT_ALIAS[rec.group] || rec.group,
+      n: sub.name,
+      s: STATUS_MAP[(sub.status || "").trim().toLowerCase()] || "idle",
+      due: ISO.test(date) ? date : ISO.test(sub.timelineTo || "") ? sub.timelineTo : null,
+      id: sub.id,
+      ...(sub.people.length > 1 ? { shared: true } : {}),
+      a,
+      sub: true,
+      p: sub.parent,
+    }];
+  });
+}
+
 export function tasksForUser(byBoard, userId) {
   const unmapped = new Set();
   const tasks = ordered(
     BOARDS.flatMap((board) =>
-      (byBoard[board.key] || []).map((rec) => toTask(rec, board, userId, unmapped)).filter(Boolean)
+      (byBoard[board.key] || []).flatMap((rec) =>
+        [toTask(rec, board, userId, unmapped), ...subitemTasks(rec, board, userId)].filter(Boolean)
+      )
     )
   );
   return { tasks, unmapped };

@@ -29,7 +29,7 @@ const json = (body, status = 200) =>
   });
 
 const store = (env) => env.FOCUS_KV || env.KV || null;
-const BOARDS_CACHE_KEY = "monday:boards:v2";
+const BOARDS_CACHE_KEY = "monday:boards:v3";   // v3: records carry subitems
 const BOARDS_CACHE_MS = 5 * 60 * 1000;
 
 async function loadBoards(token, kv, fresh) {

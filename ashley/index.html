@@ -941,7 +941,8 @@
   <script>
     /* =====================================================================
        MY MONDAY TASKS — generated from the shared LACE boards (Operations,
-       LMS, Content Design, Data & Evaluation, Comms & Branding) by
+       LMS, Content Design, Data & Evaluation, Comms & Branding) and the
+       Pre-Trial & Trial Skills Program board by
        scripts/refresh-tasks.mjs, which runs
        nightly via .github/workflows/refresh-tasks.yml. Use the refresh
        button (or GET /api/tasks/:slug) to pull live data between runs.
@@ -994,6 +995,7 @@
       content: { label: "Content Design",   id: "18420946283" },
       data:    { label: "Data & Eval",      id: "18421082069" },
       comms:   { label: "Comms & Branding", id: "18421083526" },
+      trial:   { label: "Pre-Trial & Trial", id: "18436276181" },
     };
     const pulse = (b, item) => "https://training-unit-hq.monday.com/boards/" + BOARDS[b].id + "/pulses/" + item;
 
@@ -1093,15 +1095,19 @@
     const filterPanel = document.getElementById("filterPanel");
     const filterSummary = document.getElementById("filterSummary");
     const taskToolbar = document.getElementById("taskToolbar");
-    const AREA_ORDER = ["ops", "lms", "content", "data", "comms"];
+    const AREA_ORDER = ["ops", "lms", "content", "data", "comms", "trial"];
     const STATUS_FILTER_LABELS = {
       work: "Working on it",
       wait: "Waiting",
       idle: "Not started",
     };
 
+    /* Rows flagged sub:true are subitems someone just handed you. They exist
+       for the "New this week" banner and stay out of every milestone view. */
+    function milestones(){ return TASKS.filter(t => !t.sub); }
+
     function visibleTasks(){
-      return TASKS.filter(t => {
+      return milestones().filter(t => {
         if (t.s === "done") return false;
         if (activeStatus !== "all" && t.s !== activeStatus) return false;
         if (activeArea !== "all" && t.b !== activeArea) return false;
@@ -1110,11 +1116,11 @@
     }
 
     function areaFilteredTasks(){
-      return TASKS.filter(t => activeArea === "all" || t.b === activeArea);
+      return milestones().filter(t => activeArea === "all" || t.b === activeArea);
     }
 
     function countByStatus(status){
-      return TASKS.filter(t => {
+      return milestones().filter(t => {
         if (status !== "all" && t.s !== status) return false;
         if (activeArea !== "all" && t.b !== activeArea) return false;
         return true;
@@ -1122,7 +1128,7 @@
     }
 
     function countByArea(area){
-      return TASKS.filter(t => {
+      return milestones().filter(t => {
         if (activeStatus !== "all" && t.s !== activeStatus) return false;
         if (area !== "all" && t.b !== area) return false;
         return true;
@@ -1187,7 +1193,8 @@
         const n = daysOut(t.a);
         const when = n === 0 ? "today" : n === -1 ? "yesterday"
           : parseDue(t.a).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
-        meta.textContent = BOARDS[t.b].label + " · assigned " + when + (t.due ? " · due " + fmtDue(t.due) : "");
+        meta.textContent = BOARDS[t.b].label + (t.sub && t.p ? " · under " + t.p : "") +
+          " · assigned " + when + (t.due ? " · due " + fmtDue(t.due) : "");
         li.append(a, meta);
         list.appendChild(li);
       });
@@ -1268,7 +1275,7 @@
         statusMenu.appendChild(menuItem(d.label, activeStatus === d.k, d.dot, () => { activeStatus = d.k; }));
       });
 
-      const boards = AREA_ORDER.filter(k => TASKS.some(t => t.b === k));
+      const boards = AREA_ORDER.filter(k => milestones().some(t => t.b === k));
       areaMenu.replaceChildren();
       areaMenu.appendChild(menuItem("All areas", activeArea === "all", null, () => { activeArea = "all"; }));
       boards.forEach(k => {
