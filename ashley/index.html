@@ -108,8 +108,9 @@
       margin-left:auto; flex:none;
     }
     .greeting { font-size:13px; font-weight:650; line-height:1.3; color:var(--ink); }
-    .today { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
-    .today::before { content:"·"; margin-right:7px; color:var(--faint); }
+    /* Scoped: .cal-day.today in the calendar would inherit the middot otherwise */
+    .head-meta .today { font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .head-meta .today::before { content:"·"; margin-right:7px; color:var(--faint); }
     .head-right { display:flex; align-items:center; gap:8px; flex:none; }
     .icon-btn {
       width:44px; height:44px; display:grid; place-items:center; background:var(--card);
@@ -162,10 +163,13 @@
     .monday-meta { font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
     .monday-meta::before { content:"·"; margin:0 8px 0 2px; color:var(--line); }
     .monday-refresh {
+      position:relative;
       font:inherit; line-height:0; padding:2px; border:0; border-radius:6px;
       background:transparent; color:var(--faint); cursor:pointer;
       transition:color .15s, background .15s;
     }
+    /* Drawn at 17px, tapped at 25px. */
+    .monday-refresh::after { content:""; position:absolute; inset:-4px; }
     .monday-refresh:hover { color:var(--ink); background:var(--hover-tint); }
     .monday-refresh svg { width:13px; height:13px; display:block; }
     .monday-open {
@@ -271,7 +275,7 @@
     .menu-panel[hidden] { display:none; }
     .menu-section + .menu-section { margin-top:4px; padding-top:4px; border-top:1px solid var(--line-soft); }
     .menu-section-label {
-      font-size:10px; font-weight:700; letter-spacing:.12em;
+      font-size:11px; font-weight:700; letter-spacing:.12em;
       text-transform:uppercase; color:var(--faint);
       padding:6px 14px 4px;
     }
@@ -283,10 +287,13 @@
       cursor:pointer; text-align:left; transition:background .13s;
     }
     .menu-item:hover { background:var(--hover-tint); }
-    .menu-item.is-selected {
-      background:color-mix(in srgb,var(--earth) 20%,var(--card));
-      font-weight:650;
+    /* A picked filter is a control state, so it takes brand, not earth. */
+    .menu-item[aria-pressed="true"] {
+      background:color-mix(in srgb,var(--brand) 10%,var(--card));
+      color:var(--brand-deep); font-weight:650;
     }
+    .menu-check { margin-left:auto; flex:none; width:14px; height:14px; color:var(--brand); visibility:hidden; }
+    .menu-item[aria-pressed="true"] .menu-check { visibility:visible; }
     .menu-dot { width:8px; height:8px; border-radius:50%; flex:none; }
     .task-content { min-height:80px; }
 
@@ -301,6 +308,7 @@
     .bucket[open] .bucket-chev { transform:rotate(90deg); }
     .bucket-count { margin-left:auto; font-size:12.5px; color:var(--muted);
       font-variant-numeric:tabular-nums; }
+    .bucket-note { color:var(--faint); font-weight:400; font-size:12.5px; }
     .bucket-dot { width:9px; height:9px; border-radius:50%; flex:none; }
     .bucket.b-overdue .bucket-dot { background:var(--overdue); }
     .bucket.b-soon .bucket-dot { background:var(--warm); }
@@ -324,7 +332,7 @@
     .t-area .t-board-sub { display:block; font-size:11.5px; color:var(--faint); }
     .t-due { white-space:nowrap; font-variant-numeric:tabular-nums; font-size:13.5px; color:var(--muted); }
     .t-due.od { color:var(--overdue); font-weight:650; }
-    .t-due.warn { color:var(--brand-deep); font-weight:600; }
+    .t-due.warn { color:var(--warm-deep); font-weight:600; }
     .status-pill { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; }
     .status-pill .sd { width:8px; height:8px; border-radius:50%; flex:none; }
     .st-work .sd { background:var(--working); } .st-work { color:var(--ink); }
@@ -366,7 +374,7 @@
     }
     .wk-cell { text-align:center; padding:2px 2px 4px; min-width:0; }
     .wk-cell-dow {
-      font-size:10px; font-weight:700; letter-spacing:.1em;
+      font-size:11px; font-weight:700; letter-spacing:.1em;
       text-transform:uppercase; color:var(--muted);
     }
     .wk-cell-num {
@@ -381,13 +389,17 @@
     .wk-cell.is-today .wk-cell-num { background:var(--earth); color:var(--on-accent); }
     .wk-cell.is-today .wk-cell-dow { color:var(--earth-deep); }
     .wk-nav { margin-left:auto; display:flex; gap:6px; flex:none; }
-    .wk-nav button {
+    /* Week and month steppers are one control, so they share one look. */
+    .wk-nav button, .cal-nav button {
       font:inherit; font-size:18px; line-height:1; width:32px; height:32px; cursor:pointer;
-      background:transparent; border:1px solid var(--line); border-radius:9px;
-      color:var(--muted); display:grid; place-items:center; transition:border-color .15s, color .15s, background .15s;
+      background:transparent; border:1px solid var(--line); border-radius:var(--radius);
+      color:var(--muted); display:grid; place-items:center;
+      transition:border-color .15s, color .15s, background .15s, transform .15s;
     }
-    .wk-nav button:hover { color:var(--ink); background:var(--hover-tint); }
-    .wk-nav button:hover { border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); transform:translateY(-1px); }
+    .wk-nav button:hover, .cal-nav button:hover {
+      color:var(--ink); background:var(--hover-tint);
+      border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); transform:translateY(-1px);
+    }
     .wk-nav button.wk-now { width:auto; padding:0 12px; font-size:13px; font-weight:650; }
 
     /* The week calendar frames the whole task panel, so it sits above the
@@ -454,12 +466,12 @@
 
     .wk-empty { text-align:center; padding:26px 12px; border:0; background:transparent; }
     .wk-empty p { margin:0; color:var(--muted); font-size:14.5px; }
-    .wk-empty .wk-jump {
+    .wk-empty .wk-jump, .list-empty .wk-jump {
       font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
       background:var(--card); border:1px solid color-mix(in srgb,var(--brand) 35%,var(--line));
       color:var(--brand); border-radius:999px; padding:7px 15px; transition:transform .14s, background .14s;
     }
-    .wk-empty .wk-jump:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--brand) 10%,var(--card)); }
+    .wk-empty .wk-jump:hover, .list-empty .wk-jump:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--brand) 10%,var(--card)); }
     @media (max-width:560px){
       .wk-task { align-items:flex-start; flex-direction:column; gap:6px; }
       .wk-right { text-align:left; }
@@ -492,14 +504,8 @@
     .cal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
     .cal-title { font-family:var(--sans); font-size:18px; font-weight:700; line-height:1.2; letter-spacing:-0.02em; }
     .cal-nav { display:flex; gap:6px; }
-    .cal-nav button {
-      font:inherit; font-size:18px; line-height:1; width:34px; height:34px; cursor:pointer;
-      background:var(--paper-2); border:1px solid var(--line); border-radius:var(--radius);
-      color:var(--ink); display:grid; place-items:center; transition:border-color .15s, transform .15s;
-    }
-    .cal-nav button:hover { border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); transform:translateY(-1px); }
     .cal-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
-    .cal-dow { font-size:10px; text-align:center; color:var(--faint); padding:4px 2px; font-weight:650; letter-spacing:.04em; text-transform:uppercase; }
+    .cal-dow { font-size:11px; text-align:center; color:var(--faint); padding:4px 2px; font-weight:650; letter-spacing:.04em; text-transform:uppercase; }
     .cal-day {
       min-height:76px; background:var(--paper-2); border:1px solid var(--line); border-radius:8px;
       padding:4px 5px; min-width:0;
@@ -510,12 +516,19 @@
     .cal-num { font-weight:650; font-size:11px; color:var(--muted); margin-bottom:3px; line-height:1; }
     .cal-day.today .cal-num { color:var(--brand); }
     .cal-task {
-      display:block; text-decoration:none; color:var(--ink); font-size:10.5px; line-height:1.25;
+      display:block; text-decoration:none; color:var(--ink); font-size:11px; line-height:1.25;
       padding:2px 4px; margin-bottom:2px; border-radius:4px; background:var(--card);
       border-left:2px solid var(--accent,var(--line)); overflow-wrap:anywhere; word-break:break-word;
     }
     .cal-task:hover { background:var(--card); box-shadow:var(--shadow); }
-    .cal-more { font-size:10px; color:var(--faint); padding:0 4px; line-height:1.3; }
+    .cal-more { font-size:11px; color:var(--faint); padding:0 4px; line-height:1.3; }
+    /* Narrow screens: a seven-column grid leaves ~40px per day, which shreds
+       task names letter by letter. The grid keeps its shape with status dots,
+       and the names move to a dated agenda under it. */
+    .cal-dots { display:none; }
+    .cal-agenda { display:none; }
+    .cal-agenda .ag-date { font-size:12px; color:var(--muted); white-space:nowrap;
+      font-variant-numeric:tabular-nums; min-width:46px; }
     .cal-undated { margin-top:16px; border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; }
     .cal-undated > summary {
       list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
@@ -535,10 +548,19 @@
     .cal-undated-list .ud-dot { width:8px; height:8px; border-radius:50%; flex:none; background:var(--accent); }
     .cal-undated-list .ud-name { flex:1; min-width:0; font-weight:600; overflow-wrap:anywhere; }
     .cal-undated-list .ud-board { font-size:12px; color:var(--muted); white-space:nowrap; }
-    @media (max-width:720px){ .cal-day { min-height:58px; } .cal-task { font-size:10px; } }
+    @media (max-width:720px){ .cal-day { min-height:58px; } }
+    @media (max-width:560px){
+      .cal-day { min-height:46px; }
+      .cal-task, .cal-more { display:none; }
+      .cal-dots { display:flex; flex-wrap:wrap; gap:3px; padding:2px 1px 0; }
+      .cal-dots i { width:6px; height:6px; border-radius:50%; background:var(--accent,var(--line)); }
+      .cal-agenda { display:block; margin-top:16px; border-top:1px solid var(--line); padding-top:6px; }
+    }
 
     /* ---- shared empty state (pins, list, tasks) --------------------- */
     .list-empty { color:var(--faint); font-size:14px; text-align:center; padding:16px 8px; }
+    .task-content .list-empty { color:var(--muted); padding:26px 12px; }
+    .task-content .list-empty .wk-jump { display:block; margin:12px auto 0; }
 
     /* ---- jump links ------------------------------------------------ */
     .links { list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0; }
@@ -757,7 +779,7 @@
     .head-link:focus-visible, .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
     .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
     .wk-nav button:focus-visible, .cal-nav button:focus-visible,
-    .wk-empty .wk-jump:focus-visible, .wk-task:focus-visible,
+    .wk-empty .wk-jump:focus-visible, .list-empty .wk-jump:focus-visible, .wk-task:focus-visible,
     .kcard:focus-visible, .cal-task:focus-visible, .t-name a:focus-visible,
     .cal-undated-list a:focus-visible, .bucket > summary:focus-visible,
     .wk-ongoing > summary:focus-visible, .cal-undated > summary:focus-visible {
@@ -781,7 +803,7 @@
     @media (hover: none) {
       .todo-actions { opacity:1; }
       .wk-task:hover, .kcard:hover, .links a:hover, .icon-btn:hover,
-      .wk-nav button:hover, .cal-nav button:hover { transform:none; }
+      .wk-nav button:hover, .cal-nav button:hover, .wk-empty .wk-jump:hover, .list-empty .wk-jump:hover { transform:none; }
     }
     /* Small controls keep their drawn size and gain a 24px hit area. */
     .todo-check, .todo-del, .todo-actions .mini-btn, .pin-actions .mini-btn { position:relative; }
@@ -830,8 +852,9 @@
                 <rect x="8" y="3" width="4" height="14" rx="1" fill="#ffcb00"/>
                 <rect x="14" y="3" width="4" height="14" rx="1" fill="#00d647"/>
               </svg>
-              <span class="monday-title">Milestones from Monday</span>
+              <h2 class="monday-title">Milestones from Monday</h2>
               <span class="monday-meta" id="snapNote"></span>
+              <span class="sr-only" id="refreshStatus" role="status"></span>
               <button class="monday-refresh" type="button" id="taskRefresh"
                       title="Refresh from Monday" aria-label="Refresh tasks from Monday">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
@@ -843,7 +866,7 @@
           <div id="newAssigned" hidden></div>
           <div class="monday-controls" id="taskToolbar" data-view="week">
             <div class="menu-wrap" id="filterMenuWrap">
-              <button class="filter-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="filterPanel" aria-label="Filter tasks">
+              <button class="filter-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-controls="filterPanel" aria-label="Filter tasks">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
                 <span>Filter</span>
                 <span class="filter-summary" id="filterSummary" hidden></span>
@@ -1029,7 +1052,6 @@
     const STATUS_COLOR = { work:"var(--working)", wait:"var(--wait)", idle:"var(--idle)", done:"var(--ok)" };
     let TODAY_ISO = toIso(today);
     function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
-    // Weeks run Monday → Sunday.
     /* Sunday-start, matching the week strip's Sun..Sat columns. */
     function startOfWeek(d){ return addDays(d, -d.getDay()); }
     let THIS_WEEK = startOfWeek(today);
@@ -1204,16 +1226,18 @@
       const li = document.createElement("li");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "menu-item" + (selected ? " is-selected" : "");
+      btn.className = "menu-item";
+      btn.setAttribute("aria-pressed", String(selected));
       if (dotColor) {
         const dot = document.createElement("span");
         dot.className = "menu-dot";
         dot.style.background = dotColor;
         dot.setAttribute("aria-hidden", "true");
-        btn.append(dot, document.createTextNode(label));
-      } else {
-        btn.textContent = label;
+        btn.appendChild(dot);
       }
+      btn.appendChild(document.createTextNode(label));
+      btn.insertAdjacentHTML("beforeend",
+        '<svg class="menu-check" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>');
       btn.addEventListener("click", (e) => {
         e.stopPropagation();
         onPick();
@@ -1234,7 +1258,7 @@
 
     function renderFilters(){
       const statusDefs = [
-        { k:"all",  label:"All statuses",    dot:"var(--working)" },
+        { k:"all",  label:"All statuses",    dot:"transparent" },  // keeps the label in line with the dotted rows
         { k:"work", label:"Working on it",   dot:"var(--working)" },
         { k:"wait", label:"Waiting",         dot:"var(--wait)" },
         { k:"idle", label:"Not started",     dot:"var(--idle)" },
@@ -1269,6 +1293,22 @@
       );
     }
 
+    /* Shared empty state for List and Calendar. With a filter on, the way out
+       is one press away; with none, there is genuinely nothing open. */
+    function filterEmpty(){
+      const p = document.createElement("div");
+      p.className = "list-empty";
+      const filtered = activeStatus !== "all" || activeArea !== "all";
+      p.textContent = filtered ? "Nothing matches this filter." : "Nothing open on your boards.";
+      if (filtered){
+        const clear = document.createElement("button");
+        clear.type = "button"; clear.className = "wk-jump"; clear.textContent = "Clear filter";
+        clear.addEventListener("click", () => { activeStatus = "all"; activeArea = "all"; refreshTasks(); });
+        p.appendChild(clear);
+      }
+      return p;
+    }
+
     // Sort by soonest due date; undated tasks fall to the end.
     // Ties break on status then name, so what's in progress leads its day and
     // the order never depends on how the generated TASKS array happens to sit.
@@ -1296,7 +1336,7 @@
         sum.innerHTML =
           '<span class="bucket-dot" aria-hidden="true"></span>' +
           '<span class="bucket-chev" aria-hidden="true">›</span>' +
-          '<span>' + bk.label + (bk.note ? ' <span style="color:var(--faint);font-weight:400;font-size:12.5px;">· '+bk.note+'</span>' : '') + '</span>' +
+          '<span>' + bk.label + (bk.note ? ' <span class="bucket-note">· '+bk.note+'</span>' : '') + '</span>' +
           '<span class="bucket-count">' + items.length + '</span>';
         d.appendChild(sum);
 
@@ -1337,9 +1377,7 @@
         d.appendChild(table);
         bucketsEl.appendChild(d);
       }
-      if (!shown){
-        bucketsEl.innerHTML = '<p class="list-empty">Nothing in this filter. 🎉</p>';
-      }
+      if (!shown) bucketsEl.appendChild(filterEmpty());
     }
 
     /* ---- week view (focused: just what's due this week) ------------ */
@@ -1584,7 +1622,7 @@
       calendarEl.innerHTML = "";
       const tasks = visibleTasks();
       if (!tasks.length){
-        calendarEl.innerHTML = '<p class="list-empty">Nothing in this filter. 🎉</p>';
+        calendarEl.appendChild(filterEmpty());
         return;
       }
 
@@ -1664,9 +1702,40 @@
           more.textContent = "+" + (dayTasks.length - CAL_MAX) + " more";
           cell.appendChild(more);
         }
+        if (dayTasks.length){
+          const dots = document.createElement("div");
+          dots.className = "cal-dots";
+          dots.setAttribute("aria-hidden", "true");
+          dayTasks.forEach(t => {
+            const i = document.createElement("i");
+            i.style.setProperty("--accent", STATUS_COLOR[t.s]);
+            dots.appendChild(i);
+          });
+          cell.appendChild(dots);
+        }
         grid.appendChild(cell);
       }
       wrap.appendChild(grid);
+
+      /* Only shown on narrow screens (see .cal-agenda) */
+      const monthPrefix = calYear + "-" + String(calMonth + 1).padStart(2, "0") + "-";
+      const inMonth = tasks.filter(t => t.due && t.due.startsWith(monthPrefix)).sort(byDue);
+      if (inMonth.length){
+        const ag = document.createElement("ul");
+        ag.className = "cal-undated-list cal-agenda";
+        inMonth.forEach(t => {
+          const li = document.createElement("li");
+          const a = document.createElement("a");
+          a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
+          a.innerHTML = '<span class="ag-date"></span><span class="ud-dot" style="--accent:'+STATUS_COLOR[t.s]+'"></span>' +
+            '<span class="ud-name"></span>';
+          a.querySelector(".ag-date").textContent = parseDue(t.due).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+          a.querySelector(".ud-name").textContent = t.n;
+          li.appendChild(a);
+          ag.appendChild(li);
+        });
+        wrap.appendChild(ag);
+      }
 
       const undated = tasks.filter(t => !t.due).sort((a,b) => a.n.localeCompare(b.n));
       if (undated.length){
@@ -1717,6 +1786,9 @@
     /* ---- snapshot note + live refresh ------------------------------ */
     const snapNote = document.getElementById("snapNote");
     const taskRefreshBtn = document.getElementById("taskRefresh");
+    /* The visible note re-words itself every minute, so it can't be the live
+       region. This one only speaks when someone presses refresh. */
+    const refreshStatus = document.getElementById("refreshStatus");
 
     function paintSnapNote(){
       if (snapshotLive && lastSyncedAt) {
@@ -1738,7 +1810,7 @@
       taskRefreshBtn.disabled = true;
       if (!quiet) taskRefreshBtn.classList.add("spinning");
       const prevNote = snapNote.textContent;
-      if (!quiet) snapNote.textContent = "refreshing…";
+      if (!quiet) snapNote.textContent = refreshStatus.textContent = "refreshing…";
       try {
         /* An explicit press means "I just changed something in Monday", so it
            skips the five-minute board cache on the server. Quiet background
@@ -1760,9 +1832,11 @@
         saveLiveTasks(data);
         paintSnapNote();
         refreshTasks();
+        if (!quiet) refreshStatus.textContent = "Tasks refreshed from Monday";
       } catch (err) {
         if (quiet) return;
         snapNote.textContent = "refresh failed";
+        refreshStatus.textContent = "Couldn't refresh from Monday. Showing the last saved tasks.";
         taskRefreshBtn.title = String(err.message || err);
         setTimeout(() => {
           paintSnapNote();

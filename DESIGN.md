@@ -10,7 +10,7 @@ colors:
   line: "#d9dbd4"
   ink: "#151719"
   muted: "#4f575c"
-  faint: "#6b747a"
+  faint: "#61696f"
   on-accent: "#ffffff"
   ok: "#179a72"
   wait: "#1c63b0"
@@ -253,7 +253,7 @@ legibility depends on items being individually recognisable by colour.
   follows it.
 - **Ink Muted** (`#4f575c`): Secondary content — descriptions, counts, table
   meta, panel titles.
-- **Ink Soft** (`#6b747a`): Tertiary text — timestamps, empty-state prose, hints,
+- **Ink Soft** (`#61696f`): Tertiary text — timestamps, empty-state prose, hints,
   the quietest labels.
 - **On Accent** (`#ffffff` light / `#0e0f14` dark): The foreground for anything
   sitting *on* an accent fill.
