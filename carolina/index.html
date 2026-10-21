@@ -174,6 +174,31 @@
     }
     .monday-open:hover { text-decoration:underline; text-underline-offset:2px; }
 
+    /* ---- recently assigned banner (same family as the home page's
+       announcement banner: earth wash, 3px left rule) ------------------ */
+    .new-assign {
+      margin:0 0 12px; padding:10px 12px 10px 14px;
+      background:color-mix(in srgb, var(--earth) 10%, var(--card));
+      border:1px solid color-mix(in srgb, var(--earth) 24%, var(--line));
+      border-left:3px solid var(--earth);
+      border-radius:12px; font-size:14px; color:var(--ink);
+    }
+    .na-head { display:flex; align-items:center; gap:10px; }
+    .na-dot { flex:none; width:8px; height:8px; border-radius:50%; background:var(--earth); }
+    .na-title { font-weight:650; min-width:0; }
+    .na-x {
+      margin-left:auto; flex:none; display:grid; place-items:center;
+      width:28px; height:28px; border-radius:8px; cursor:pointer;
+      background:transparent; border:0; color:var(--faint); font-size:18px; line-height:1;
+    }
+    .na-x:hover { background:var(--hover-tint); color:var(--ink); }
+    .na-x:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
+    .na-list { list-style:none; margin:4px 0 0 18px; padding:0; }
+    .na-list li { padding:3px 0; min-width:0; overflow-wrap:anywhere; }
+    .na-list a { color:var(--ink); font-weight:550; text-decoration:none; }
+    .na-list a:hover, .na-list a:focus-visible { color:var(--brand); text-decoration:underline; text-underline-offset:2px; outline:none; }
+    .na-meta { display:block; font-size:12.5px; color:var(--muted); }
+
     .monday-controls {
       display:flex; align-items:center; gap:10px 12px; flex-wrap:wrap;
       margin:0 0 18px; padding:10px 12px;
@@ -814,6 +839,8 @@
             </div>
             <a class="monday-open" href="https://training-unit-hq.monday.com/workspaces/16174604" target="_blank" rel="noopener noreferrer">Open in Monday <span aria-hidden="true">↗</span></a>
           </div>
+          <!-- Recently assigned: filled by renderNewAssigned() -->
+          <div id="newAssigned" hidden></div>
           <div class="monday-controls" id="taskToolbar" data-view="week">
             <div class="menu-wrap" id="filterMenuWrap">
               <button class="filter-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-haspopup="true" aria-controls="filterPanel" aria-label="Filter tasks">
@@ -1093,7 +1120,67 @@
     function refreshTasks(){
       renderFilters();
       updateToolbar();
+      renderNewAssigned();
       renderView();
+    }
+
+    /* ---- recently assigned ------------------------------------------
+       t.a is the day someone else put you on the task (Eastern), set by
+       scripts/refresh-tasks.mjs and /api/tasks only for the past week.
+       Re-checked against today here so a stale snapshot still ages out.
+       Dismissing remembers those task ids; a newer assignment brings the
+       banner back with just the new ones. */
+    const NEW_SEEN_KEY = "tu-" + pageSlug + "-new-seen-v1";
+    const newAssignedEl = document.getElementById("newAssigned");
+    function seenNew(){
+      try { return new Set(JSON.parse(localStorage.getItem(NEW_SEEN_KEY) || "[]")); }
+      catch(e){ return new Set(); }
+    }
+    function renderNewAssigned(){
+      const seen = seenNew();
+      const fresh = TASKS
+        .filter(t => t.a && t.s !== "done" && !seen.has(t.id) && daysOut(t.a) !== null && daysOut(t.a) > -7)
+        .sort((x, y) => (x.a < y.a ? 1 : x.a > y.a ? -1 : x.n.localeCompare(y.n)));
+      newAssignedEl.replaceChildren();
+      newAssignedEl.hidden = fresh.length === 0;
+      if (!fresh.length) return;
+
+      const box = document.createElement("div");
+      box.className = "new-assign";
+      box.setAttribute("role", "region");
+      box.setAttribute("aria-label", "Recently assigned tasks");
+      const head = document.createElement("div");
+      head.className = "na-head";
+      head.innerHTML = '<span class="na-dot" aria-hidden="true"></span><span class="na-title"></span>' +
+        '<button class="na-x" type="button" aria-label="Dismiss recently assigned tasks">&times;</button>';
+      head.querySelector(".na-title").textContent =
+        fresh.length === 1 ? "New this week: 1 task assigned to you" : "New this week: " + fresh.length + " tasks assigned to you";
+      head.querySelector(".na-x").addEventListener("click", () => {
+        fresh.forEach(t => seen.add(t.id));
+        /* Only ids still in the window are worth keeping. */
+        const keep = [...seen].filter(id => TASKS.some(t => t.id === id && t.a));
+        try { localStorage.setItem(NEW_SEEN_KEY, JSON.stringify(keep)); } catch(e){}
+        renderNewAssigned();
+      });
+
+      const list = document.createElement("ul");
+      list.className = "na-list";
+      fresh.forEach(t => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
+        a.textContent = t.n;
+        const meta = document.createElement("span");
+        meta.className = "na-meta";
+        const n = daysOut(t.a);
+        const when = n === 0 ? "today" : n === -1 ? "yesterday"
+          : parseDue(t.a).toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+        meta.textContent = BOARDS[t.b].label + " · assigned " + when + (t.due ? " · due " + fmtDue(t.due) : "");
+        li.append(a, meta);
+        list.appendChild(li);
+      });
+      box.append(head, list);
+      newAssignedEl.appendChild(box);
     }
 
     function updateToolbar(){
@@ -2383,6 +2470,7 @@
     paintSnapNote();
     renderFilters();
     setView(view);
+    renderNewAssigned();
     renderPins();
     renderTodos();
     pull();

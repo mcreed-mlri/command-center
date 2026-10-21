@@ -60,6 +60,8 @@ query ($boardId: ID!, $cols: [String!], $cursor: String) {
       items {
         id
         name
+        created_at
+        creator_id
         group { title }
         column_values(ids: $cols) { id text value }
       }
@@ -67,9 +69,20 @@ query ($boardId: ID!, $cols: [String!], $cursor: String) {
   }
 }`;
 
+/* Who was added to which item's people column, and when. Only the last
+   ASSIGN_LOOKBACK_DAYS are read: the pages flag anything assigned in the past
+   week, so older history would just be weight. */
+const ACTIVITY_QUERY = `
+query ($boardId: ID!, $cols: [String], $from: ISO8601DateTime) {
+  boards(ids: [$boardId]) {
+    activity_logs(from: $from, column_ids: $cols, limit: 1000) { event data created_at user_id }
+  }
+}`;
+const ASSIGN_LOOKBACK_DAYS = 8;
+
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function gql(variables, token) {
+export async function gql(variables, token, query = QUERY) {
   const ATTEMPTS = 3;
   for (let attempt = 1; ; attempt++) {
     let res, body;
@@ -81,7 +94,7 @@ export async function gql(variables, token) {
           Authorization: token,
           "API-Version": API_VERSION,
         },
-        body: JSON.stringify({ query: QUERY, variables }),
+        body: JSON.stringify({ query, variables }),
       });
       body = await res.json();
     } catch (err) {
@@ -103,11 +116,43 @@ export async function gql(variables, token) {
   }
 }
 
+/**
+ * itemId -> { userId -> epoch ms } for people added to the board's people
+ * column in the lookback window, ignoring self-assignment. Monday stamps
+ * activity logs in 100ns units, hence the /1e4.
+ */
+async function fetchAssignments(board, token) {
+  const from = new Date(Date.now() - ASSIGN_LOOKBACK_DAYS * 86400000).toISOString();
+  const data = await gql({ boardId: board.id, cols: [board.people], from }, token, ACTIVITY_QUERY);
+  const out = {};
+  for (const log of data.boards?.[0]?.activity_logs || []) {
+    if (log.event !== "update_column_value") continue;
+    let d;
+    try { d = JSON.parse(log.data); } catch { continue; }
+    const ids = (v) => new Set((v?.personsAndTeams || []).filter((p) => p.kind === "person").map((p) => Number(p.id)));
+    const before = ids(d.previous_value);
+    const at = Number(log.created_at) / 1e4;
+    for (const uid of ids(d.value)) {
+      if (before.has(uid) || uid === Number(log.user_id)) continue;
+      const item = (out[d.pulse_id] ||= {});
+      if (!item[uid] || at > item[uid]) item[uid] = at;
+    }
+  }
+  return out;
+}
+
 export async function fetchBoard(board, token) {
   const cols = [board.people, board.status, board.date, board.timeline].filter(Boolean);
   const records = [];
   let cursor = null;
   let verified = false;
+
+  /* The banner is a nice-to-have: if the activity log can't be read, the task
+     list still loads, just without anything flagged as new. */
+  const assignments = await fetchAssignments(board, token).catch((err) => {
+    console.warn(`Board ${board.heading}: activity log unavailable (${err.message})`);
+    return {};
+  });
 
   do {
     const data = await gql({ boardId: board.id, cols, cursor }, token);
@@ -147,6 +192,9 @@ export async function fetchBoard(board, token) {
         date: col(board.date).text || "",
         timelineTo,
         people,
+        createdAt: item.created_at || null,
+        creatorId: Number(item.creator_id) || null,
+        assignedAt: assignments[item.id] || {},
       });
     }
     cursor = live.items_page.cursor;
@@ -163,6 +211,25 @@ export async function fetchAllBoards(token) {
 }
 
 const ISO = /^\d{4}-\d{2}-\d{2}$/;
+const ASSIGN_WINDOW_MS = 7 * 86400000;
+
+const etDate = (ms) =>
+  new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).format(new Date(ms));
+
+/* When userId got this task, if it was in the last week and someone else
+   gave it to them: an add in the activity log, or an item created with them
+   already on it (creation doesn't always log a people-column change). */
+function recentlyAssigned(rec, userId) {
+  let at = rec.assignedAt?.[userId] || 0;
+  const created = Date.parse(rec.createdAt || "") || 0;
+  if (!at && created && rec.creatorId !== userId) at = created;
+  return at && Date.now() - at < ASSIGN_WINDOW_MS ? etDate(at) : null;
+}
 
 function toTask(rec, board, userId, unmapped) {
   if (!rec.people.includes(userId)) return null;
@@ -174,6 +241,7 @@ function toTask(rec, board, userId, unmapped) {
 
   const date = (rec.date || "").trim();
   const due = ISO.test(date) ? date : ISO.test(rec.timelineTo || "") ? rec.timelineTo : null;
+  const assigned = isDone ? null : recentlyAssigned(rec, userId);
 
   return {
     b: board.key,
@@ -183,6 +251,7 @@ function toTask(rec, board, userId, unmapped) {
     due,
     id: rec.id,
     ...(rec.people.length > 1 ? { shared: true } : {}),
+    ...(assigned ? { a: assigned } : {}),
   };
 }
 
@@ -206,13 +275,7 @@ export function tasksForUser(byBoard, userId) {
   return { tasks, unmapped };
 }
 
-export const todayET = () =>
-  new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).format(new Date());
+export const todayET = () => etDate(Date.now());
 
 /** Resolve Monday user id for a focus-page slug from Worker/Node env. */
 export function userIdForSlug(slug, env = process.env) {

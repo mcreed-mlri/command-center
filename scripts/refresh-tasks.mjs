@@ -59,7 +59,8 @@ function render(tasks, eol) {
     for (const t of mine) {
       lines.push(
         `      { b:${js(t.b)}, cat:${js(t.cat)}, n:${js(t.n)}, s:${js(t.s)}, ` +
-          `due:${t.due ? js(t.due) : "null"}, id:${js(t.id)}${t.shared ? ", shared:true" : ""} },`
+          `due:${t.due ? js(t.due) : "null"}, id:${js(t.id)}${t.shared ? ", shared:true" : ""}` +
+          `${t.a ? `, a:${js(t.a)}` : ""} },`
       );
     }
   }
@@ -83,7 +84,7 @@ function readBlock(html, htmlPath) {
 
 function parseBlock(body) {
   const out = new Map();
-  const line = /\{\s*b:"([^"]+)",\s*cat:"((?:[^"\\]|\\.)*)",\s*n:"((?:[^"\\]|\\.)*)",\s*s:"(\w+)",\s*due:(null|"[\d-]+"),\s*id:"(\d+)"(,\s*shared:true)?\s*\}/g;
+  const line = /\{\s*b:"([^"]+)",\s*cat:"((?:[^"\\]|\\.)*)",\s*n:"((?:[^"\\]|\\.)*)",\s*s:"(\w+)",\s*due:(null|"[\d-]+"),\s*id:"(\d+)"(,\s*shared:true)?(?:,\s*a:"([\d-]+)")?\s*\}/g;
   for (const m of body.matchAll(line)) {
     out.set(m[6], {
       b: m[1],
@@ -93,6 +94,7 @@ function parseBlock(body) {
       due: m[5] === "null" ? null : JSON.parse(m[5]),
       id: m[6],
       shared: Boolean(m[7]),
+      ...(m[8] ? { a: m[8] } : {}),
     });
   }
   return out;
@@ -103,7 +105,7 @@ function summarize(before, after) {
   for (const t of after) {
     const old = before.get(t.id);
     if (!old) { added.push(t); continue; }
-    const deltas = ["cat", "n", "s", "due", "shared", "b"]
+    const deltas = ["cat", "n", "s", "due", "shared", "b", "a"]
       .filter((k) => (old[k] ?? null) !== (t[k] ?? null))
       .map((k) => `${k}: ${JSON.stringify(old[k] ?? null)} -> ${JSON.stringify(t[k] ?? null)}`);
     if (deltas.length) changed.push({ t, deltas });
