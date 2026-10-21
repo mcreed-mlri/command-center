@@ -196,12 +196,13 @@
       color:var(--on-accent); background:var(--earth);
     }
     .na-title { font-size:13px; font-weight:650; color:var(--earth-deep); min-width:0; }
-    .na-ok {
+    .na-toggle {
       margin-left:auto; flex:none; min-height:32px; padding:0 10px; border-radius:8px; cursor:pointer;
       background:transparent; border:0; font:inherit; font-size:13px; font-weight:600; color:var(--earth-deep);
     }
-    .na-ok:hover { background:color-mix(in srgb, var(--earth) 12%, transparent); }
-    .na-ok:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
+    .na-toggle:hover { background:color-mix(in srgb, var(--earth) 12%, transparent); }
+    .na-toggle:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
+    .new-assign.is-collapsed .na-head { border-bottom:0; }
     .na-list { list-style:none; margin:0; padding:0; }
     .na-list li + li { border-top:1px solid var(--line-soft); }
     /* Fixed chip and date columns so both line up from row to row. */
@@ -1185,8 +1186,9 @@
        t.a is the day someone else put you on the task (Eastern), set by
        scripts/refresh-tasks.mjs and /api/tasks only for the past week.
        Re-checked against today here so a stale snapshot still ages out.
-       Dismissing remembers those task ids; a newer assignment brings the
-       banner back with just the new ones. */
+       Hide collapses the card to its header and remembers those task ids;
+       a newer assignment opens it again. It never removes anything: subitems
+       show nowhere else on the page, so the card is their only home here. */
     const NEW_SEEN_KEY = "tu-" + pageSlug + "-new-seen-v1";
     const newAssignedEl = document.getElementById("newAssigned");
     function seenNew(){
@@ -1196,11 +1198,12 @@
     function renderNewAssigned(){
       const seen = seenNew();
       const fresh = TASKS
-        .filter(t => t.a && t.s !== "done" && !seen.has(t.id) && daysOut(t.a) !== null && daysOut(t.a) > -7)
+        .filter(t => t.a && t.s !== "done" && daysOut(t.a) !== null && daysOut(t.a) > -7)
         .sort((x, y) => (x.a < y.a ? 1 : x.a > y.a ? -1 : x.n.localeCompare(y.n)));
       newAssignedEl.replaceChildren();
       newAssignedEl.hidden = fresh.length === 0;
       if (!fresh.length) return;
+      let collapsed = fresh.every(t => seen.has(t.id));
 
       const box = document.createElement("div");
       box.className = "new-assign";
@@ -1209,19 +1212,28 @@
       const head = document.createElement("div");
       head.className = "na-head";
       head.innerHTML = '<span class="na-pill">NEW</span><span class="na-title"></span>' +
-        '<button class="na-ok" type="button">Got it</button>';
+        '<button class="na-toggle" type="button" aria-controls="newAssignedList"></button>';
       head.querySelector(".na-title").textContent =
         fresh.length === 1 ? "1 task assigned to you" : fresh.length + " tasks assigned to you";
-      head.querySelector(".na-ok").addEventListener("click", () => {
-        fresh.forEach(t => seen.add(t.id));
-        /* Only ids still in the window are worth keeping. */
-        const keep = [...seen].filter(id => TASKS.some(t => t.id === id && t.a));
-        try { localStorage.setItem(NEW_SEEN_KEY, JSON.stringify(keep)); } catch(e){}
-        renderNewAssigned();
-      });
+      const toggle = head.querySelector(".na-toggle");
 
       const list = document.createElement("ul");
       list.className = "na-list";
+      list.id = "newAssignedList";
+      const paint = () => {
+        box.classList.toggle("is-collapsed", collapsed);
+        list.hidden = collapsed;
+        toggle.textContent = collapsed ? "Show" : "Hide";
+        toggle.setAttribute("aria-expanded", String(!collapsed));
+      };
+      toggle.addEventListener("click", () => {
+        collapsed = !collapsed;
+        fresh.forEach(t => collapsed ? seen.add(t.id) : seen.delete(t.id));
+        /* Only ids still in the window are worth keeping. */
+        const keep = [...seen].filter(id => TASKS.some(t => t.id === id && t.a));
+        try { localStorage.setItem(NEW_SEEN_KEY, JSON.stringify(keep)); } catch(e){}
+        paint();
+      });
       fresh.forEach(t => {
         const li = document.createElement("li");
         const a = document.createElement("a");
@@ -1249,6 +1261,7 @@
         list.appendChild(li);
       });
       box.append(head, list);
+      paint();
       newAssignedEl.appendChild(box);
     }
 
