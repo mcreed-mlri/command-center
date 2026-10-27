@@ -9,22 +9,26 @@
 export const API_URL = "https://api.monday.com/v2";
 export const API_VERSION = "2026-07";
 
+/* Timeline columns were removed from every board in late Oct 2026 in favour
+   of a "Target Date" date column. On Operations and Content Design the old
+   due-date column stayed behind as "Completion Date" and still holds most
+   items' dates, so it is read as a fallback (date2) when Target Date is
+   empty. */
 export const BOARDS = [
   { key: "ops", heading: "Operations", id: "18418833001",
-    people: "multiple_person_mm4jktf9", status: "color_mm4v35ba", date: "date_mm4jybye", timeline: "timerange_mm4jxj08" },
+    people: "multiple_person_mm4jktf9", status: "color_mm4v35ba", date: "date_mm8h939e", date2: "date_mm4jybye" },
   { key: "lms", heading: "LMS", id: "18421080121",
-    people: "person", status: "status", date: "date4", timeline: "timerange_mm54mpqq" },
+    people: "person", status: "status", date: "date4" },
   { key: "content", heading: "Content Design", id: "18420946283",
-    people: "multiple_person_mm518x46", status: "color_mm513668", date: "date_mm51kh32", timeline: "timerange_mm51x3zw" },
+    people: "multiple_person_mm518x46", status: "color_mm513668", date: "date_mm8hvgzg", date2: "date_mm51kh32" },
   { key: "data", heading: "Data & Evaluation", id: "18421082069",
-    people: "person", status: "status", date: "date4", timeline: "timerange_mm54n315" },
+    people: "person", status: "status", date: "date4" },
   { key: "comms", heading: "Comms & Branding", id: "18421083526",
-    people: "person", status: "status", date: "date4", timeline: "timerange_mm5fazhm" },
-  /* No date column; "Team Lead" is the people column. Most of the actual
-     assignments on this board are subitems, which reach the pages only
-     through the recently-assigned banner (see subitemTasks). */
+    people: "person", status: "status", date: "date4" },
+  /* "Team Lead" is the people column. Most of the actual assignments on this
+     board are subitems (see subitemTasks). */
   { key: "trial", heading: "Pre-Trial & Trial Skills", id: "18436276181",
-    people: "multiple_person_mm8a8zxc", status: "color_mm8az2hx", date: null, timeline: "timerange_mm8az2z5" },
+    people: "multiple_person_mm8a8zxc", status: "color_mm8az2hx", date: "date_mm8h8y41" },
 ];
 
 /** Default Monday user ids — env vars override in both Node and Workers. */
@@ -159,7 +163,7 @@ async function fetchAssignments(board, token) {
 }
 
 export async function fetchBoard(board, token) {
-  const cols = [board.people, board.status, board.date, board.timeline].filter(Boolean);
+  const cols = [board.people, board.status, board.date, board.date2, board.timeline].filter(Boolean);
   const records = [];
   let cursor = null;
   let verified = false;
@@ -206,7 +210,7 @@ export async function fetchBoard(board, token) {
         name: item.name,
         group: item.group?.title || "",
         status: col(board.status).text || "",
-        date: col(board.date).text || "",
+        date: col(board.date).text || (board.date2 && col(board.date2).text) || "",
         timelineTo,
         people,
         createdAt: item.created_at || null,
@@ -324,27 +328,35 @@ function ordered(tasks) {
   );
 }
 
-/* Subitems are steps under a milestone, not milestones, so the pages list
-   none of them -- except one someone else handed you this past week, which
-   rides along flagged sub:true for the "New this week" banner only. */
+const SUB_DUE_WINDOW_DAYS = 14;
+
+/* Subitems are steps under a milestone, not milestones, so the pages mostly
+   leave them out. Two kinds ride along flagged sub:true: one someone else
+   handed you this past week (a: for the "New this week" banner), and one due
+   within SUB_DUE_WINDOW_DAYS or already overdue (soon:true, listed with the
+   milestones) -- the second catches subitems you made for yourself. */
 function subitemTasks(rec, board, userId) {
+  const horizon = etDate(Date.now() + SUB_DUE_WINDOW_DAYS * 86400000);
   return (rec.subitems || []).flatMap((sub) => {
     if (!sub.people.includes(userId)) return [];
     if (DONE.has((sub.status || "").trim().toLowerCase())) return [];
-    const a = recentlyAssigned(sub, userId);
-    if (!a) return [];
     const date = (sub.date || "").trim();
+    const due = ISO.test(date) ? date : ISO.test(sub.timelineTo || "") ? sub.timelineTo : null;
+    const a = recentlyAssigned(sub, userId);
+    const soon = due !== null && due <= horizon;
+    if (!a && !soon) return [];
     return [{
       b: board.key,
       cat: CAT_ALIAS[rec.group] || rec.group,
       n: sub.name,
       s: STATUS_MAP[(sub.status || "").trim().toLowerCase()] || "idle",
-      due: ISO.test(date) ? date : ISO.test(sub.timelineTo || "") ? sub.timelineTo : null,
+      due,
       id: sub.id,
       ...(sub.people.length > 1 ? { shared: true } : {}),
-      a,
+      ...(a ? { a } : {}),
       sub: true,
       p: sub.parent,
+      ...(soon ? { soon: true } : {}),
     }];
   });
 }

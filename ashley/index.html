@@ -1142,9 +1142,14 @@
       idle: "Not started",
     };
 
-    /* Rows flagged sub:true are subitems someone just handed you. They exist
-       for the "New this week" banner and stay out of every milestone view. */
-    function milestones(){ return TASKS.filter(t => !t.sub); }
+    /* Rows flagged sub:true are subitems. Ones someone just handed you exist
+       for the "New this week" banner; ones also flagged soon:true are due in
+       the next two weeks (or overdue) and join the milestone views, named
+       with their parent item so they read on their own. */
+    function milestones(){
+      return TASKS.filter(t => !t.sub || t.soon)
+        .map(t => t.sub ? { ...t, n: t.n + " — " + t.p } : t);
+    }
 
     function visibleTasks(){
       return milestones().filter(t => {
