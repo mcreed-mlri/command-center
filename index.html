@@ -224,6 +224,17 @@
       outline: none; z-index: 3; transform: translateY(-2px);
       box-shadow: 0 0 0 2px var(--card), 0 0 0 4px color-mix(in srgb, var(--accent) 40%, transparent);
     }
+    /* Count of tasks someone handed this person in the past week, in the
+       focus pages' NEW-pill colours. */
+    .av-badge {
+      position: absolute; top: -5px; right: -5px;
+      min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px;
+      display: grid; place-items: center;
+      font-size: 10px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums;
+      color: var(--on-accent); background: var(--earth);
+      box-shadow: 0 0 0 2px var(--card);
+      pointer-events: none;
+    }
     /* Overflow beyond AVATAR_MAX collapses here; the popover reuses .focus-list. */
     .av-menu { position: relative; flex: none; }
     .av-menu > summary {
@@ -2159,6 +2170,36 @@
        never pushes the header's actions off the row. */
     const AVATAR_MAX = 4;
 
+    /* ---- recently-assigned badges ---------------------------------- */
+    /* Same source as each focus page's "New this week" card: /api/tasks/:slug
+       flags t.a only for tasks someone else gave them in the past week. Ones
+       hidden on that focus page (its tu-<slug>-new-seen-v1 list, same origin)
+       don't count, so the badge clears the way a notification would. The
+       first request warms the API's five-minute board cache; the rest wait
+       for it rather than each pulling every board from Monday. */
+    let boardsWarm = null;
+    async function badgeNewAssigned(avatar, p) {
+      const slug = p.url.replace(/\/$/, "");
+      try {
+        const get = () => fetch("api/tasks/" + slug).then(r => r.ok ? r.json() : null);
+        let data;
+        if (!boardsWarm) data = await (boardsWarm = get());
+        else { await boardsWarm.catch(() => {}); data = await get(); }
+        let seen = new Set();
+        try { seen = new Set(JSON.parse(localStorage.getItem("tu-" + slug + "-new-seen-v1") || "[]")); } catch (e) {}
+        const n = (data?.tasks || []).filter(t => t.a && t.s !== "done" && !seen.has(t.id)).length;
+        if (!n) return;
+        const badge = document.createElement("span");
+        badge.className = "av-badge";
+        badge.setAttribute("aria-hidden", "true");
+        badge.textContent = n > 9 ? "9+" : String(n);
+        avatar.appendChild(badge);
+        const label = p.name + "’s focus page, " + n + " new task" + (n === 1 ? "" : "s");
+        avatar.title = label;
+        avatar.setAttribute("aria-label", label);
+      } catch (e) { /* offline or API down: no badge */ }
+    }
+
     (function renderAvatarStack() {
       const stack = document.getElementById("avatarStack");
       if (!stack) return;
@@ -2176,6 +2217,7 @@
         a.setAttribute("aria-label", p.name + "’s focus page");
         a.textContent = p.mono;
         stack.appendChild(a);
+        badgeNewAssigned(a, p);
       }
 
       if (!rest.length) return;
