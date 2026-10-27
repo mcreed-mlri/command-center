@@ -2189,7 +2189,18 @@
         else { await boardsWarm.catch(() => {}); data = await get(); }
         let seen = new Set();
         try { seen = new Set(JSON.parse(localStorage.getItem("tu-" + slug + "-new-seen-v1") || "[]")); } catch (e) {}
-        const n = (data?.tasks || []).filter(t => t.a && t.s !== "done" && !seen.has(t.id)).length;
+        /* The focus page re-checks t.a by calendar day (assigned 0–6 days
+           ago); the API's window is 7×24h, so without this the badge can count
+           one the card has already dropped. */
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const daysAgo = iso => {
+          const [y, m, d] = iso.split("-").map(Number);
+          return Math.round((today - new Date(y, m - 1, d)) / 86400000);
+        };
+        const n = (data?.tasks || []).filter(t =>
+          t.a && t.s !== "done" && !seen.has(t.id) && daysAgo(t.a) < 7
+        ).length;
         if (!n) return;
         const badge = document.createElement("span");
         badge.className = "av-badge";
