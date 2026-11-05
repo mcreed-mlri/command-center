@@ -178,66 +178,73 @@
     }
     .monday-open:hover { text-decoration:underline; text-underline-offset:2px; }
 
-    /* ---- recently assigned card: earth-tinted header with a NEW pill,
-       then one row per task with its board chip and due date ----------- */
+    /* ---- assigned to you this week ------------------------------------
+       Earth-tinted header with a NEW pill and a Got it / Show toggle, then
+       one row per task: name over its group and assign date, area chip, due.
+       Got it folds it to the header; it never removes anything, because
+       subitems handed to you show nowhere else on the page. */
     .new-assign {
-      margin:0 0 12px; overflow:hidden; background:var(--card);
+      margin:0 0 14px; overflow:hidden; background:var(--card);
       border:1px solid color-mix(in srgb, var(--earth) 28%, var(--line));
-      border-radius:12px; font-size:14px; color:var(--ink);
+      border-radius:14px; font-size:14px; color:var(--ink);
     }
     .na-head {
-      display:flex; align-items:center; gap:8px; padding:6px 8px 6px 14px;
+      display:flex; align-items:center; gap:10px; padding:4px 6px 4px 16px; min-height:46px;
       background:color-mix(in srgb, var(--earth) 10%, var(--card));
-      border-bottom:1px solid color-mix(in srgb, var(--earth) 18%, var(--line));
     }
-    .na-pill {
-      flex:none; padding:4px 7px; border-radius:999px; line-height:1;
-      font-size:11px; font-weight:700; letter-spacing:.06em;
+    .new-assign:not(.is-collapsed) .na-head { border-bottom:1px solid color-mix(in srgb, var(--earth) 18%, var(--line)); }
+    .na-pill, .new-tag {
+      flex:none; padding:3px 8px; border-radius:999px; line-height:1.15;
+      font-size:11px; font-weight:700; letter-spacing:.08em;
       color:var(--on-accent); background:var(--earth);
     }
-    .na-title { font-size:13px; font-weight:650; color:var(--earth-deep); min-width:0; }
+    .new-tag { font-size:10.5px; padding:2px 7px; }
+    .na-title { font-size:13.5px; font-weight:700; color:var(--earth-deep); min-width:0; }
+    .na-count { font-size:12.5px; color:var(--earth-deep); }
     .na-toggle {
-      margin-left:auto; flex:none; min-height:32px; padding:0 10px; border-radius:8px; cursor:pointer;
-      background:transparent; border:0; font:inherit; font-size:13px; font-weight:600; color:var(--earth-deep);
+      margin-left:auto; flex:none; min-height:36px; padding:0 12px; border-radius:8px; cursor:pointer;
+      background:transparent; border:0; font:inherit; font-size:13px; font-weight:650; color:var(--earth-deep);
     }
     .na-toggle:hover { background:color-mix(in srgb, var(--earth) 12%, transparent); }
     .na-toggle:focus-visible { outline:none; box-shadow:0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
-    .new-assign.is-collapsed .na-head { border-bottom:0; }
     .na-list { list-style:none; margin:0; padding:0; }
     .na-list li + li { border-top:1px solid var(--line-soft); }
     /* Fixed chip and date columns so both line up from row to row. */
     .na-list a {
-      display:grid; grid-template-columns:minmax(0,1fr) 10rem 6.5em; align-items:center; gap:4px 12px;
-      padding:10px 14px; color:var(--ink); text-decoration:none;
+      display:grid; grid-template-columns:minmax(0,1fr) auto 7.5em; align-items:center; gap:4px 14px;
+      padding:12px 16px; color:var(--ink); text-decoration:none;
     }
     .na-list a:hover { background:color-mix(in srgb, var(--ink) 3%, var(--card)); }
-    .na-list a:hover .na-task { color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
+    .na-list a:hover .na-task { color:var(--brand); }
     .na-list a:focus-visible { outline:none; box-shadow:inset 0 0 0 2px color-mix(in srgb, var(--brand) 40%, transparent); }
     .na-name { min-width:0; overflow-wrap:anywhere; }
-    .na-task { font-weight:600; }
-    .na-parent { margin-left:6px; font-size:13px; color:var(--faint); }
-    /* One hue per synced board. Every board sits in the LACE workspace, so the
-       home page's project colours would all be the same red. */
-    .na-chip {
-      --chip:var(--hue-7); --chip-tint:var(--hue-7-tint);
-      justify-self:end; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
-      padding:2px 9px 2px 8px; border-radius:999px; font-size:12px; font-weight:600;
-      color:color-mix(in srgb, var(--chip) 72%, var(--ink)); background:var(--chip-tint);
-      border:1px solid color-mix(in srgb, var(--chip) 25%, var(--chip-tint));
-    }
-    .na-chip::before { content:""; flex:none; width:6px; height:6px; border-radius:50%; background:var(--chip); }
-    .na-chip.c-trial   { --chip:var(--hue-2); --chip-tint:var(--hue-2-tint); }
-    .na-chip.c-lms     { --chip:var(--hue-3); --chip-tint:var(--hue-3-tint); }
-    .na-chip.c-comms   { --chip:var(--hue-4); --chip-tint:var(--hue-4-tint); }
-    .na-chip.c-data    { --chip:var(--hue-5); --chip-tint:var(--hue-5-tint); }
-    .na-chip.c-content { --chip:var(--hue-6); --chip-tint:var(--hue-6-tint); }
-    .na-due { justify-self:end; font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
+    .na-task { display:block; font-size:14.5px; font-weight:600; line-height:1.35; transition:color .13s; }
+    .na-sub { display:block; margin-top:3px; font-size:12.5px; color:var(--muted); }
+    .na-due { justify-self:end; font-size:13px; font-weight:600; color:var(--muted); font-variant-numeric:tabular-nums; white-space:nowrap; }
     @media (max-width:560px){
       .na-list a { grid-template-columns:auto minmax(0,1fr); }
       .na-name { grid-column:1 / -1; }
-      .na-parent { display:block; margin-left:0; }
-      .na-chip, .na-due { justify-self:start; }
+      .na-due { justify-self:start; }
     }
+
+    /* ---- area chips --------------------------------------------------
+       One hue per synced board. Every board sits in the LACE workspace, so the
+       home page's project colours would all be the same red. The c-<board>
+       classes set --chip / --chip-tint for anything that wants the area's
+       colour: chips, timeline rows, area cards. */
+    .c-ops     { --chip:var(--hue-7); --chip-tint:var(--hue-7-tint); }
+    .c-trial   { --chip:var(--hue-2); --chip-tint:var(--hue-2-tint); }
+    .c-lms     { --chip:var(--hue-3); --chip-tint:var(--hue-3-tint); }
+    .c-comms   { --chip:var(--hue-4); --chip-tint:var(--hue-4-tint); }
+    .c-data    { --chip:var(--hue-5); --chip-tint:var(--hue-5-tint); }
+    .c-content { --chip:var(--hue-6); --chip-tint:var(--hue-6-tint); }
+    .area-chip {
+      display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+      padding:2px 9px 2px 8px; border-radius:999px; font-size:12px; font-weight:600; line-height:1.4;
+      color:color-mix(in srgb, var(--chip,var(--hue-7)) 72%, var(--ink)); background:var(--chip-tint,var(--hue-7-tint));
+      border:1px solid color-mix(in srgb, var(--chip,var(--hue-7)) 25%, var(--chip-tint,var(--hue-7-tint)));
+    }
+    .area-chip::before { content:""; flex:none; width:6px; height:6px; border-radius:50%; background:var(--chip,var(--hue-7)); }
 
     .monday-controls {
       display:flex; align-items:center; gap:10px 12px; flex-wrap:wrap;
@@ -333,52 +340,260 @@
     .menu-dot { width:8px; height:8px; border-radius:50%; flex:none; }
     .task-content { min-height:80px; }
 
-    /* ---- task buckets + table -------------------------------------- */
-    .bucket { border:0; border-top:1px solid var(--line); border-radius:0; margin-bottom:2px; background:transparent; }
-    .bucket > summary {
-      list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 4px; font-weight:650; font-size:14px;
+    /* ---- milestone views: shared pieces ------------------------------
+       --od-ink is overdue as TEXT: the raw --overdue sits right at 4.5:1 on
+       white and dips under it on its own tint, so text pulls it toward ink. */
+    .panel { --od-ink:color-mix(in srgb, var(--overdue) 80%, var(--ink)); }
+    .status-pill {
+      display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px;
+      font-size:12.5px; font-weight:600; white-space:nowrap; line-height:1.2;
     }
-    .bucket > summary::-webkit-details-marker { display:none; }
-    .bucket-chev { color:var(--faint); transition:transform .16s; }
-    .bucket[open] .bucket-chev { transform:rotate(90deg); }
-    .bucket-count { margin-left:auto; font-size:12.5px; color:var(--muted);
-      font-variant-numeric:tabular-nums; }
-    .bucket-note { color:var(--faint); font-weight:400; font-size:12.5px; }
-    .bucket-dot { width:9px; height:9px; border-radius:50%; flex:none; }
-    .bucket.b-overdue .bucket-dot { background:var(--overdue); }
-    .bucket.b-soon .bucket-dot { background:var(--warm); }
-    .bucket.b-next .bucket-dot { background:var(--wait); }
-    .bucket.b-later .bucket-dot { background:var(--idle); }
-    .bucket.b-none .bucket-dot { background:var(--line); }
+    .status-pill .sd { width:7px; height:7px; border-radius:50%; flex:none; }
+    .st-work { background:var(--warm-tint); color:var(--warm-deep); } .st-work .sd { background:var(--working); }
+    .st-wait { background:var(--brand-tint); color:var(--brand-deep); } .st-wait .sd { background:var(--wait); }
+    .st-idle { background:var(--hue-7-tint); color:var(--hue-7); } .st-idle .sd { background:var(--idle); }
+    .st-done { background:color-mix(in srgb,var(--ok) 12%,var(--card)); color:var(--ok); } .st-done .sd { background:var(--ok); }
 
-    .ttable { width:100%; border-collapse:collapse; background:transparent; }
-    .ttable th { text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
-      color:var(--muted); font-weight:650; padding:8px 4px; border-top:1px solid var(--line); }
-    .trow { border-top:1px solid var(--line-soft); transition:background .13s; }
-    .trow:hover { background:var(--hover-tint); }
-    .trow td { padding:11px 4px; vertical-align:middle; font-size:14.5px; }
-    .t-name a { text-decoration:none; font-weight:600; display:inline; overflow-wrap:anywhere; word-break:break-word; }
-    .t-name a:hover { color:var(--brand); text-decoration:underline; text-underline-offset:2px; }
-    .t-name .shared { font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase;
-      color:var(--faint); border:1px solid var(--line); border-radius:999px; padding:1px 6px; margin-left:8px; vertical-align:middle; }
-    .t-board { font-size:12.5px; color:var(--muted); white-space:nowrap; }
-    .t-area { min-width:120px; }
-    .t-area .t-cat { display:block; font-size:13px; font-weight:600; color:var(--ink); line-height:1.3; }
-    .t-area .t-board-sub { display:block; font-size:11.5px; color:var(--faint); }
-    .t-due { white-space:nowrap; font-variant-numeric:tabular-nums; font-size:13.5px; color:var(--muted); }
-    .t-due.od { color:var(--overdue); font-weight:650; }
-    .t-due.warn { color:var(--warm-deep); font-weight:600; }
-    .status-pill { display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600; white-space:nowrap; }
-    .status-pill .sd { width:8px; height:8px; border-radius:50%; flex:none; }
-    .st-work .sd { background:var(--working); } .st-work { color:var(--ink); }
-    .st-wait .sd { background:var(--wait); }
-    .st-idle .sd { background:var(--idle); }
-    .st-done .sd { background:var(--ok); } .st-done { color:var(--ok); }
-    @media (max-width:600px){
-      .t-board-col, .t-board { display:none; }
-      .trow td, .ttable th { padding:10px; }
+    /* ---- summary tiles: counts that double as jump links -------------- */
+    .ms-tiles { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:0 0 14px; }
+    .ms-tile {
+      font:inherit; text-align:left; cursor:pointer; color:var(--ink);
+      background:var(--card); border:1px solid var(--line); border-radius:14px;
+      padding:12px 14px; min-height:44px; display:flex; flex-direction:column; gap:5px;
+      transition:border-color .15s, transform .15s;
     }
+    .ms-tile:hover:not(:disabled) { border-color:color-mix(in srgb,var(--brand) 40%,var(--line)); transform:translateY(-1px); }
+    .ms-tile b { font-size:26px; font-weight:700; letter-spacing:-0.03em; line-height:1; font-variant-numeric:tabular-nums; }
+    .ms-tile span { font-size:12.5px; font-weight:600; color:var(--muted); line-height:1.3; }
+    .ms-tile.is-alert {
+      background:color-mix(in srgb,var(--overdue) 8%,var(--card));
+      border-color:color-mix(in srgb,var(--overdue) 35%,var(--line));
+    }
+    .ms-tile.is-alert b { color:var(--od-ink); }
+    .ms-tile:disabled { cursor:default; }
+    .ms-tile:disabled b { color:var(--faint); }
+    @media (max-width:560px){ .ms-tiles { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+
+    /* ---- focus view ---------------------------------------------------- */
+    .ms-sec { margin:0 0 20px; scroll-margin-top:16px; }
+    .ms-sec:focus { outline:none; }
+    .ms-sec:last-child { margin-bottom:0; }
+    .ms-sec-head { display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 10px; padding:0 2px 10px; }
+    .ms-sec-head h3, .ms-alert-head h3 { margin:0; font-size:14px; font-weight:700; color:inherit; }
+    .ms-sec-note { font-size:12.5px; color:var(--faint); }
+    .ms-card { background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden; }
+    .ms-card.is-alert { border-color:color-mix(in srgb,var(--overdue) 35%,var(--line)); }
+    .ms-alert-head {
+      display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; padding:11px 16px;
+      background:color-mix(in srgb,var(--overdue) 8%,var(--card)); color:var(--od-ink);
+    }
+    .ms-alert-head svg { width:16px; height:16px; flex:none; }
+    .ms-alert-head .ms-sec-note { color:var(--od-ink); }
+    .ms-empty { margin:0; padding:18px 16px; font-size:14px; color:var(--muted); }
+
+    .ms-row {
+      display:grid; grid-template-columns:52px minmax(0,1fr) auto; align-items:center; gap:14px;
+      padding:12px 14px; border-top:1px solid var(--line-soft);
+      color:var(--ink); text-decoration:none; transition:background .13s;
+    }
+    .ms-card > .ms-row:first-child { border-top:0; }
+    .ms-row:hover { background:color-mix(in srgb,var(--ink) 3%,var(--card)); }
+    .ms-row:hover .ms-name { color:var(--brand); }
+    .ms-date {
+      width:52px; height:52px; border-radius:12px; background:var(--paper-2);
+      display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1;
+    }
+    .ms-date b { font-size:19px; font-weight:700; letter-spacing:-0.02em; font-variant-numeric:tabular-nums; }
+    .ms-date span { font-size:10.5px; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); margin-top:4px; }
+    .ms-date.is-od { background:color-mix(in srgb,var(--overdue) 10%,var(--card)); color:var(--od-ink); }
+    .ms-date.is-od span { color:var(--od-ink); }
+    .ms-date.is-none b { color:var(--faint); }
+    .ms-main { min-width:0; }
+    .ms-name { display:block; font-size:15px; font-weight:600; line-height:1.35; overflow-wrap:anywhere; transition:color .13s; }
+    .ms-meta { display:flex; align-items:center; flex-wrap:wrap; gap:4px 8px; margin-top:5px; font-size:12.5px; color:var(--muted); }
+    .ms-side { display:flex; align-items:center; gap:14px; }
+    .ms-when {
+      min-width:6.5em; text-align:right; font-size:13px; font-weight:600; color:var(--muted);
+      font-variant-numeric:tabular-nums; white-space:nowrap;
+    }
+    .ms-when.is-od { color:var(--od-ink); }
+    .ms-when.is-soon { color:var(--warm-deep); }
+    @media (max-width:560px){
+      .ms-row { grid-template-columns:44px minmax(0,1fr); gap:8px 12px; align-items:start; }
+      .ms-date { width:44px; height:44px; border-radius:11px; }
+      .ms-date b { font-size:16px; }
+      .ms-date span { font-size:9.5px; margin-top:3px; }
+      .ms-side { grid-column:2; gap:10px; }
+      .ms-when { min-width:0; text-align:left; }
+    }
+
+    /* Later: a month-by-month count, with the full list one press away */
+    .ms-later {
+      background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:16px 18px; display:flex; flex-direction:column; gap:14px;
+    }
+    .ms-later-head { display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; }
+    .ms-later-head h3 { margin:0; font-size:14px; font-weight:700; }
+    .ms-more-btn {
+      margin-left:auto; font:inherit; font-size:13px; font-weight:650; cursor:pointer;
+      color:var(--brand-deep); background:var(--brand-tint); border:0; border-radius:999px;
+      padding:0 14px; min-height:36px; transition:background .15s;
+    }
+    .ms-more-btn:hover { background:color-mix(in srgb,var(--brand) 18%,var(--card)); }
+    .ms-hist { display:grid; grid-template-columns:repeat(var(--n),minmax(0,1fr)); gap:8px; height:100px; }
+    .ms-bar { display:flex; flex-direction:column; align-items:center; justify-content:flex-end; gap:6px; min-width:0; }
+    .ms-bar-n { font-size:12px; font-weight:650; font-variant-numeric:tabular-nums; }
+    .ms-bar-fill { width:100%; max-width:64px; border-radius:6px; background:color-mix(in srgb,var(--idle) 45%,var(--card)); }
+    .ms-bar-m { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
+    .ms-bar.is-peak .ms-bar-fill { background:var(--earth); }
+    .ms-bar.is-peak .ms-bar-n, .ms-bar.is-peak .ms-bar-m { color:var(--earth-deep); }
+    .ms-later-note { margin:0; font-size:13px; color:var(--muted); }
+    .ms-month { margin-top:16px; }
+    .ms-month-head {
+      margin:0 2px 8px; font-size:11px; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:var(--earth-deep);
+    }
+    @media (max-width:560px){ .ms-hist { gap:4px; } .ms-bar-m { font-size:10px; letter-spacing:.04em; } }
+
+    /* No due date: folded away, like the other quiet buckets */
+    .ms-undated { border-top:1px solid var(--line); }
+    .ms-undated > summary {
+      list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
+      padding:12px 4px; font-weight:650; font-size:14px; min-height:44px;
+    }
+    .ms-undated > summary::-webkit-details-marker { display:none; }
+    .ms-undated .ms-sec-note { font-weight:400; }
+    .bucket-chev { color:var(--faint); transition:transform .16s; }
+    .ms-undated[open] .bucket-chev { transform:rotate(90deg); }
+    .ms-undated .ms-card { margin-bottom:4px; }
+
+    /* ---- timeline view --------------------------------------------------
+       One row per area, months across, a dot per milestone. Milestones that
+       would sit on top of each other merge into one numbered circle; picking
+       one lists what's in it underneath. Positions are percentages, so the
+       chart reflows with the column. */
+    .tl { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px 18px 12px; margin-bottom:16px; }
+    .tl-body { position:relative; }
+    .tl-axis, .tl-row { display:grid; grid-template-columns:168px minmax(0,1fr); }
+    .tl-axis { height:50px; }
+    .tl-row { align-items:center; min-height:62px; border-top:1px solid var(--line-soft); }
+    .tl-track { position:relative; align-self:stretch; margin:0 14px; }
+    .tl-axis .tl-track { margin-top:0; }
+    .tl-month {
+      position:absolute; top:6px; font-size:11px; font-weight:700; letter-spacing:.1em;
+      text-transform:uppercase; color:var(--faint); white-space:nowrap;
+    }
+    .tl-today-tag {
+      position:absolute; top:26px; transform:translateX(-50%); z-index:2;
+      font-size:11px; font-weight:700; line-height:1.4; white-space:nowrap;
+      color:var(--on-accent); background:var(--earth); border-radius:999px; padding:1px 8px;
+    }
+    .tl-lines { position:absolute; top:50px; bottom:0; left:168px; right:0; pointer-events:none; }
+    .tl-lines-in { position:absolute; inset:0 14px; }
+    .tl-gl { position:absolute; top:0; bottom:0; width:1px; background:var(--line-soft); }
+    .tl-now { position:absolute; top:-6px; bottom:0; width:2px; margin-left:-1px; background:var(--earth); }
+    .tl-label { display:flex; align-items:center; gap:8px; min-width:0; font-size:13.5px; font-weight:650; padding-right:8px; white-space:nowrap; }
+    .tl-label::before { content:""; flex:none; width:9px; height:9px; border-radius:50%; background:var(--chip); }
+    .tl-label em { font-style:normal; font-weight:500; font-size:12px; color:var(--faint); }
+    .tl-mk {
+      --mk:var(--chip);
+      position:absolute; top:50%; transform:translate(-50%,-50%); z-index:1;
+      display:grid; place-items:center; padding:0; cursor:pointer;
+      border-radius:999px; border:2px solid var(--card); background:var(--mk);
+      color:var(--on-accent); font:inherit; font-size:11.5px; font-weight:700; line-height:1;
+      box-shadow:0 1px 3px rgba(38,54,63,.25); transition:box-shadow .15s;
+    }
+    .tl-mk::after { content:""; position:absolute; inset:-5px; border-radius:inherit; }
+    .tl-mk.is-od { --mk:var(--overdue); }
+    .tl-mk[aria-pressed="true"] { z-index:3; box-shadow:0 0 0 2px var(--card), 0 0 0 4px var(--mk); }
+    .tl-new {
+      position:absolute; top:-5px; right:-5px; width:12px; height:12px; border-radius:50%;
+      background:var(--earth); border:2px solid var(--card);
+    }
+    .tl-legend {
+      display:flex; align-items:center; flex-wrap:wrap; gap:6px 18px; margin-top:8px; padding-top:10px;
+      border-top:1px solid var(--line-soft); font-size:12.5px; color:var(--muted);
+    }
+    .tl-legend span { display:inline-flex; align-items:center; gap:7px; }
+    .tl-legend i { width:11px; height:11px; border-radius:50%; display:block; flex:none; }
+    .tl-detail-head { display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; padding:13px 16px; border-bottom:1px solid var(--line-soft); }
+    .tl-detail-head::before { content:""; flex:none; width:9px; height:9px; border-radius:50%; background:var(--chip); }
+    .tl-detail-head.is-od::before { background:var(--overdue); }
+    .tl-detail-head h3 { margin:0; font-size:15px; font-weight:700; }
+    .tl-undated { margin:12px 2px 0; font-size:13px; color:var(--muted); }
+    @media (max-width:560px){
+      .tl { padding:12px 12px 10px; }
+      .tl-axis, .tl-row { grid-template-columns:minmax(0,1fr); }
+      .tl-axis .tl-spacer { display:none; }
+      .tl-row { padding-top:8px; min-height:0; }
+      .tl-label { justify-self:start; position:relative; z-index:2; background:var(--card); padding-right:10px; }
+      .tl-row .tl-track { height:48px; }
+      .tl-lines { left:0; }
+      .tl-month { font-size:10px; letter-spacing:.04em; }
+    }
+
+    /* ---- areas view ------------------------------------------------------ */
+    .ar-summary { margin:0 0 16px; font-size:15px; line-height:1.55; color:var(--muted); }
+    .ar-summary b { color:var(--ink); font-weight:650; }
+    .ar-summary .ar-od { color:var(--od-ink); }
+    .ar-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    @media (max-width:720px){ .ar-grid { grid-template-columns:minmax(0,1fr); } }
+    .ar-card {
+      background:var(--card); border:1px solid var(--line); border-radius:16px;
+      padding:18px; display:flex; flex-direction:column; gap:14px; min-width:0;
+    }
+    .ar-head { display:flex; align-items:center; gap:9px; flex-wrap:wrap; }
+    .ar-head::before { content:""; flex:none; width:10px; height:10px; border-radius:50%; background:var(--chip); }
+    .ar-head h3 { margin:0; font-size:15px; font-weight:700; }
+    .ar-n { font-size:12.5px; color:var(--faint); font-variant-numeric:tabular-nums; }
+    .ar-od-badge {
+      margin-left:auto; font-size:11.5px; font-weight:700; color:var(--od-ink);
+      background:color-mix(in srgb,var(--overdue) 10%,var(--card)); border-radius:999px; padding:3px 9px;
+    }
+    .ar-bar { display:flex; gap:2px; height:8px; border-radius:999px; overflow:hidden; }
+    .ar-bar span { display:block; height:100%; }
+    .ar-leg { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:8px; font-size:12px; color:var(--muted); }
+    .ar-leg span { display:inline-flex; align-items:center; gap:6px; }
+    .ar-leg i { width:7px; height:7px; border-radius:50%; display:block; }
+    .ar-next {
+      display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:12px;
+      background:var(--chip-tint); color:var(--ink); text-decoration:none;
+    }
+    .ar-next small {
+      font-size:11px; font-weight:700; letter-spacing:.12em; text-transform:uppercase;
+      color:color-mix(in srgb, var(--chip) 72%, var(--ink));
+    }
+    .ar-next b { font-size:15px; font-weight:650; line-height:1.35; overflow-wrap:anywhere; transition:color .13s; }
+    .ar-next b .new-tag { margin-right:7px; vertical-align:2px; }
+    .ar-next em { font-style:normal; font-size:12.5px; color:var(--muted); }
+    .ar-next:hover b { color:var(--brand); }
+    .ar-next.is-od { background:color-mix(in srgb,var(--overdue) 9%,var(--card)); }
+    .ar-next.is-od small { color:var(--od-ink); }
+    .ar-then { list-style:none; margin:0; padding:0; }
+    .ar-then a {
+      display:flex; justify-content:space-between; gap:12px; padding:9px 2px;
+      border-top:1px solid var(--line-soft); font-size:13.5px; color:var(--ink); text-decoration:none;
+    }
+    .ar-then a:hover { color:var(--brand); }
+    .ar-then .new-tag { margin-right:6px; vertical-align:1px; }
+    .ar-then-due { flex:none; color:var(--muted); font-variant-numeric:tabular-nums; }
+    .ar-then-due.is-od { color:var(--od-ink); font-weight:600; }
+    .ar-all {
+      align-self:flex-start; margin-top:auto; font:inherit; font-size:13px; font-weight:650;
+      color:var(--brand); background:none; border:0; padding:6px 0; min-height:32px; cursor:pointer;
+    }
+    .ar-all:hover { text-decoration:underline; text-underline-offset:2px; }
+    .ar-card.is-undated { background:transparent; border-style:dashed; justify-content:center; }
+    .ar-card.is-undated p { margin:0; font-size:13.5px; line-height:1.5; color:var(--muted); }
+    .ar-card.is-undated a { font-size:13px; font-weight:650; color:var(--brand); text-decoration:none; }
+    .ar-card.is-undated a:hover { text-decoration:underline; text-underline-offset:2px; }
+
+    .list-empty .wk-jump {
+      font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
+      background:var(--card); border:1px solid color-mix(in srgb,var(--brand) 35%,var(--line));
+      color:var(--brand); border-radius:999px; padding:7px 15px; transition:transform .14s, background .14s;
+    }
+    .list-empty .wk-jump:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--brand) 10%,var(--card)); }
 
     @keyframes task-spin { to { transform: rotate(360deg); } }
     .monday-refresh.spinning svg { animation: task-spin 0.85s linear infinite; }
@@ -390,207 +605,6 @@
       .view-toggle { margin-left:0; width:100%; }
       .view-seg { flex:1; text-align:center; padding:7px 8px; }
       .filter-summary { max-width:16ch; }
-    }
-
-    /* ---- week view (focused: just this week) ----------------------- */
-    .wk-head { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
-    /* Date/range and nav share one baseline. */
-    .wk-titles { display:flex; align-items:baseline; flex-wrap:wrap; gap:2px 11px; min-width:0; }
-    .wk-range { font-family:var(--sans); font-size:19px; font-weight:700; line-height:1.25; letter-spacing:-0.02em; }
-    .wk-rel { font-size:12.5px; color:var(--muted); margin-top:0; }
-    .wk-rel b { color:var(--earth-deep); font-weight:650; }
-
-    /* ---- week strip -------------------------------------------------
-       Read-only on purpose: it shows you where you are in the week, it is not
-       a control. No links, no hit targets, and aria-hidden because the group
-       headings below already carry the real dates. */
-    .wk-strip {
-      display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
-      gap:2px; margin:0 0 20px;
-    }
-    .wk-cell { text-align:center; padding:2px 2px 4px; min-width:0; }
-    .wk-cell-dow {
-      font-size:11px; font-weight:700; letter-spacing:.1em;
-      text-transform:uppercase; color:var(--muted);
-    }
-    .wk-cell-num {
-      margin:6px auto 0; width:30px; height:30px; border-radius:50%;
-      display:grid; place-items:center;
-      font-size:14px; font-weight:650; color:var(--ink);
-      font-variant-numeric:tabular-nums;
-    }
-    .wk-cell.is-past .wk-cell-dow, .wk-cell.is-past .wk-cell-num { color:var(--faint); }
-    /* --on-accent, not #fff: --earth lightens in dark mode, so a hard white
-       would invert from readable to invisible exactly there. */
-    .wk-cell.is-today .wk-cell-num { background:var(--earth); color:var(--on-accent); }
-    .wk-cell.is-today .wk-cell-dow { color:var(--earth-deep); }
-    .wk-nav { margin-left:auto; display:flex; gap:6px; flex:none; }
-    /* Week and month steppers are one control, so they share one look. */
-    .wk-nav button, .cal-nav button {
-      font:inherit; font-size:18px; line-height:1; width:32px; height:32px; cursor:pointer;
-      background:transparent; border:1px solid var(--line); border-radius:var(--radius);
-      color:var(--muted); display:grid; place-items:center;
-      transition:border-color .15s, color .15s, background .15s, transform .15s;
-    }
-    .wk-nav button:hover, .cal-nav button:hover {
-      color:var(--ink); background:var(--hover-tint);
-      border-color:color-mix(in srgb,var(--brand) 45%,var(--line)); transform:translateY(-1px);
-    }
-    .wk-nav button.wk-now { width:auto; padding:0 12px; font-size:13px; font-weight:650; }
-
-    /* The week calendar frames the whole task panel, so it sits above the
-       panel heading rather than inside the Week view's own content. */
-    .week-cal { margin-bottom:32px; }
-    .week-cal .wk-strip { margin-bottom:0; }
-
-    .wk-group { margin-bottom:16px; }
-    .wk-group:last-child { margin-bottom:0; }
-    .wk-day-head {
-      display:flex; align-items:center; gap:8px; padding:0 2px 7px; margin-bottom:8px;
-      border-bottom:1px solid var(--line);
-    }
-    .wk-dow { font-size:11px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--earth-deep); }
-    .wk-date { font-size:12px; color:var(--faint); }
-    .wk-day-n { margin-left:auto; font-size:12px; color:var(--faint); font-variant-numeric:tabular-nums; }
-    .wk-group.is-today .wk-dow { color:var(--brand); }
-    .wk-group.is-today .wk-day-head { border-bottom-color:color-mix(in srgb,var(--brand) 45%,var(--line)); }
-    .wk-group.is-overdue .wk-dow { color:var(--overdue); }
-    .wk-group.is-done .wk-dow { color:var(--ok); }
-    .wk-group.is-done .wk-day-head { border-bottom-color:color-mix(in srgb,var(--ok) 35%,var(--line)); }
-    .wk-group.is-ongoing .wk-dow { color:var(--working); }
-    .wk-group.is-ongoing .wk-day-head { border-bottom-color:color-mix(in srgb,var(--working) 45%,var(--line)); }
-
-    .wk-list { display:flex; flex-direction:column; gap:0; }
-    /* Hairline rows, and the accent moves from a left bar to a leading dot */
-    .wk-task {
-      display:flex; align-items:flex-start; gap:11px; text-decoration:none; color:inherit;
-      background:transparent; border:0;
-      border-bottom:1px solid var(--line-soft);
-      border-radius:7px; padding:11px 4px;
-      transition:background .14s, border-color .14s;
-    }
-    .wk-task::before {
-      content:""; flex:none; width:7px; height:7px; border-radius:50%;
-      background:var(--accent,var(--line));
-      margin-top:0.45em;
-    }
-    .wk-list > .wk-task:last-child { border-bottom:none; }
-    .wk-task:hover {
-      background:var(--hover-tint); border-bottom-color:transparent;
-      box-shadow:inset 2px 0 0 var(--accent,var(--brand));
-    }
-    /* Name and meta stack; status stays pinned on the right */
-    .wk-main { display:flex; flex-direction:column; align-items:flex-start; gap:3px; min-width:0; flex:1; }
-    .wk-name { font-size:14.5px; font-weight:600; line-height:1.35; overflow-wrap:anywhere; }
-    .wk-task.is-done { opacity:.88; }
-    .wk-task.is-done .wk-name { text-decoration:line-through; color:var(--muted); }
-    .wk-meta { font-size:12px; color:var(--muted); line-height:1.35; }
-    .wk-right { flex:none; text-align:right; padding-top:1px; }
-    .wk-due { display:block; font-size:12px; color:var(--faint); margin-top:3px; font-variant-numeric:tabular-nums; }
-    .wk-due.od { color:var(--overdue); font-weight:650; }
-
-    /* Still a collapsed <details> — undated in-progress work stays folded away
-        by default. Just unboxed to match the rest of the page. */
-    .wk-ongoing { margin-top:18px; border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; }
-    .wk-ongoing > summary {
-      list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 4px; font-weight:650; font-size:14px;
-    }
-    .wk-ongoing > summary::-webkit-details-marker { display:none; }
-    .wk-ongoing[open] .bucket-chev { transform:rotate(90deg); }
-    .wk-ongoing .wk-list { padding:0 0 8px; }
-
-    .wk-empty { text-align:center; padding:26px 12px; border:0; background:transparent; }
-    .wk-empty p { margin:0; color:var(--muted); font-size:14.5px; }
-    .wk-empty .wk-jump, .list-empty .wk-jump {
-      font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
-      background:var(--card); border:1px solid color-mix(in srgb,var(--brand) 35%,var(--line));
-      color:var(--brand); border-radius:999px; padding:7px 15px; transition:transform .14s, background .14s;
-    }
-    .wk-empty .wk-jump:hover, .list-empty .wk-jump:hover { transform:translateY(-1px); background:color-mix(in srgb,var(--brand) 10%,var(--card)); }
-    @media (max-width:560px){
-      .wk-task { align-items:flex-start; flex-direction:column; gap:6px; }
-      .wk-right { text-align:left; }
-      .wk-due { display:inline; margin:0 0 0 10px; }
-    }
-
-    /* ---- kanban board (read-only visual) --------------------------- */
-    .kanban { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
-    @media (max-width:720px){ .kanban { grid-template-columns:1fr; } }
-    .kcol { background:transparent; border:0; border-top:1px solid var(--line); border-radius:0; padding:8px 0 0; min-width:0; }
-    .kcol-head { display:flex; align-items:center; gap:8px; margin:2px 4px 10px; font-size:12px;
-      font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted); }
-    .kcol-head .kd { width:9px; height:9px; border-radius:50%; flex:none; }
-    .kcol-head .kn { margin-left:auto; font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums; }
-    .kcol.k-work .kd { background:var(--working); } .kcol.k-wait .kd { background:var(--wait); } .kcol.k-idle .kd { background:var(--idle); }
-    .kcard { display:block; text-decoration:none; color:inherit; background:transparent;
-      border:0; border-bottom:1px solid var(--line-soft); border-radius:7px;
-      padding:10px 4px; margin-bottom:0; transition:background .13s, border-color .13s; }
-    .kcard:last-child { border-bottom:none; }
-    .kcard:hover { background:var(--hover-tint); border-bottom-color:transparent;
-      box-shadow:inset 2px 0 0 var(--accent,var(--brand)); }
-    .kcard-name { font-size:13.5px; font-weight:600; line-height:1.35; overflow-wrap:anywhere; }
-    .kcard-meta { display:flex; align-items:flex-start; gap:8px; margin-top:7px; font-size:12px; color:var(--muted); }
-    .kcard-board { min-width:0; flex:1; line-height:1.35; }
-    .kcard-due { margin-left:auto; flex:none; white-space:nowrap; font-variant-numeric:tabular-nums; }
-    .kcard-due.od { color:var(--overdue); font-weight:650; } .kcard-due.warn { color:var(--warm-deep); font-weight:600; }
-    .kcol-empty { color:var(--faint); font-size:13px; text-align:center; padding:14px 6px; }
-
-    /* ---- calendar view --------------------------------------------- */
-    .cal-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px; }
-    .cal-title { font-family:var(--sans); font-size:18px; font-weight:700; line-height:1.2; letter-spacing:-0.02em; }
-    .cal-nav { display:flex; gap:6px; }
-    .cal-grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); gap:4px; }
-    .cal-dow { font-size:11px; text-align:center; color:var(--faint); padding:4px 2px; font-weight:650; letter-spacing:.04em; text-transform:uppercase; }
-    .cal-day {
-      min-height:76px; background:var(--paper-2); border:1px solid var(--line); border-radius:8px;
-      padding:4px 5px; min-width:0;
-    }
-    .cal-day.other { opacity:.42; }
-    .cal-day.today { border-color:var(--brand); background:color-mix(in srgb,var(--brand) 8%,var(--paper-2)); }
-    .cal-day.past .cal-num { color:var(--faint); }
-    .cal-num { font-weight:650; font-size:11px; color:var(--muted); margin-bottom:3px; line-height:1; }
-    .cal-day.today .cal-num { color:var(--brand); }
-    .cal-task {
-      display:block; text-decoration:none; color:var(--ink); font-size:11px; line-height:1.25;
-      padding:2px 4px; margin-bottom:2px; border-radius:4px; background:var(--card);
-      border-left:2px solid var(--accent,var(--line)); overflow-wrap:anywhere; word-break:break-word;
-    }
-    .cal-task:hover { background:var(--card); box-shadow:var(--shadow); }
-    .cal-more { font-size:11px; color:var(--faint); padding:0 4px; line-height:1.3; }
-    /* Narrow screens: a seven-column grid leaves ~40px per day, which shreds
-       task names letter by letter. The grid keeps its shape with status dots,
-       and the names move to a dated agenda under it. */
-    .cal-dots { display:none; }
-    .cal-agenda { display:none; }
-    .cal-agenda .ag-date { font-size:12px; color:var(--muted); white-space:nowrap;
-      font-variant-numeric:tabular-nums; min-width:46px; }
-    .cal-undated { margin-top:16px; border:0; border-top:1px solid var(--line); border-radius:0; background:transparent; }
-    .cal-undated > summary {
-      list-style:none; cursor:pointer; display:flex; align-items:center; gap:10px;
-      padding:11px 4px; font-weight:650; font-size:14px;
-    }
-    .cal-undated > summary::-webkit-details-marker { display:none; }
-    .cal-undated[open] .bucket-chev { transform:rotate(90deg); }
-    .cal-undated-list { list-style:none; margin:0; padding:0 0 8px; display:flex; flex-direction:column; gap:0; }
-    .cal-undated-list a {
-      display:flex; align-items:center; gap:9px; text-decoration:none; color:inherit;
-      padding:9px 4px; border-radius:7px; background:transparent;
-      border:0; border-bottom:1px solid var(--line-soft); font-size:13.5px;
-      transition:background .14s, border-color .14s;
-    }
-    .cal-undated-list > li:last-child a { border-bottom:none; }
-    .cal-undated-list a:hover { background:var(--hover-tint); border-bottom-color:transparent; }
-    .cal-undated-list .ud-dot { width:8px; height:8px; border-radius:50%; flex:none; background:var(--accent); }
-    .cal-undated-list .ud-name { flex:1; min-width:0; font-weight:600; overflow-wrap:anywhere; }
-    .cal-undated-list .ud-board { font-size:12px; color:var(--muted); white-space:nowrap; }
-    @media (max-width:720px){ .cal-day { min-height:58px; } }
-    @media (max-width:560px){
-      .cal-day { min-height:46px; }
-      .cal-task, .cal-more { display:none; }
-      .cal-dots { display:flex; flex-wrap:wrap; gap:3px; padding:2px 1px 0; }
-      .cal-dots i { width:6px; height:6px; border-radius:50%; background:var(--accent,var(--line)); }
-      .cal-agenda { display:block; margin-top:16px; border-top:1px solid var(--line); padding-top:6px; }
     }
 
     /* ---- shared empty state (pins, list, tasks) --------------------- */
@@ -805,7 +819,7 @@
       .hero-inner { padding:14px 0 12px; gap:12px; }
       .head-meta { margin-left:0; }
       .hero-sep { display:none; }
-      .todo, .wk-task, .kcard, .links a, .cal-undated-list a { min-height:48px; }
+      .todo, .ms-row, .links a { min-height:48px; }
     }
     /* ---- focus states ------------------------------------------------ */
     /* One ring for every control, matching the Command Center. Each item's
@@ -814,14 +828,13 @@
     .mini-btn:focus-visible, .btn-sm:focus-visible,
     .head-link:focus-visible, .link-btn:focus-visible, .todo-check:focus-visible, .todo-del:focus-visible,
     .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
-    .wk-nav button:focus-visible, .cal-nav button:focus-visible,
-    .wk-empty .wk-jump:focus-visible, .list-empty .wk-jump:focus-visible, .wk-task:focus-visible,
-    .kcard:focus-visible, .cal-task:focus-visible, .t-name a:focus-visible,
-    .cal-undated-list a:focus-visible, .bucket > summary:focus-visible,
-    .wk-ongoing > summary:focus-visible, .cal-undated > summary:focus-visible {
+    .list-empty .wk-jump:focus-visible, .ms-tile:focus-visible, .ms-more-btn:focus-visible,
+    .ms-undated > summary:focus-visible, .tl-mk:focus-visible, .ar-next:focus-visible,
+    .ar-then a:focus-visible, .ar-all:focus-visible, .ar-card.is-undated a:focus-visible {
       outline:none;
       box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--brand)) 35%,transparent);
     }
+    .ms-row:focus-visible { outline:none; box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--brand) 45%,transparent); }
     /* Pins carry their colour on --link-accent rather than --accent. */
     .links a:focus-visible {
       outline:none;
@@ -838,8 +851,7 @@
        an invisible delete button sitting under your thumb. */
     @media (hover: none) {
       .todo-actions { opacity:1; }
-      .wk-task:hover, .kcard:hover, .links a:hover, .icon-btn:hover,
-      .wk-nav button:hover, .cal-nav button:hover, .wk-empty .wk-jump:hover, .list-empty .wk-jump:hover { transform:none; }
+      .links a:hover, .icon-btn:hover, .ms-tile:hover:not(:disabled), .list-empty .wk-jump:hover { transform:none; }
     }
     /* Small controls keep their drawn size and gain a 24px hit area. */
     .todo-check, .todo-del, .todo-actions .mini-btn, .pin-actions .mini-btn { position:relative; }
@@ -879,8 +891,6 @@
       <!-- LEFT: tasks -->
       <div class="col">
         <section class="panel">
-          <!-- Week calendar: filled by renderWeekCal(), pinned above Monday tasks -->
-          <div class="week-cal" id="weekCal"></div>
           <div class="monday-head">
             <div class="monday-head-main">
               <svg class="monday-mark" aria-hidden="true" viewBox="0 0 20 20" width="20" height="20">
@@ -900,7 +910,9 @@
           </div>
           <!-- Recently assigned: filled by renderNewAssigned() -->
           <div id="newAssigned" hidden></div>
-          <div class="monday-controls" id="taskToolbar" data-view="week">
+          <!-- Overdue / next 30 days / later / no date: filled by renderTiles() -->
+          <div class="ms-tiles" id="msTiles"></div>
+          <div class="monday-controls" id="taskToolbar" data-view="focus">
             <div class="menu-wrap" id="filterMenuWrap">
               <button class="filter-trigger" type="button" id="filterTrigger" aria-expanded="false" aria-controls="filterPanel" aria-label="Filter tasks">
                 <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
@@ -919,17 +931,15 @@
               </div>
             </div>
             <div class="view-toggle" id="viewToggle" role="group" aria-label="Task view">
-              <button class="view-seg" type="button" data-view="week" aria-pressed="true">Week</button>
-              <button class="view-seg" type="button" data-view="list" aria-pressed="false">List</button>
-              <button class="view-seg" type="button" data-view="board" aria-pressed="false">Board</button>
-              <button class="view-seg" type="button" data-view="calendar" aria-pressed="false">Calendar</button>
+              <button class="view-seg" type="button" data-view="focus" aria-pressed="true">Focus</button>
+              <button class="view-seg" type="button" data-view="timeline" aria-pressed="false">Timeline</button>
+              <button class="view-seg" type="button" data-view="areas" aria-pressed="false">Areas</button>
             </div>
           </div>
           <div class="task-content">
-            <div id="week"></div>
-            <div id="buckets" hidden></div>
-            <div id="kanban" hidden></div>
-            <div id="calendar" hidden></div>
+            <div id="msFocus"></div>
+            <div id="msTimeline" hidden></div>
+            <div id="msAreas" hidden></div>
           </div>
         </section>
       </div>
@@ -1073,55 +1083,30 @@
     const MS_DAY = 86400000;
     function parseDue(iso){ if(!iso) return null; const [y,m,d]=iso.split("-").map(Number); return new Date(y, m-1, d); }
     function daysOut(iso){ const dt=parseDue(iso); return dt ? Math.round((dt - today)/MS_DAY) : null; }
-    function fmtDue(iso){
-      if(!iso) return "—";
-      const dt = parseDue(iso);
-      const s = dt.toLocaleDateString(undefined, { month:"short", day:"numeric" });
-      const n = daysOut(iso);
-      if (n < 0) return s + " · overdue";
-      if (n === 0) return s + " · today";
-      if (n <= 30) return s + " · " + n + "d";
-      return s;
-    }
     function toIso(d){
       return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
     }
-    const STATUS_COLOR = { work:"var(--working)", wait:"var(--wait)", idle:"var(--idle)", done:"var(--ok)" };
     let TODAY_ISO = toIso(today);
     function addDays(d, n){ return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n); }
-    /* Sunday-start, matching the week strip's Sun..Sat columns. */
-    function startOfWeek(d){ return addDays(d, -d.getDay()); }
-    let THIS_WEEK = startOfWeek(today);
-    function weekIndexOf(iso){
-      return Math.round((startOfWeek(parseDue(iso)) - THIS_WEEK) / (7 * MS_DAY));
-    }
 
-    /* ---- buckets by time horizon ----------------------------------- */
-    const BUCKETS = [
-      { key:"overdue", cls:"b-overdue", label:"Overdue",   open:true,  test:n => n!==null && n<0 },
-      { key:"soon",    cls:"b-soon",    label:"Due soon",  open:true,  test:n => n!==null && n>=0 && n<=30, note:"next 30 days" },
-      { key:"next",    cls:"b-next",    label:"Coming up", open:true,  test:n => n!==null && n>30 && n<=90, note:"31–90 days" },
-      { key:"later",   cls:"b-later",   label:"Later",     open:false, test:n => n!==null && n>90 },
-      { key:"none",    cls:"b-none",    label:"No due date",open:false, test:n => n===null },
-    ];
-
-    const VIEWS = ["week", "list", "board", "calendar"];
+    const VIEWS = ["focus", "timeline", "areas"];
     let activeStatus = "all";
     let activeArea = "all";
-    let view = "week";
+    let view = "focus";
     let lastSyncedAt = null;
-    let calMonth = today.getMonth();
-    let calYear = today.getFullYear();
-    let weekOffset = 0;               // 0 = this week, 1 = next week, …
+    let laterOpen = false;            // Focus: is the full Later list showing?
+    let noneOpen = false;             // Focus: is No due date unfolded?
+    let tlSel = null;                 // Timeline: key of the picked circle
+    /* A view saved by the old Week / List / Board / Calendar toggle isn't in
+       VIEWS, so it falls through to Focus. */
     try {
       const saved = localStorage.getItem("olivia-view-v2");
       if (VIEWS.includes(saved)) view = saved;
     } catch(e){}
-    const weekEl = document.getElementById("week");
-    const weekCalEl = document.getElementById("weekCal");
-    const bucketsEl = document.getElementById("buckets");
-    const kanbanEl = document.getElementById("kanban");
-    const calendarEl = document.getElementById("calendar");
+    const tilesEl = document.getElementById("msTiles");
+    const focusEl = document.getElementById("msFocus");
+    const timelineEl = document.getElementById("msTimeline");
+    const areasEl = document.getElementById("msAreas");
     const statusMenu = document.getElementById("statusMenu");
     const areaMenu = document.getElementById("areaMenu");
     const statusMenuSection = document.getElementById("statusMenuSection");
@@ -1138,12 +1123,11 @@
     };
 
     /* Rows flagged sub:true are subitems. Ones someone just handed you exist
-       for the "New this week" banner; ones also flagged soon:true are due in
-       the next two weeks (or overdue) and join the milestone views, named
-       with their parent item so they read on their own. */
+       for the "Assigned to you this week" bar; ones also flagged soon:true are
+       due in the next two weeks (or overdue) and join the milestone views,
+       shown with their parent item so they read on their own. */
     function milestones(){
-      return TASKS.filter(t => !t.sub || t.soon)
-        .map(t => t.sub ? { ...t, n: t.n + " — " + t.p } : t);
+      return TASKS.filter(t => !t.sub || t.soon);
     }
 
     function visibleTasks(){
@@ -1198,32 +1182,30 @@
     function renderNewAssigned(){
       const seen = seenNew();
       const fresh = TASKS
-        .filter(t => t.a && t.s !== "done" && daysOut(t.a) !== null && daysOut(t.a) > -7)
+        .filter(isNew)
         .sort((x, y) => (x.a < y.a ? 1 : x.a > y.a ? -1 : x.n.localeCompare(y.n)));
       newAssignedEl.replaceChildren();
       newAssignedEl.hidden = fresh.length === 0;
       if (!fresh.length) return;
       let collapsed = fresh.every(t => seen.has(t.id));
 
-      const box = document.createElement("div");
-      box.className = "new-assign";
+      const box = el("div", "new-assign");
       box.setAttribute("role", "region");
-      box.setAttribute("aria-label", "Recently assigned tasks");
-      const head = document.createElement("div");
-      head.className = "na-head";
-      head.innerHTML = '<span class="na-pill">NEW</span><span class="na-title"></span>' +
-        '<button class="na-toggle" type="button" aria-controls="newAssignedList"></button>';
-      head.querySelector(".na-title").textContent =
-        fresh.length === 1 ? "1 task assigned to you" : fresh.length + " tasks assigned to you";
-      const toggle = head.querySelector(".na-toggle");
+      box.setAttribute("aria-label", "Assigned to you this week");
+      const head = el("div", "na-head");
+      head.append(el("span", "na-pill", "NEW"), el("span", "na-title", "Assigned to you this week"),
+        el("span", "na-count", fresh.length === 1 ? "1 item" : fresh.length + " items"));
+      const toggle = el("button", "na-toggle");
+      toggle.type = "button";
+      toggle.setAttribute("aria-controls", "newAssignedList");
+      head.append(toggle);
 
-      const list = document.createElement("ul");
-      list.className = "na-list";
+      const list = el("ul", "na-list");
       list.id = "newAssignedList";
       const paint = () => {
         box.classList.toggle("is-collapsed", collapsed);
         list.hidden = collapsed;
-        toggle.textContent = collapsed ? "Show" : "Hide";
+        toggle.textContent = collapsed ? "Show" : "Got it";
         toggle.setAttribute("aria-expanded", String(!collapsed));
       };
       toggle.addEventListener("click", () => {
@@ -1235,39 +1217,24 @@
         paint();
       });
       fresh.forEach(t => {
-        const li = document.createElement("li");
-        const a = document.createElement("a");
-        a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-        const name = document.createElement("span");
-        name.className = "na-name";
-        const task = document.createElement("span");
-        task.className = "na-task";
-        task.textContent = t.n;
-        name.appendChild(task);
-        if (t.sub && t.p) {
-          const parent = document.createElement("span");
-          parent.className = "na-parent";
-          parent.textContent = "in " + t.p;
-          name.appendChild(parent);
-        }
-        const chip = document.createElement("span");
-        chip.className = "na-chip c-" + t.b;
-        chip.textContent = BOARDS[t.b].label;
-        const due = document.createElement("span");
-        due.className = "na-due";
-        if (t.due) due.textContent = "due " + parseDue(t.due).toLocaleDateString(undefined, { month:"short", day:"numeric" });
-        a.append(name, chip, due);
-        li.appendChild(a);
-        list.appendChild(li);
+        const li = el("li");
+        const a = pulseLink(null, t);
+        const name = el("span", "na-name");
+        name.append(el("span", "na-task", t.n),
+          el("span", "na-sub", [context(t), "assigned " + fmtShort(t.a)].filter(Boolean).join(" · ")));
+        const due = el("span", "na-due", t.due ? "Due " + fmtShort(t.due) : "No due date");
+        a.append(name, areaChip(t.b), due);
+        li.append(a);
+        list.append(li);
       });
       box.append(head, list);
       paint();
-      newAssignedEl.appendChild(box);
+      newAssignedEl.append(box);
     }
 
     function updateToolbar(){
       if (taskToolbar) taskToolbar.dataset.view = view;
-      if (statusMenuSection) statusMenuSection.hidden = view === "board";
+      if (statusMenuSection) statusMenuSection.hidden = view === "areas";
     }
 
     function closeMenus(except){
@@ -1319,11 +1286,10 @@
     }
 
     function renderView(){
-      renderWeekCal();
-      if (view === "week") renderWeek();
-      else if (view === "board") renderKanban();
-      else if (view === "calendar") renderCalendar();
-      else renderBuckets();
+      renderTiles();
+      if (view === "timeline") renderTimeline();
+      else if (view === "areas") renderAreas();
+      else renderFocus();
     }
 
     function renderFilters(){
@@ -1391,461 +1357,544 @@
       return S_RANK[a.s] - S_RANK[b.s] || a.n.localeCompare(b.n);
     }
 
-    function renderBuckets(){
-      const rows = visibleTasks().slice().sort(byDue);
-      bucketsEl.innerHTML = "";
-      let shown = 0;
-      for (const bk of BUCKETS){
-        const items = rows.filter(t => bk.test(daysOut(t.due)));
-        if (!items.length) continue;
-        shown += items.length;
-        const d = document.createElement("details");
-        d.className = "bucket " + bk.cls;
-        if (bk.open) d.open = true;
-        const sum = document.createElement("summary");
-        sum.innerHTML =
-          '<span class="bucket-dot" aria-hidden="true"></span>' +
-          '<span class="bucket-chev" aria-hidden="true">›</span>' +
-          '<span>' + bk.label + (bk.note ? ' <span class="bucket-note">· '+bk.note+'</span>' : '') + '</span>' +
-          '<span class="bucket-count">' + items.length + '</span>';
-        d.appendChild(sum);
-
-        const table = document.createElement("table");
-        table.className = "ttable";
-        table.innerHTML = '<thead><tr><th>Task</th><th>Status</th><th class="t-board-col">Area</th><th>Due</th></tr></thead>';
-        const tb = document.createElement("tbody");
-        for (const t of items){
-          const tr = document.createElement("tr");
-          tr.className = "trow";
-          const n = daysOut(t.due);
-          const dueCls = n!==null && n<0 ? "od" : (n!==null && n<=14 ? "warn" : "");
-          const st = STATUS[t.s];
-          const name = document.createElement("td");
-          name.className = "t-name";
-          const a = document.createElement("a");
-          a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-          a.textContent = t.n;
-          name.appendChild(a);
-          if (t.shared){ const sh=document.createElement("span"); sh.className="shared"; sh.textContent="shared"; name.appendChild(sh); }
-          tr.appendChild(name);
-          const stTd = document.createElement("td");
-          stTd.innerHTML = '<span class="status-pill '+st.cls+'"><span class="sd" aria-hidden="true"></span>'+st.label+'</span>';
-          tr.appendChild(stTd);
-          const bd = document.createElement("td");
-          bd.className = "t-area t-board-col";
-          bd.innerHTML = '<span class="t-cat"></span><span class="t-board-sub"></span>';
-          bd.querySelector(".t-cat").textContent = t.cat;
-          bd.querySelector(".t-board-sub").textContent = BOARDS[t.b].label;
-          tr.appendChild(bd);
-          const due = document.createElement("td");
-          due.className = "t-due " + dueCls;
-          due.textContent = fmtDue(t.due);
-          tr.appendChild(due);
-          tb.appendChild(tr);
-        }
-        table.appendChild(tb);
-        d.appendChild(table);
-        bucketsEl.appendChild(d);
-      }
-      if (!shown) bucketsEl.appendChild(filterEmpty());
+    /* ---- shared pieces for the three milestone views ---------------- */
+    function el(tag, cls, text){
+      const e = document.createElement(tag);
+      if (cls) e.className = cls;
+      if (text !== undefined && text !== null) e.textContent = text;
+      return e;
     }
-
-    /* ---- week view (focused: just what's due this week) ------------ */
-    function relWeekLabel(n){
-      if (n === 0) return "This week";
-      if (n === 1) return "Next week";
-      if (n === -1) return "Last week";
-      return n > 0 ? "In " + n + " weeks" : Math.abs(n) + " weeks ago";
+    function fmtShort(iso){ return parseDue(iso).toLocaleDateString(undefined, { month:"short", day:"numeric" }); }
+    function monthShort(d){ return d.toLocaleDateString(undefined, { month:"short" }); }
+    /* Someone else put you on it within the past week. Re-checked against
+       today so a stale snapshot still ages out. */
+    function isNew(t){ const n = daysOut(t.a); return n !== null && n > -7 && t.s !== "done"; }
+    function whenText(n){
+      if (n < -1) return (-n) + " days late";
+      if (n === -1) return "1 day late";
+      if (n === 0) return "today";
+      if (n === 1) return "tomorrow";
+      return "in " + n + " days";
     }
-    function fmtDayLabel(d){
-      const iso = toIso(d);
-      if (iso === TODAY_ISO) return "Today";
-      if (iso === toIso(addDays(today, 1))) return "Tomorrow";
-      return d.toLocaleDateString(undefined, { weekday:"long" });
+    /* What the milestone belongs to: its parent for a subitem, else its group. */
+    function context(t){
+      return [t.sub && t.p ? "in " + t.p : t.cat, t.shared ? "shared" : null].filter(Boolean).join(" · ");
     }
-    function weekTaskRow(t, opts){
-      const st = STATUS[t.s];
-      const n = daysOut(t.due);
-      const a = document.createElement("a");
-      a.className = "wk-task" + (t.s === "done" ? " is-done" : "");
+    function areaChip(k){ return el("span", "area-chip c-" + k, BOARDS[k].label); }
+    function statusPill(s){
+      const st = STATUS[s];
+      const p = el("span", "status-pill " + st.cls);
+      p.innerHTML = '<span class="sd" aria-hidden="true"></span>';
+      p.append(st.label);
+      return p;
+    }
+    function pulseLink(cls, t){
+      const a = el("a", cls);
       a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-      a.style.setProperty("--accent", STATUS_COLOR[t.s]);
-      a.innerHTML =
-        '<span class="wk-main"><span class="wk-name"></span><span class="wk-meta"></span></span>' +
-        '<span class="wk-right"><span class="status-pill ' + st.cls + '">' +
-        '<span class="sd" aria-hidden="true"></span>' + st.label + '</span>' +
-        (opts && opts.showDue ? '<span class="wk-due' + (n !== null && n < 0 ? ' od' : '') + '"></span>' : '') +
-        '</span>';
-      a.querySelector(".wk-name").textContent = t.n;
-      a.querySelector(".wk-meta").textContent =
-        t.cat + " · " + BOARDS[t.b].label + (t.shared ? " · shared" : "");
-      if (opts && opts.showDue) a.querySelector(".wk-due").textContent = fmtDue(t.due);
       return a;
     }
-    function weekGroup(cls, label, sub, items, opts){
-      const g = document.createElement("section");
-      g.className = "wk-group " + cls;
-      const head = document.createElement("div");
-      head.className = "wk-day-head";
-      head.innerHTML = '<span class="wk-dow"></span><span class="wk-date"></span>' +
-        '<span class="wk-day-n">' + items.length + '</span>';
-      head.querySelector(".wk-dow").textContent = label;
-      head.querySelector(".wk-date").textContent = sub || "";
-      g.appendChild(head);
-      const list = document.createElement("div");
-      list.className = "wk-list";
-      items.forEach(t => list.appendChild(weekTaskRow(t, opts)));
-      g.appendChild(list);
-      return g;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    /* One milestone row: date block, name over area and context, status, when. */
+    function msRow(t){
+      const n = daysOut(t.due);
+      const od = n !== null && n < 0;
+      const a = pulseLink("ms-row", t);
+      const d = el("span", "ms-date" + (od ? " is-od" : "") + (t.due ? "" : " is-none"));
+      d.setAttribute("aria-hidden", "true");
+      if (t.due){
+        const dt = parseDue(t.due);
+        d.append(el("b", null, dt.getDate()), el("span", null, monthShort(dt)));
+      } else {
+        d.append(el("b", null, "–"));
+      }
+      const main = el("span", "ms-main");
+      main.append(el("span", "ms-name", t.n));
+      const meta = el("span", "ms-meta");
+      if (isNew(t)) meta.append(el("span", "new-tag", "NEW"));
+      meta.append(areaChip(t.b));
+      const ctx = context(t);
+      if (ctx) meta.append(el("span", null, ctx));
+      main.append(meta);
+      const side = el("span", "ms-side");
+      let whenTxt = "no date", whenCls = "";
+      if (t.due){
+        whenTxt = n > 30 ? fmtShort(t.due) : whenText(n);
+        whenCls = od ? " is-od" : n <= 7 ? " is-soon" : "";
+      }
+      const when = el("span", "ms-when" + whenCls, whenTxt);
+      if (t.due && n <= 30) when.append(el("span", "sr-only", ", " + fmtShort(t.due)));
+      side.append(statusPill(t.s), when);
+      a.append(d, main, side);
+      return a;
+    }
+    function msCard(items, cls){
+      const card = el("div", "ms-card" + (cls ? " " + cls : ""));
+      items.forEach(t => card.append(msRow(t)));
+      return card;
     }
 
-    function weekFrame(){
-      const start = addDays(THIS_WEEK, weekOffset * 7);
-      const end = addDays(start, 6);
-      const startIso = toIso(start), endIso = toIso(end);
-      const isCurrent = weekOffset === 0;
+    /* Overdue / next 30 days / later / no date. The tiles and the Focus view
+       both read from this, so their counts can never disagree. */
+    function focusBuckets(tasks){
+      const od = [], soon = [], later = [], none = [];
+      tasks.forEach(t => {
+        const n = daysOut(t.due);
+        if (n === null) none.push(t);
+        else if (n < 0) od.push(t);
+        else if (n <= 30) soon.push(t);
+        else later.push(t);
+      });
+      od.sort(byDue); soon.sort(byDue); later.sort(byDue);
+      none.sort((a, b) => S_RANK[a.s] - S_RANK[b.s] || a.n.localeCompare(b.n));
+      return { od, soon, later, none };
+    }
+
+    /* ---- summary tiles ---------------------------------------------- */
+    function renderTiles(){
+      const { od, soon, later, none } = focusBuckets(visibleTasks());
+      const last = later.length ? parseDue(later[later.length - 1].due) : null;
+      const defs = [
+        { k:"od",    n:od.length,    label:"Overdue", alert:od.length > 0 },
+        { k:"soon",  n:soon.length,  label:"Next 30 days" },
+        { k:"later", n:later.length, label:last ? "Later · to " + last.toLocaleDateString(undefined, { month:"short", year:"numeric" }) : "Later" },
+        { k:"none",  n:none.length,  label:"No due date" },
+      ];
+      tilesEl.replaceChildren();
+      defs.forEach(d => {
+        const b = el("button", "ms-tile" + (d.alert ? " is-alert" : ""));
+        b.type = "button";
+        b.disabled = d.n === 0;
+        b.setAttribute("aria-label", d.n + " " + d.label + (d.n ? ", show them" : ""));
+        b.append(el("b", null, d.n), el("span", null, d.label));
+        b.addEventListener("click", () => jumpTo(d.k));
+        tilesEl.append(b);
+      });
+    }
+    function jumpTo(k){
+      if (k === "later") laterOpen = true;
+      if (k === "none") noneOpen = true;
+      if (view !== "focus") setView("focus"); else renderFocus();
+      const target = document.getElementById("ms-" + k);
+      if (!target) return;
+      target.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" });
+      target.focus({ preventScroll: true });
+    }
+
+    /* ---- focus view -------------------------------------------------- */
+    function section(id, extraCls){
+      const s = el("section", "ms-sec" + (extraCls ? " " + extraCls : ""));
+      s.id = id; s.tabIndex = -1;
+      return s;
+    }
+    function renderFocus(){
+      focusEl.replaceChildren();
       const tasks = visibleTasks();
-      const cutoff = isCurrent ? TODAY_ISO : startIso;
-      const overdue = isCurrent ? tasks.filter(t => t.due && t.due < TODAY_ISO).sort(byDue) : [];
-      const inWeek = tasks.filter(t => t.due && t.due >= cutoff && t.due <= endIso);
-      const ongoing = isCurrent ? tasks.filter(t => !t.due && t.s === "work").sort((a,b) => a.n.localeCompare(b.n)) : [];
-      const doneInWeek = activeStatus === "all"
-        ? areaFilteredTasks().filter(t => t.s === "done" && t.due && t.due >= startIso && t.due <= endIso).sort(byDue)
-        : [];
-      return { start, end, startIso, endIso, isCurrent, tasks, overdue, inWeek, ongoing, doneInWeek };
-    }
+      if (!tasks.length){ focusEl.append(filterEmpty()); return; }
+      const { od, soon, later, none } = focusBuckets(tasks);
 
-    function syncWeekNav(){
-      renderWeekCal();
-      if (view === "week") renderWeek();
-    }
-
-    function renderWeekCal(){
-      weekCalEl.innerHTML = "";
-      const { start, end, isCurrent } = weekFrame();
-      const head = document.createElement("div");
-      head.className = "wk-head";
-      const titles = document.createElement("div");
-      titles.className = "wk-titles";
-      const sameMonth = start.getMonth() === end.getMonth();
-      const range = start.toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " – " +
-        end.toLocaleDateString(undefined, sameMonth ? { day:"numeric" } : { month:"short", day:"numeric" });
-      titles.innerHTML = '<div class="wk-range"></div><div class="wk-rel"></div>';
-      titles.querySelector(".wk-range").textContent = isCurrent
-        ? today.toLocaleDateString(undefined, { weekday:"long", day:"numeric", month:"long" })
-        : range;
-      titles.querySelector(".wk-rel").textContent = "";
-      const nav = document.createElement("div");
-      nav.className = "wk-nav";
-      if (!isCurrent){
-        const nowBtn = document.createElement("button");
-        nowBtn.type = "button"; nowBtn.className = "wk-now"; nowBtn.textContent = "This week";
-        nowBtn.addEventListener("click", () => { weekOffset = 0; syncWeekNav(); });
-        nav.appendChild(nowBtn);
-      }
-      const prev = document.createElement("button");
-      prev.type = "button"; prev.setAttribute("aria-label", "Previous week"); prev.textContent = "‹";
-      prev.addEventListener("click", () => { weekOffset--; syncWeekNav(); });
-      const next = document.createElement("button");
-      next.type = "button"; next.setAttribute("aria-label", "Next week"); next.textContent = "›";
-      next.addEventListener("click", () => { weekOffset++; syncWeekNav(); });
-      nav.append(prev, next);
-      head.append(titles, nav);
-      weekCalEl.appendChild(head);
-
-      const strip = document.createElement("div");
-      strip.className = "wk-strip";
-      strip.setAttribute("aria-hidden", "true");
-      for (let i = 0; i < 7; i++){
-        const d = addDays(start, i);
-        const iso = toIso(d);
-        const cell = document.createElement("div");
-        cell.className = "wk-cell" +
-          (iso === TODAY_ISO ? " is-today" : "") +
-          (iso < TODAY_ISO ? " is-past" : "");
-        cell.innerHTML = '<div class="wk-cell-dow"></div><div class="wk-cell-num"></div>';
-        cell.querySelector(".wk-cell-dow").textContent =
-          d.toLocaleDateString(undefined, { weekday:"short" });
-        cell.querySelector(".wk-cell-num").textContent = d.getDate();
-        strip.appendChild(cell);
-      }
-      weekCalEl.appendChild(strip);
-    }
-
-    function renderWeek(){
-      weekEl.innerHTML = "";
-      const { start, end, endIso, isCurrent, tasks, overdue, inWeek, ongoing, doneInWeek } = weekFrame();
-      const count = overdue.length + inWeek.length;
-      const hasDue = count > 0;
-
-      /* overdue carry-over */
-      if (overdue.length){
-        weekEl.appendChild(weekGroup("is-overdue", "Overdue", "still open", overdue, { showDue:true }));
+      if (od.length){
+        const sec = section("ms-od");
+        sec.setAttribute("aria-label", "Overdue");
+        const card = el("div", "ms-card is-alert");
+        const head = el("div", "ms-alert-head");
+        head.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+        head.append(el("h3", null, "Needs attention"),
+          el("span", "ms-sec-note", od.length + " past " + (od.length === 1 ? "its" : "their") + " date"));
+        card.append(head);
+        od.forEach(t => card.append(msRow(t)));
+        sec.append(card);
+        focusEl.append(sec);
       }
 
-      /* one group per day that has something */
-      const byDate = {};
-      inWeek.forEach(t => { (byDate[t.due] = byDate[t.due] || []).push(t); });
-      for (let i = 0; i < 7; i++){
-        const d = addDays(start, i);
-        const iso = toIso(d);
-        const items = (byDate[iso] || []).sort((a,b) => a.n.localeCompare(b.n));
-        if (!items.length) continue;
-        weekEl.appendChild(weekGroup(
-          iso === TODAY_ISO ? "is-today" : "",
-          fmtDayLabel(d),
-          d.toLocaleDateString(undefined, { month:"short", day:"numeric" }),
-          items
-        ));
+      const soonSec = section("ms-soon");
+      const soonHead = el("div", "ms-sec-head");
+      soonHead.append(el("h3", null, "Next 30 days"),
+        el("span", "ms-sec-note", "through " + fmtShort(toIso(addDays(today, 30)))));
+      soonSec.append(soonHead);
+      if (soon.length) soonSec.append(msCard(soon));
+      else {
+        const box = el("div", "ms-card");
+        const next = later[0];
+        box.append(el("p", "ms-empty", next
+          ? "Nothing due in the next 30 days. Next up is " + next.n + " on " + fmtShort(next.due) + "."
+          : "Nothing due in the next 30 days."));
+        soonSec.append(box);
       }
+      focusEl.append(soonSec);
 
-      /* empty state — skip the hero box when in-progress tasks are listed below */
-      if (!hasDue && !(ongoing.length && isCurrent)){
-        const empty = document.createElement("div");
-        empty.className = "wk-empty";
-        const p = document.createElement("p");
-        p.textContent = weekOffset < 0 ? "Nothing was due this week." : "Nothing due this week. 🎉";
-        empty.appendChild(p);
-        const upcoming = tasks.filter(t => t.due && t.due > endIso).sort(byDue)[0];
-        if (upcoming){
-          const jump = document.createElement("button");
-          jump.type = "button"; jump.className = "wk-jump";
-          const target = weekIndexOf(upcoming.due);
-          jump.textContent = "Next up: " + parseDue(upcoming.due)
-            .toLocaleDateString(undefined, { month:"short", day:"numeric" }) + " →";
-          jump.addEventListener("click", () => { weekOffset = target; syncWeekNav(); });
-          empty.appendChild(jump);
-        }
-        weekEl.appendChild(empty);
-      }
+      if (later.length) focusEl.append(laterSection(later));
 
-      if (doneInWeek.length){
-        weekEl.appendChild(weekGroup("is-done", "Done this week", "checked off ✓", doneInWeek, { showDue:true }));
-      }
-
-      /* in-progress with no date — collapsed by default */
-      if (ongoing.length && isCurrent){
-        const det = document.createElement("details");
-        det.className = "wk-ongoing";
-        det.open = false;
-        const sum = document.createElement("summary");
-        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span>' +
-          '<span>In progress · no due date</span>' +
-          '<span class="bucket-count">' + ongoing.length + '</span>';
-        det.appendChild(sum);
-        const list = document.createElement("div");
-        list.className = "wk-list";
-        ongoing.forEach(t => list.appendChild(weekTaskRow(t)));
-        det.appendChild(list);
-        weekEl.appendChild(det);
+      if (none.length){
+        const det = el("details", "ms-undated ms-sec");
+        det.id = "ms-none"; det.tabIndex = -1;
+        det.open = noneOpen;
+        det.addEventListener("toggle", () => { noneOpen = det.open; });
+        const sum = el("summary");
+        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span>';
+        sum.append(el("span", null, "No due date"), el("span", "ms-sec-note", String(none.length)));
+        det.append(sum, msCard(none));
+        focusEl.append(det);
       }
     }
 
-    /* ---- kanban board (grouped by status, read-only) --------------- */
-    const COLS = [
-      { k:"idle", label:"Not started",   cls:"k-idle", color:"var(--idle)" },
-      { k:"wait", label:"Waiting",       cls:"k-wait", color:"var(--wait)" },
-      { k:"work", label:"Working on it", cls:"k-work", color:"var(--working)" },
-    ];
-    function renderKanban(){
-      kanbanEl.innerHTML = "";
-      const grid = document.createElement("div");
-      grid.className = "kanban";
-      for (const col of COLS){
-        const items = visibleTasks().filter(t => t.s===col.k).sort(byDue);
-        const c = document.createElement("div");
-        c.className = "kcol " + col.cls;
-        const head = document.createElement("div");
-        head.className = "kcol-head";
-        head.innerHTML = '<span class="kd" aria-hidden="true"></span><span>' + col.label +
-          '</span><span class="kn">' + items.length + '</span>';
-        c.appendChild(head);
-        if (!items.length){
-          const e = document.createElement("p"); e.className = "kcol-empty"; e.textContent = "Nothing here";
-          c.appendChild(e);
-        }
-        for (const t of items){
-          const n = daysOut(t.due);
-          const dueCls = n!==null && n<0 ? "od" : (n!==null && n<=14 ? "warn" : "");
-          const a = document.createElement("a");
-          a.className = "kcard";
-          a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-          a.style.setProperty("--accent", col.color);
-          a.innerHTML = '<div class="kcard-name"></div>' +
-            '<div class="kcard-meta"><span class="kcard-board"></span>' +
-            '<span class="kcard-due ' + dueCls + '"></span></div>';
-          a.querySelector(".kcard-name").textContent = t.n;
-          a.querySelector(".kcard-board").textContent = t.cat + " · " + BOARDS[t.b].label + (t.shared ? " · shared" : "");
-          a.querySelector(".kcard-due").textContent = fmtDue(t.due);
-          c.appendChild(a);
-        }
-        grid.appendChild(c);
+    function laterSection(later){
+      const sec = section("ms-later");
+      const box = el("div", "ms-later");
+      const first = parseDue(later[0].due), last = parseDue(later[later.length - 1].due);
+      const head = el("div", "ms-later-head");
+      head.append(el("h3", null, "Later"),
+        el("span", "ms-sec-note", later.length + (later.length === 1 ? " milestone, " : " milestones, ") +
+          monthShort(first) + (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear() ? "" : " → " + monthShort(last))));
+      const more = el("button", "ms-more-btn", laterOpen ? "Hide list" : "Show all " + later.length);
+      more.type = "button";
+      more.setAttribute("aria-expanded", String(laterOpen));
+      more.setAttribute("aria-controls", "msLaterList");
+      more.addEventListener("click", () => {
+        laterOpen = !laterOpen;
+        renderFocus();
+        const again = document.querySelector("#ms-later .ms-more-btn");
+        if (again) again.focus();
+      });
+      head.append(more);
+      box.append(head);
+
+      /* Month by month, first later month to last, empty months included so
+         the gaps read as gaps. */
+      const months = [];
+      for (let m = new Date(first.getFullYear(), first.getMonth(), 1); m <= last; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)){
+        const key = m.getFullYear() + "-" + String(m.getMonth() + 1).padStart(2, "0");
+        months.push({ m, key, items: later.filter(t => t.due.startsWith(key)) });
       }
-      kanbanEl.appendChild(grid);
+      const max = Math.max(...months.map(x => x.items.length));
+      const peak = months.length > 1 && max >= 3 ? months.find(x => x.items.length === max) : null;
+      const hist = el("div", "ms-hist");
+      hist.style.setProperty("--n", months.length);
+      hist.setAttribute("role", "img");
+      hist.setAttribute("aria-label", "Later milestones by month: " +
+        months.map(x => monthShort(x.m) + " " + x.items.length).join(", "));
+      months.forEach((x, i) => {
+        const bar = el("div", "ms-bar" + (x === peak ? " is-peak" : ""));
+        const fill = el("div", "ms-bar-fill");
+        fill.style.height = Math.max(4, Math.round(x.items.length / max * 56)) + "px";
+        const yr = x.m.getFullYear() !== today.getFullYear() && (i === 0 || x.m.getMonth() === 0)
+          ? " ’" + String(x.m.getFullYear()).slice(2) : "";
+        bar.append(el("span", "ms-bar-n", x.items.length || ""), fill, el("span", "ms-bar-m", monthShort(x.m) + yr));
+        hist.append(bar);
+      });
+      box.append(hist);
+      if (peak){
+        const byArea = {};
+        peak.items.forEach(t => { byArea[t.b] = (byArea[t.b] || 0) + 1; });
+        const [topK, topN] = Object.entries(byArea).sort((a, b) => b[1] - a[1])[0];
+        const monthLong = peak.m.toLocaleDateString(undefined, { month:"long" });
+        box.append(el("p", "ms-later-note", monthLong + " is the busiest month: " + max + " milestones land, " +
+          (topN === max ? "all of them " : topN + " of them ") + BOARDS[topK].label + "."));
+      }
+      sec.append(box);
+
+      if (laterOpen){
+        const list = el("div");
+        list.id = "msLaterList";
+        months.filter(x => x.items.length).forEach(x => {
+          const g = el("div", "ms-month");
+          g.append(el("h4", "ms-month-head", x.m.toLocaleDateString(undefined, { month:"long", year:"numeric" })), msCard(x.items));
+          list.append(g);
+        });
+        sec.append(list);
+      }
+      return sec;
     }
 
-    /* ---- calendar (grouped by due date) ---------------------------- */
-    const CAL_DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-    const CAL_MAX = 3;
-
-    function renderCalendar(){
-      calendarEl.innerHTML = "";
+    /* ---- timeline view ----------------------------------------------- */
+    function renderTimeline(){
+      timelineEl.replaceChildren();
       const tasks = visibleTasks();
-      if (!tasks.length){
-        calendarEl.appendChild(filterEmpty());
+      if (!tasks.length){ timelineEl.append(filterEmpty()); return; }
+      const dated = tasks.filter(t => t.due).sort(byDue);
+      const undated = tasks.length - dated.length;
+      if (!dated.length){
+        timelineEl.append(el("p", "list-empty", "None of these milestones has a due date yet."));
         return;
       }
 
-      const wrap = document.createElement("div");
+      /* The axis runs from the start of the earliest month (today's, if that
+         is earlier) to the end of the latest one. */
+      const first = parseDue(dated[0].due), last = parseDue(dated[dated.length - 1].due);
+      const lo = first < today ? first : today, hi = last > today ? last : today;
+      const start = new Date(lo.getFullYear(), lo.getMonth(), 1);
+      const end = new Date(hi.getFullYear(), hi.getMonth() + 1, 1);
+      const span = end - start;
+      const pct = d => (d - start) / span * 100;
 
-      const head = document.createElement("div");
-      head.className = "cal-head";
-      const title = document.createElement("div");
-      title.className = "cal-title";
-      title.textContent = new Date(calYear, calMonth, 1).toLocaleDateString(undefined, { month:"long", year:"numeric" });
-      const nav = document.createElement("div");
-      nav.className = "cal-nav";
-      const prev = document.createElement("button");
-      prev.type = "button"; prev.setAttribute("aria-label", "Previous month"); prev.textContent = "‹";
-      prev.addEventListener("click", () => {
-        calMonth--;
-        if (calMonth < 0){ calMonth = 11; calYear--; }
-        renderCalendar();
-      });
-      const next = document.createElement("button");
-      next.type = "button"; next.setAttribute("aria-label", "Next month"); next.textContent = "›";
-      next.addEventListener("click", () => {
-        calMonth++;
-        if (calMonth > 11){ calMonth = 0; calYear++; }
-        renderCalendar();
-      });
-      nav.append(prev, next);
-      head.append(title, nav);
-      wrap.appendChild(head);
+      /* Merge markers closer than ~26px at this width into one circle. */
+      const narrow = timelineEl.clientWidth < 560;
+      const trackW = Math.max(160, timelineEl.clientWidth - (narrow ? 24 : 36) - (narrow ? 0 : 168) - 28);
+      const mergePct = 26 / trackW * 100;
 
-      const byDate = {};
-      tasks.forEach(t => {
-        if (!t.due) return;
-        if (!byDate[t.due]) byDate[t.due] = [];
-        byDate[t.due].push(t);
-      });
-      Object.keys(byDate).forEach(k => byDate[k].sort((a,b) => a.n.localeCompare(b.n)));
-
-      const grid = document.createElement("div");
-      grid.className = "cal-grid";
-      CAL_DOW.forEach(d => {
-        const el = document.createElement("div");
-        el.className = "cal-dow"; el.textContent = d;
-        grid.appendChild(el);
-      });
-
-      const first = new Date(calYear, calMonth, 1);
-      const start = new Date(calYear, calMonth, 1 - first.getDay());
-      for (let i = 0; i < 42; i++){
-        const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
-        const iso = toIso(d);
-        const inMonth = d.getMonth() === calMonth;
-        const isToday = d.getTime() === today.getTime();
-        const isPast = d < today;
-        const cell = document.createElement("div");
-        cell.className = "cal-day" + (inMonth ? "" : " other") + (isToday ? " today" : "") + (isPast && inMonth ? " past" : "");
-
-        const num = document.createElement("div");
-        num.className = "cal-num";
-        num.textContent = d.getDate();
-        cell.appendChild(num);
-
-        const dayTasks = byDate[iso] || [];
-        dayTasks.slice(0, CAL_MAX).forEach(t => {
-          const a = document.createElement("a");
-          a.className = "cal-task";
-          a.href = pulse(t.b, t.id);
-          a.target = "_blank"; a.rel = "noopener noreferrer";
-          a.style.setProperty("--accent", STATUS_COLOR[t.s]);
-          a.title = t.n;
-          a.textContent = t.n;
-          cell.appendChild(a);
+      const areas = AREA_ORDER.filter(k => dated.some(t => t.b === k));
+      const rows = areas.map(k => {
+        const clusters = [];
+        dated.filter(t => t.b === k).forEach(t => {
+          const p = pct(parseDue(t.due));
+          const c = clusters[clusters.length - 1];
+          const late = t.due < TODAY_ISO;
+          if (c && p - c.p0 < mergePct && c.late === late) c.items.push(t);
+          else clusters.push({ p0: p, late, items: [t] });
         });
-        if (dayTasks.length > CAL_MAX){
-          const more = document.createElement("div");
-          more.className = "cal-more";
-          more.textContent = "+" + (dayTasks.length - CAL_MAX) + " more";
-          cell.appendChild(more);
-        }
-        if (dayTasks.length){
-          const dots = document.createElement("div");
-          dots.className = "cal-dots";
-          dots.setAttribute("aria-hidden", "true");
-          dayTasks.forEach(t => {
-            const i = document.createElement("i");
-            i.style.setProperty("--accent", STATUS_COLOR[t.s]);
-            dots.appendChild(i);
+        clusters.forEach(c => {
+          c.k = k;
+          c.key = k + ":" + c.items[0].due;
+          c.left = c.items.reduce((s, t) => s + pct(parseDue(t.due)), 0) / c.items.length;
+          c.od = c.items.some(t => t.due < TODAY_ISO);
+          c.isNew = c.items.some(isNew);
+          const a = c.items[0].due, b = c.items[c.items.length - 1].due;
+          c.range = a === b ? fmtShort(a) : fmtShort(a) + " – " + fmtShort(b);
+        });
+        return { k, count: dated.filter(t => t.b === k).length, clusters };
+      });
+      const all = rows.flatMap(r => r.clusters);
+      if (!all.some(c => c.key === tlSel)){
+        const upcoming = all.filter(c => c.items[c.items.length - 1].due >= TODAY_ISO)
+          .sort((x, y) => (x.items[0].due < y.items[0].due ? -1 : 1))[0];
+        tlSel = (upcoming || all[all.length - 1]).key;
+      }
+
+      const box = el("div", "tl");
+      const body = el("div", "tl-body");
+      const months = [];
+      for (let m = new Date(start); m < end; m = new Date(m.getFullYear(), m.getMonth() + 1, 1)) months.push(m);
+
+      const lines = el("div", "tl-lines");
+      lines.setAttribute("aria-hidden", "true");
+      const linesIn = el("div", "tl-lines-in");
+      months.forEach(m => { const g = el("div", "tl-gl"); g.style.left = pct(m) + "%"; linesIn.append(g); });
+      const nowLine = el("div", "tl-now"); nowLine.style.left = pct(today) + "%";
+      linesIn.append(nowLine);
+      lines.append(linesIn);
+
+      const axis = el("div", "tl-axis");
+      axis.setAttribute("aria-hidden", "true");
+      const axisTrack = el("div", "tl-track");
+      /* Every other label when a month is too narrow to hold one. */
+      const step = trackW / months.length < 34 ? 2 : 1;
+      months.forEach((m, i) => {
+        if (i % step) return;
+        const yr = m.getMonth() === 0 || i === 0 ? " ’" + String(m.getFullYear()).slice(2) : "";
+        const lab = el("span", "tl-month", monthShort(m) + (yr && m.getFullYear() !== today.getFullYear() ? yr : ""));
+        lab.style.left = pct(m) + "%";
+        axisTrack.append(lab);
+      });
+      const tag = el("span", "tl-today-tag", "Today");
+      tag.style.left = pct(today) + "%";
+      axisTrack.append(tag);
+      axis.append(el("div", "tl-spacer"), axisTrack);
+      body.append(lines, axis);
+
+      let picked = null;
+      rows.forEach(r => {
+        const row = el("div", "tl-row c-" + r.k);
+        const label = el("div", "tl-label", BOARDS[r.k].label);
+        label.append(" ", el("em", null, r.count));
+        const track = el("div", "tl-track");
+        r.clusters.forEach(c => {
+          const n = c.items.length;
+          const size = n === 1 ? 18 : Math.min(36, 20 + n * 2.5);
+          const b = el("button", "tl-mk" + (c.od ? " is-od" : ""), n > 1 ? String(n) : "");
+          b.type = "button";
+          b.dataset.key = c.key;
+          b.style.left = c.left + "%";
+          b.style.width = b.style.height = size + "px";
+          const on = c.key === tlSel;
+          if (on) picked = c;
+          b.setAttribute("aria-pressed", String(on));
+          b.setAttribute("aria-label", BOARDS[r.k].label + ", " + c.range + ", " + n +
+            (n === 1 ? " milestone" : " milestones") + (c.od ? ", overdue" : "") + (c.isNew ? ", new for you" : ""));
+          if (c.isNew){ const dot = el("span", "tl-new"); dot.setAttribute("aria-hidden", "true"); b.append(dot); }
+          b.addEventListener("click", () => {
+            tlSel = c.key;
+            renderTimeline();
+            const again = timelineEl.querySelector('.tl-mk[data-key="' + c.key + '"]');
+            if (again) again.focus();
           });
-          cell.appendChild(dots);
+          track.append(b);
+        });
+        row.append(label, track);
+        body.append(row);
+      });
+      box.append(body);
+
+      const legend = el("div", "tl-legend");
+      legend.innerHTML =
+        '<span><i style="background:var(--overdue)" aria-hidden="true"></i>Overdue</span>' +
+        '<span><i style="background:var(--earth)" aria-hidden="true"></i>Corner dot: new for you</span>' +
+        '<span>Numbered circles hold milestones due close together</span>';
+      box.append(legend);
+      timelineEl.append(box);
+
+      if (picked){
+        const card = el("section", "ms-card c-" + picked.k);
+        card.setAttribute("aria-live", "polite");
+        const head = el("div", "tl-detail-head" + (picked.od ? " is-od" : ""));
+        const n = picked.items.length;
+        head.append(el("h3", null, BOARDS[picked.k].label + " · " + picked.range),
+          el("span", "ms-sec-note", n + (n === 1 ? " milestone" : " milestones")));
+        card.append(head);
+        picked.items.forEach(t => card.append(msRow(t)));
+        timelineEl.append(card);
+      }
+      if (undated){
+        timelineEl.append(el("p", "tl-undated",
+          undated + (undated === 1 ? " milestone has" : " milestones have") + " no due date, so " + (undated === 1 ? "it isn't" : "they aren't") + " on the timeline. Find " +
+          (undated === 1 ? "it" : "them") + " under No due date in Focus."));
+      }
+    }
+    let tlResizeTimer = null;
+    let tlLastWidth = 0;
+    addEventListener("resize", () => {
+      if (view !== "timeline") return;
+      clearTimeout(tlResizeTimer);
+      tlResizeTimer = setTimeout(() => {
+        if (Math.abs(timelineEl.clientWidth - tlLastWidth) < 24) return;
+        tlLastWidth = timelineEl.clientWidth;
+        renderTimeline();
+      }, 150);
+    });
+
+    /* ---- areas view ---------------------------------------------------
+       One card per board. Status filter doesn't apply here (the status bar IS
+       the status breakdown), so its menu section hides in this view. */
+    function renderAreas(){
+      areasEl.replaceChildren();
+      const tasks = areaFilteredTasks().filter(t => t.s !== "done");
+      if (!tasks.length){ areasEl.append(filterEmpty()); return; }
+
+      const groups = AREA_ORDER.map(k => {
+        const items = tasks.filter(t => t.b === k);
+        const dated = items.filter(t => t.due).sort(byDue);
+        return {
+          k, items, dated,
+          od: dated.filter(t => t.due < TODAY_ISO),
+          ahead: dated.filter(t => t.due >= TODAY_ISO),
+          undated: items.filter(t => !t.due),
+        };
+      }).filter(g => g.items.length);
+      /* Anything overdue leads; then whichever area has the soonest date. */
+      groups.sort((a, b) =>
+        (b.od.length > 0) - (a.od.length > 0) ||
+        (a.ahead[0] ? a.ahead[0].due : "9999").localeCompare(b.ahead[0] ? b.ahead[0].due : "9999"));
+
+      const odCount = groups.reduce((s, g) => s + g.od.length, 0);
+      const nextUp = tasks.filter(t => t.due && t.due >= TODAY_ISO).sort(byDue)[0];
+      const sum = el("p", "ar-summary");
+      sum.append("You own ", el("b", null, tasks.length + (tasks.length === 1 ? " milestone" : " milestones")),
+        groups.length > 1 ? " across " + groups.length + " areas." : ".");
+      if (odCount) sum.append(" ", el("b", "ar-od", odCount + " " + (odCount === 1 ? "is" : "are") + " overdue"), nextUp ? ", and" : ".");
+      if (nextUp) sum.append((odCount ? " the" : " The") + " next one due is ", el("b", null, nextUp.n), " on " + fmtShort(nextUp.due) + ".");
+      areasEl.append(sum);
+
+      const grid = el("div", "ar-grid");
+      groups.forEach(g => {
+        const card = el("section", "ar-card c-" + g.k);
+        const head = el("div", "ar-head");
+        head.append(el("h3", null, BOARDS[g.k].label), el("span", "ar-n", g.items.length));
+        if (g.od.length) head.append(el("span", "ar-od-badge", g.od.length + " overdue"));
+        card.append(head);
+
+        const c = { work:0, wait:0, idle:0 };
+        g.items.forEach(t => { if (c[t.s] !== undefined) c[t.s]++; });
+        const parts = [
+          { k:"work", n:c.work, color:"var(--working)", label:"working" },
+          { k:"wait", n:c.wait, color:"var(--wait)", label:"waiting" },
+          { k:"idle", n:c.idle, color:"color-mix(in srgb,var(--idle) 55%,var(--card))", dot:"var(--idle)", label:"not started" },
+        ].filter(p => p.n);
+        const barWrap = el("div");
+        const bar = el("div", "ar-bar");
+        bar.setAttribute("role", "img");
+        bar.setAttribute("aria-label", parts.map(p => p.n + " " + p.label).join(", "));
+        const leg = el("div", "ar-leg");
+        parts.forEach(p => {
+          const s = el("span"); s.style.width = (p.n / g.items.length * 100) + "%"; s.style.background = p.color;
+          bar.append(s);
+          const l = el("span"); const i = el("i"); i.style.background = p.dot || p.color;
+          l.append(i, p.n + " " + p.label);
+          leg.append(l);
+        });
+        leg.setAttribute("aria-hidden", "true");
+        barWrap.append(bar, leg);
+        card.append(barWrap);
+
+        const lead = g.od[0] || g.ahead[0] || g.undated[0];
+        const leadOd = lead.due && lead.due < TODAY_ISO;
+        const next = pulseLink("ar-next" + (leadOd ? " is-od" : ""), lead);
+        let eyebrow = "No date yet";
+        if (lead.due){
+          const n = daysOut(lead.due);
+          eyebrow = leadOd ? "Overdue · " + fmtShort(lead.due)
+            : "Next · " + fmtShort(lead.due) + (n <= 30 ? " · " + whenText(n) : "");
         }
-        grid.appendChild(cell);
-      }
-      wrap.appendChild(grid);
+        const nm = el("b");
+        if (isNew(lead)) nm.append(el("span", "new-tag", "NEW"));
+        nm.append(lead.n);
+        next.append(el("small", null, eyebrow), nm,
+          el("em", null, [context(lead), STATUS[lead.s].label.toLowerCase()].filter(Boolean).join(" · ")));
+        card.append(next);
 
-      /* Only shown on narrow screens (see .cal-agenda) */
-      const monthPrefix = calYear + "-" + String(calMonth + 1).padStart(2, "0") + "-";
-      const inMonth = tasks.filter(t => t.due && t.due.startsWith(monthPrefix)).sort(byDue);
-      if (inMonth.length){
-        const ag = document.createElement("ul");
-        ag.className = "cal-undated-list cal-agenda";
-        inMonth.forEach(t => {
-          const li = document.createElement("li");
-          const a = document.createElement("a");
-          a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-          a.innerHTML = '<span class="ag-date"></span><span class="ud-dot" style="--accent:'+STATUS_COLOR[t.s]+'"></span>' +
-            '<span class="ud-name"></span>';
-          a.querySelector(".ag-date").textContent = parseDue(t.due).toLocaleDateString(undefined, { month:"short", day:"numeric" });
-          a.querySelector(".ud-name").textContent = t.n;
-          li.appendChild(a);
-          ag.appendChild(li);
-        });
-        wrap.appendChild(ag);
-      }
+        const rest = [...g.od, ...g.ahead].filter(t => t !== lead).slice(0, 2);
+        if (rest.length){
+          const ul = el("ul", "ar-then");
+          rest.forEach(t => {
+            const li = el("li");
+            const a = pulseLink(null, t);
+            const name = el("span");
+            if (isNew(t)) name.append(el("span", "new-tag", "NEW"));
+            name.append(t.n);
+            a.append(name, el("span", "ar-then-due" + (t.due < TODAY_ISO ? " is-od" : ""), fmtShort(t.due)));
+            li.append(a);
+            ul.append(li);
+          });
+          card.append(ul);
+        }
+        if (g.items.length > 1){
+          const all = el("button", "ar-all", "See all " + g.items.length + " →");
+          all.type = "button";
+          all.addEventListener("click", () => {
+            activeArea = g.k;
+            setView("focus");
+            focusEl.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" });
+          });
+          card.append(all);
+        }
+        grid.append(card);
+      });
 
-      const undated = tasks.filter(t => !t.due).sort((a,b) => a.n.localeCompare(b.n));
+      const undated = tasks.filter(t => !t.due);
       if (undated.length){
-        const det = document.createElement("details");
-        det.className = "cal-undated";
-        det.open = undated.length <= 8;
-        const sum = document.createElement("summary");
-        sum.innerHTML = '<span class="bucket-chev" aria-hidden="true">›</span><span>No due date</span><span class="bucket-count">' + undated.length + '</span>';
-        det.appendChild(sum);
-        const ul = document.createElement("ul");
-        ul.className = "cal-undated-list";
-        undated.forEach(t => {
-          const li = document.createElement("li");
-          const a = document.createElement("a");
-          a.href = pulse(t.b, t.id); a.target = "_blank"; a.rel = "noopener noreferrer";
-          a.innerHTML = '<span class="ud-dot" style="--accent:'+STATUS_COLOR[t.s]+'"></span>' +
-            '<span class="ud-name"></span><span class="ud-board"></span>';
-          a.querySelector(".ud-name").textContent = t.n;
-          a.querySelector(".ud-board").textContent = BOARDS[t.b].label;
-          li.appendChild(a);
-          ul.appendChild(li);
-        });
-        det.appendChild(ul);
-        wrap.appendChild(det);
+        const card = el("section", "ar-card is-undated");
+        card.append(el("h3", null, "No due date"));
+        const names = undated.slice(0, 4).map(t => t.n).join("; ");
+        card.append(el("p", null, undated.length + (undated.length === 1 ? " milestone has" : " milestones have") +
+          " no date yet: " + names + (undated.length > 4 ? "; and " + (undated.length - 4) + " more." : ".")));
+        const a = el("a", null, "Set dates in Monday ↗");
+        a.href = "https://training-unit-hq.monday.com/workspaces/16174604";
+        a.target = "_blank"; a.rel = "noopener noreferrer";
+        card.append(a);
+        grid.append(card);
       }
-
-      calendarEl.appendChild(wrap);
+      areasEl.append(grid);
     }
 
-    /* ---- view toggle (Week / List / Board / Calendar) -------------- */
+    /* ---- view toggle (Focus / Timeline / Areas) ---------------------- */
     function setView(v){
       view = v;
       try { localStorage.setItem("olivia-view-v2", v); } catch(e){}
-      weekEl.hidden = v !== "week";
-      bucketsEl.hidden = v !== "list";
-      kanbanEl.hidden = v !== "board";
-      calendarEl.hidden = v !== "calendar";
+      focusEl.hidden = v !== "focus";
+      timelineEl.hidden = v !== "timeline";
+      areasEl.hidden = v !== "areas";
       updateToolbar();
       renderFilters();
       renderView();
+      if (v === "timeline") tlLastWidth = timelineEl.clientWidth;
     }
     document.querySelectorAll(".view-seg").forEach(b =>
       b.addEventListener("click", () => {
@@ -2638,7 +2687,6 @@
       now = new Date();
       today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
       TODAY_ISO = toIso(today);
-      THIS_WEEK = startOfWeek(today);
     }
 
     function syncToClock(opts){
@@ -2650,9 +2698,7 @@
         /* A new day means the page has been idle since yesterday, so whichever
            week or month you had paged to is stale context, not state worth
            keeping. Land back on the present. */
-        weekOffset = 0;
-        calMonth = today.getMonth();
-        calYear = today.getFullYear();
+        tlSel = null;
         refreshTasks();
       }
       const stale = lastSyncedAt === null || Date.now() - lastSyncedAt > RESUME_STALE_MS;

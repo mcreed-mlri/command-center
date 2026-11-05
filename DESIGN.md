@@ -357,8 +357,8 @@ mobile. Panel heads are separated by a 12px gap plus a 1px rule, not by whitespa
 **Density behaviour.** The launcher's sections choose their own internal layout by
 role: large accordion tiles for tools with children, a 2×2 grid for LMS rows, a
 single-column list for documents, a 3-across icon grid for quick apps (2-across
-below 400px). Task views on focus pages switch between a day-grouped week list, a
-grouped table, a 3-column kanban, and a 7-column month grid — all inside the same
+below 400px). Task views on focus pages switch between a dated Focus list, a
+Timeline across months, and a grid of area cards — all inside the same
 panel, all collapsing to single-column between 520 and 720px.
 
 ### Named Rules
