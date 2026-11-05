@@ -83,7 +83,7 @@ query ($boardId: ID!, $cols: [String!], $cursor: String) {
           created_at
           creator_id
           board { id }
-          column_values(types: [people, status, date, timeline]) { id type text value }
+          column_values(types: [people, status, date, timeline]) { id type text value column { title } }
         }
       }
     }
@@ -240,9 +240,14 @@ export async function fetchBoard(board, token) {
 }
 
 /* Subitem columns are found by type rather than id: each subitem board has
-   its own ids, and they are not worth pinning in BOARDS for a banner. */
+   its own ids, and they are not worth pinning in BOARDS for a banner. The due
+   date is the date column titled "Target Date"; a board without one falls
+   back to its first date column. */
 function subitemRecord(sub, parentName) {
   const ofType = (type) => (sub.column_values || []).find((c) => c.type === type) || {};
+  const targetDate = (sub.column_values || []).find(
+    (c) => c.type === "date" && (c.column?.title || "").trim().toLowerCase() === "target date"
+  ) || ofType("date");
   let people = [];
   try {
     people = (JSON.parse(ofType("people").value || "{}").personsAndTeams || [])
@@ -257,7 +262,7 @@ function subitemRecord(sub, parentName) {
     parent: parentName,
     boardId: sub.board?.id || null,
     status: ofType("status").text || "",
-    date: ofType("date").text || "",
+    date: targetDate.text || "",
     timelineTo,
     people,
     createdAt: sub.created_at || null,
