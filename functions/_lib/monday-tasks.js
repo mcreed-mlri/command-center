@@ -10,17 +10,18 @@ export const API_URL = "https://api.monday.com/v2";
 export const API_VERSION = "2026-07";
 
 /* Timeline columns were removed from every board in late Oct 2026. Operations
-   and Content Design have two date columns: "Completion Date" is the due date
-   the pages use, and the newer "Target Date" is read only as a fallback
-   (date2) when Completion Date is empty. The other boards have just the one
-   "Target Date" column. */
+   and Content Design each have two date columns: the newer "Target Date"
+   (date) is the due date the pages use, and the older column (date2 --
+   "Completion Date" on Operations, a second "Target Date" on Content Design)
+   is read only as a fallback when Target Date is empty. The other boards have
+   just the one "Target Date" column. */
 export const BOARDS = [
   { key: "ops", heading: "Operations", id: "18418833001",
-    people: "multiple_person_mm4jktf9", status: "color_mm4v35ba", date: "date_mm4jybye", date2: "date_mm8h939e" },
+    people: "multiple_person_mm4jktf9", status: "color_mm4v35ba", date: "date_mm8h939e", date2: "date_mm4jybye" },
   { key: "lms", heading: "LMS", id: "18421080121",
     people: "person", status: "status", date: "date4" },
   { key: "content", heading: "Content Design", id: "18420946283",
-    people: "multiple_person_mm518x46", status: "color_mm513668", date: "date_mm51kh32", date2: "date_mm8hvgzg" },
+    people: "multiple_person_mm518x46", status: "color_mm513668", date: "date_mm8hvgzg", date2: "date_mm51kh32" },
   { key: "data", heading: "Data & Evaluation", id: "18421082069",
     people: "person", status: "status", date: "date4" },
   { key: "comms", heading: "Comms & Branding", id: "18421083526",
