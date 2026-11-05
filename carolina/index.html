@@ -447,7 +447,6 @@
     .ms-bar-m { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); white-space:nowrap; }
     .ms-bar.is-peak .ms-bar-fill { background:var(--earth); }
     .ms-bar.is-peak .ms-bar-n, .ms-bar.is-peak .ms-bar-m { color:var(--earth-deep); }
-    .ms-later-note { margin:0; font-size:13px; color:var(--muted); }
     .ms-month { margin-top:16px; }
     .ms-month-head {
       margin:0 2px 8px; font-size:11px; font-weight:700; letter-spacing:.14em;
@@ -520,7 +519,6 @@
     .tl-detail-head::before { content:""; flex:none; width:9px; height:9px; border-radius:50%; background:var(--chip); }
     .tl-detail-head.is-od::before { background:var(--overdue); }
     .tl-detail-head h3 { margin:0; font-size:15px; font-weight:700; }
-    .tl-undated { margin:12px 2px 0; font-size:13px; color:var(--muted); }
     @media (max-width:560px){
       .tl { padding:12px 12px 10px; }
       .tl-axis, .tl-row { grid-template-columns:minmax(0,1fr); }
@@ -533,9 +531,6 @@
     }
 
     /* ---- areas view ------------------------------------------------------ */
-    .ar-summary { margin:0 0 16px; font-size:15px; line-height:1.55; color:var(--muted); }
-    .ar-summary b { color:var(--ink); font-weight:650; }
-    .ar-summary .ar-od { color:var(--od-ink); }
     .ar-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
     @media (max-width:720px){ .ar-grid { grid-template-columns:minmax(0,1fr); } }
     .ar-card {
@@ -552,9 +547,6 @@
     }
     .ar-bar { display:flex; gap:2px; height:8px; border-radius:999px; overflow:hidden; }
     .ar-bar span { display:block; height:100%; }
-    .ar-leg { display:flex; flex-wrap:wrap; gap:4px 14px; margin-top:8px; font-size:12px; color:var(--muted); }
-    .ar-leg span { display:inline-flex; align-items:center; gap:6px; }
-    .ar-leg i { width:7px; height:7px; border-radius:50%; display:block; }
     .ar-next {
       display:flex; flex-direction:column; gap:3px; padding:12px 14px; border-radius:12px;
       background:var(--chip-tint); color:var(--ink); text-decoration:none;
@@ -1394,9 +1386,11 @@
       if (n === 1) return "tomorrow";
       return "in " + n + " days";
     }
-    /* What the milestone belongs to: its parent for a subitem, else its group. */
+    /* A subitem names its parent so "Make comments" says what it is about.
+       Group names and "shared" stay off the rows: the area chip is enough,
+       and every extra word is one more thing to read past. */
     function context(t){
-      return [t.sub && t.p ? "in " + t.p : t.cat, t.shared ? "shared" : null].filter(Boolean).join(" · ");
+      return t.sub && t.p ? "in " + t.p : "";
     }
     function areaChip(k){ return el("span", "area-chip c-" + k, BOARDS[k].label); }
     function statusPill(s){
@@ -1471,11 +1465,10 @@
     /* ---- summary tiles ---------------------------------------------- */
     function renderTiles(){
       const { od, soon, later, none } = focusBuckets(visibleTasks());
-      const last = later.length ? parseDue(later[later.length - 1].due) : null;
       const defs = [
         { k:"od",    n:od.length,    label:"Overdue", alert:od.length > 0 },
         { k:"soon",  n:soon.length,  label:"Next 30 days" },
-        { k:"later", n:later.length, label:last ? "Later · to " + last.toLocaleDateString(undefined, { month:"short", year:"numeric" }) : "Later" },
+        { k:"later", n:later.length, label:"Later" },
         { k:"none",  n:none.length,  label:"No due date" },
       ];
       tilesEl.replaceChildren();
@@ -1517,8 +1510,7 @@
         const card = el("div", "ms-card is-alert");
         const head = el("div", "ms-alert-head");
         head.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
-        head.append(el("h3", null, "Needs attention"),
-          el("span", "ms-sec-note", od.length + " past " + (od.length === 1 ? "its" : "their") + " date"));
+        head.append(el("h3", null, "Needs attention"));
         card.append(head);
         od.forEach(t => card.append(msRow(t)));
         sec.append(card);
@@ -1527,8 +1519,7 @@
 
       const soonSec = section("ms-soon");
       const soonHead = el("div", "ms-sec-head");
-      soonHead.append(el("h3", null, "Next 30 days"),
-        el("span", "ms-sec-note", "through " + fmtShort(toIso(addDays(today, 30)))));
+      soonHead.append(el("h3", null, "Next 30 days"));
       soonSec.append(soonHead);
       if (soon.length) soonSec.append(msCard(soon));
       else {
@@ -1561,9 +1552,7 @@
       const box = el("div", "ms-later");
       const first = parseDue(later[0].due), last = parseDue(later[later.length - 1].due);
       const head = el("div", "ms-later-head");
-      head.append(el("h3", null, "Later"),
-        el("span", "ms-sec-note", later.length + (later.length === 1 ? " milestone, " : " milestones, ") +
-          monthShort(first) + (first.getMonth() === last.getMonth() && first.getFullYear() === last.getFullYear() ? "" : " → " + monthShort(last))));
+      head.append(el("h3", null, "Later"));
       const more = el("button", "ms-more-btn", laterOpen ? "Hide list" : "Show all " + later.length);
       more.type = "button";
       more.setAttribute("aria-expanded", String(laterOpen));
@@ -1601,14 +1590,6 @@
         hist.append(bar);
       });
       box.append(hist);
-      if (peak){
-        const byArea = {};
-        peak.items.forEach(t => { byArea[t.b] = (byArea[t.b] || 0) + 1; });
-        const [topK, topN] = Object.entries(byArea).sort((a, b) => b[1] - a[1])[0];
-        const monthLong = peak.m.toLocaleDateString(undefined, { month:"long" });
-        box.append(el("p", "ms-later-note", monthLong + " is the busiest month: " + max + " milestones land, " +
-          (topN === max ? "all of them " : topN + " of them ") + BOARDS[topK].label + "."));
-      }
       sec.append(box);
 
       if (laterOpen){
@@ -1630,7 +1611,6 @@
       const tasks = visibleTasks();
       if (!tasks.length){ timelineEl.append(filterEmpty()); return; }
       const dated = tasks.filter(t => t.due).sort(byDue);
-      const undated = tasks.length - dated.length;
       if (!dated.length){
         timelineEl.append(el("p", "list-empty", "None of these milestones has a due date yet."));
         return;
@@ -1745,8 +1725,7 @@
       const legend = el("div", "tl-legend");
       legend.innerHTML =
         '<span><i style="background:var(--overdue)" aria-hidden="true"></i>Overdue</span>' +
-        '<span><i style="background:var(--earth)" aria-hidden="true"></i>Corner dot: new for you</span>' +
-        '<span>Numbered circles hold milestones due close together</span>';
+        '<span><i style="background:var(--earth)" aria-hidden="true"></i>Corner dot: new for you</span>';
       box.append(legend);
       timelineEl.append(box);
 
@@ -1760,11 +1739,6 @@
         card.append(head);
         picked.items.forEach(t => card.append(msRow(t)));
         timelineEl.append(card);
-      }
-      if (undated){
-        timelineEl.append(el("p", "tl-undated",
-          undated + (undated === 1 ? " milestone has" : " milestones have") + " no due date, so " + (undated === 1 ? "it isn't" : "they aren't") + " on the timeline. Find " +
-          (undated === 1 ? "it" : "them") + " under No due date in Focus."));
       }
     }
     let tlResizeTimer = null;
@@ -1802,15 +1776,6 @@
         (b.od.length > 0) - (a.od.length > 0) ||
         (a.ahead[0] ? a.ahead[0].due : "9999").localeCompare(b.ahead[0] ? b.ahead[0].due : "9999"));
 
-      const odCount = groups.reduce((s, g) => s + g.od.length, 0);
-      const nextUp = tasks.filter(t => t.due && t.due >= TODAY_ISO).sort(byDue)[0];
-      const sum = el("p", "ar-summary");
-      sum.append("You own ", el("b", null, tasks.length + (tasks.length === 1 ? " milestone" : " milestones")),
-        groups.length > 1 ? " across " + groups.length + " areas." : ".");
-      if (odCount) sum.append(" ", el("b", "ar-od", odCount + " " + (odCount === 1 ? "is" : "are") + " overdue"), nextUp ? ", and" : ".");
-      if (nextUp) sum.append((odCount ? " the" : " The") + " next one due is ", el("b", null, nextUp.n), " on " + fmtShort(nextUp.due) + ".");
-      areasEl.append(sum);
-
       const grid = el("div", "ar-grid");
       groups.forEach(g => {
         const card = el("section", "ar-card c-" + g.k);
@@ -1824,23 +1789,20 @@
         const parts = [
           { k:"work", n:c.work, color:"var(--working)", label:"working" },
           { k:"wait", n:c.wait, color:"var(--wait)", label:"waiting" },
-          { k:"idle", n:c.idle, color:"color-mix(in srgb,var(--idle) 55%,var(--card))", dot:"var(--idle)", label:"not started" },
+          { k:"idle", n:c.idle, color:"color-mix(in srgb,var(--idle) 55%,var(--card))", label:"not started" },
         ].filter(p => p.n);
-        const barWrap = el("div");
+        /* The bar uses the status pill colours, so it reads without a legend;
+           the exact counts are on hover and for screen readers. */
         const bar = el("div", "ar-bar");
+        const mix = parts.map(p => p.n + " " + p.label).join(", ");
         bar.setAttribute("role", "img");
-        bar.setAttribute("aria-label", parts.map(p => p.n + " " + p.label).join(", "));
-        const leg = el("div", "ar-leg");
+        bar.setAttribute("aria-label", mix);
+        bar.title = mix;
         parts.forEach(p => {
           const s = el("span"); s.style.width = (p.n / g.items.length * 100) + "%"; s.style.background = p.color;
           bar.append(s);
-          const l = el("span"); const i = el("i"); i.style.background = p.dot || p.color;
-          l.append(i, p.n + " " + p.label);
-          leg.append(l);
         });
-        leg.setAttribute("aria-hidden", "true");
-        barWrap.append(bar, leg);
-        card.append(barWrap);
+        card.append(bar);
 
         const lead = g.od[0] || g.ahead[0] || g.undated[0];
         const leadOd = lead.due && lead.due < TODAY_ISO;
@@ -1855,7 +1817,7 @@
         if (isNew(lead)) nm.append(el("span", "new-tag", "NEW"));
         nm.append(lead.n);
         next.append(el("small", null, eyebrow), nm,
-          el("em", null, [context(lead), STATUS[lead.s].label.toLowerCase()].filter(Boolean).join(" · ")));
+          el("em", null, [context(lead), STATUS[lead.s].label].filter(Boolean).join(" · ")));
         card.append(next);
 
         const rest = [...g.od, ...g.ahead].filter(t => t !== lead).slice(0, 2);
