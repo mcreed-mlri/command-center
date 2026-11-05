@@ -583,10 +583,16 @@
       color:var(--brand); background:none; border:0; padding:6px 0; min-height:32px; cursor:pointer;
     }
     .ar-all:hover { text-decoration:underline; text-underline-offset:2px; }
-    .ar-card.is-undated { background:transparent; border-style:dashed; justify-content:center; }
-    .ar-card.is-undated p { margin:0; font-size:13.5px; line-height:1.5; color:var(--muted); }
-    .ar-card.is-undated a { font-size:13px; font-weight:650; color:var(--brand); text-decoration:none; }
-    .ar-card.is-undated a:hover { text-decoration:underline; text-underline-offset:2px; }
+    /* Dashed: the one card that is a to-do about the plan, not a board */
+    .ar-card.is-undated { background:transparent; border-style:dashed; }
+    .ar-card.is-undated .ar-head::before { background:var(--idle); }
+    .ar-then-area { flex:none; font-size:12.5px; color:var(--muted); white-space:nowrap; }
+    .ar-more { margin:0; padding:9px 2px 0; border-top:1px solid var(--line-soft); font-size:12.5px; color:var(--muted); }
+    .ar-undated-link {
+      align-self:flex-start; margin-top:auto; font-size:13px; font-weight:650;
+      color:var(--brand); text-decoration:none; padding:6px 0;
+    }
+    .ar-undated-link:hover { text-decoration:underline; text-underline-offset:2px; }
 
     .list-empty .wk-jump {
       font:inherit; font-size:13.5px; font-weight:650; margin-top:12px; cursor:pointer;
@@ -830,7 +836,7 @@
     .swatch:focus-visible, .icon-pick:focus-visible, .icon-btn:focus-visible,
     .list-empty .wk-jump:focus-visible, .ms-tile:focus-visible, .ms-more-btn:focus-visible,
     .ms-undated > summary:focus-visible, .tl-mk:focus-visible, .ar-next:focus-visible,
-    .ar-then a:focus-visible, .ar-all:focus-visible, .ar-card.is-undated a:focus-visible {
+    .ar-then a:focus-visible, .ar-all:focus-visible, .ar-undated-link:focus-visible {
       outline:none;
       box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,var(--brand)) 35%,transparent);
     }
@@ -1882,12 +1888,25 @@
 
       const undated = tasks.filter(t => !t.due);
       if (undated.length){
+        const SHOW = 6;
         const card = el("section", "ar-card is-undated");
-        card.append(el("h3", null, "No due date"));
-        const names = undated.slice(0, 4).map(t => t.n).join("; ");
-        card.append(el("p", null, undated.length + (undated.length === 1 ? " milestone has" : " milestones have") +
-          " no date yet: " + names + (undated.length > 4 ? "; and " + (undated.length - 4) + " more." : ".")));
-        const a = el("a", null, "Set dates in Monday ↗");
+        const head = el("div", "ar-head");
+        head.append(el("h3", null, "No due date"), el("span", "ar-n", undated.length));
+        card.append(head);
+        const ul = el("ul", "ar-then");
+        undated.slice(0, SHOW).forEach(t => {
+          const li = el("li");
+          const a = pulseLink(null, t);
+          const name = el("span");
+          if (isNew(t)) name.append(el("span", "new-tag", "NEW"));
+          name.append(t.n);
+          a.append(name, el("span", "ar-then-area", BOARDS[t.b].label));
+          li.append(a);
+          ul.append(li);
+        });
+        card.append(ul);
+        if (undated.length > SHOW) card.append(el("p", "ar-more", "+ " + (undated.length - SHOW) + " more"));
+        const a = el("a", "ar-undated-link", "Set dates in Monday ↗");
         a.href = "https://training-unit-hq.monday.com/workspaces/16174604";
         a.target = "_blank"; a.rel = "noopener noreferrer";
         card.append(a);
