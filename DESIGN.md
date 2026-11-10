@@ -264,7 +264,7 @@ Status pigments, each bound to a specific Monday state and aligned with LACE sta
 tokens:
 
 - **Green** (`#179a72`, dark `#5fc9a8`): Done. Also the sync-saved indicator.
-- **Blue** (`#1c63b0`, dark `#3b8ede`): Waiting or paused, "needs review".
+- **Blue** (`#1c63b0`, dark `#3b8ede`): Waiting or paused. (The status pill itself uses the Monday `--mon-*` fills; see Status pill.)
 - **Graphite** (`#8b909d`, dark `#a9b2c0`): Not started, and the neutral resting sync dot.
 - **Changed Red** (`#c8493b`, dark `#e8957a`): Overdue only.
 - **Amber** (`#c8791b`, dark `#e0a552`): Actively working on it.
@@ -460,7 +460,7 @@ a pin pushed into the wall. A panel title without it is not a panel title.
 - **Count pills:** Kraft or Fresh Sheet fill, `--muted` text at 12–13px, `999px`, `3px 10px`, tabular figures, pushed right with `margin-left: auto`. They report; they never act. Hidden entirely below 400px, where the label matters more than the number.
 - **Soon tag:** 10.5px, 700, tracked 0.08em, uppercase, Dry Pencil on Fresh Sheet with a `--line` pill border. Always paired with 55–62% opacity on its parent and the removal of the link — a soon item cannot be clicked.
 - **Shared tag:** The same pill treatment at 10.5px on task names, marking an item assigned to more than one person.
-- **Status pill:** No fill at all — an 8px status dot plus 12.5px 600-weight text. Done pills tint the text Pine; every other state keeps Graphite and lets the dot carry the colour.
+- **Status pill:** A solid label in the team's Monday colours (`--mon-*` tokens): Not started gray, Working on it yellow, Waiting blue, Needs review red, Done dark green. 12.5px 600-weight text, `5px` corners, no dot. Gray and yellow take dark text (`#323338`); the rest white. The squared, filled label is what separates status from area chips, which stay soft tinted pills with a dot; never give one the other's shape. The Areas status bar uses the same fills.
 
 ### Cards / Containers
 

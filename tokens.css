@@ -79,6 +79,15 @@
   --overdue: #c8493b;
   --danger: #c8493b;
   --working: #c8791b;
+  /* Monday status labels: the team's own Monday colours, as solid labels.
+     Deliberately the same in light and dark (they are Monday's colours, and
+     each fill carries its own text colour), so the dark blocks leave them be.
+     Gray and yellow take dark text; white on them fails contrast. */
+  --mon-idle: #c4c4c4;   --mon-idle-ink: #323338;
+  --mon-work: #f2c94c;   --mon-work-ink: #323338;
+  --mon-wait: #4b63d6;   --mon-wait-ink: #ffffff;
+  --mon-review: #c4424b; --mon-review-ink: #ffffff;
+  --mon-done: #3f7d4f;   --mon-done-ink: #ffffff;
 
   /* Typography */
   --sans: "Geist", "Segoe UI Variable", "Segoe UI", "Inter", system-ui, sans-serif;

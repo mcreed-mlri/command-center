@@ -43,7 +43,7 @@ export const DEFAULT_USER_IDS = {
 export const STATUS_MAP = {
   "working on it": "work",
   "waiting/paused": "wait",
-  "needs review": "wait",
+  "needs review": "review",
   "not started": "idle",
   "": "idle",
   // Pre-Trial & Trial Skills board labels
@@ -51,7 +51,7 @@ export const STATUS_MAP = {
   "planning": "work",
   "not started yet": "idle",
 };
-const DONE = new Set(["done"]);
+const DONE = new Set(["done", "done (archive)"]);
 
 export const CAT_ALIAS = {
   "Pilot & Launch Readiness": "Pilot & Launch",
@@ -250,6 +250,7 @@ function subitemRecord(sub, parentName) {
     (c) => c.type === "date" && (c.column?.title || "").trim().toLowerCase() === "target date"
   ) || ofType("date");
   let people = [];
+  const owners = (ofType("people").text || "").trim();
   try {
     people = (JSON.parse(ofType("people").value || "{}").personsAndTeams || [])
       .filter((p) => p.kind === "person")
@@ -266,6 +267,7 @@ function subitemRecord(sub, parentName) {
     date: targetDate.text || "",
     timelineTo,
     people,
+    owners,
     createdAt: sub.created_at || null,
     creatorId: Number(sub.creator_id) || null,
     assignedAt: {},
@@ -337,20 +339,27 @@ function ordered(tasks) {
 const SUB_DUE_WINDOW_DAYS = 14;
 
 /* Subitems are steps under a milestone, not milestones, so the pages mostly
-   leave them out. Two kinds ride along flagged sub:true: one someone else
-   handed you this past week (a: for the "New this week" banner), and one due
-   within SUB_DUE_WINDOW_DAYS or already overdue (soon:true, listed with the
-   milestones) -- the second catches subitems you made for yourself. */
+   leave them out. Rows ride along flagged sub:true with pid (the parent's id):
+   - one someone else handed you this past week (a: for the "Assigned to you
+     this week" bar);
+   - one of yours due within SUB_DUE_WINDOW_DAYS or already overdue (soon:true,
+     listed with the milestones) -- this catches subitems you made yourself;
+   - when the parent is your own milestone, every open subitem under it, so its
+     row can fold out the full list of steps. These carry o: (who has it) and
+     me:true when it's yours; without soon or a they show only in that list.
+   Steps under someone else's milestone wait for the two-week window. */
 function subitemTasks(rec, board, userId) {
   const horizon = etDate(Date.now() + SUB_DUE_WINDOW_DAYS * 86400000);
+  const parentMine = rec.people.includes(userId);
   return (rec.subitems || []).flatMap((sub) => {
-    if (!sub.people.includes(userId)) return [];
     if (DONE.has((sub.status || "").trim().toLowerCase())) return [];
+    const mine = sub.people.includes(userId);
+    if (!mine && !parentMine) return [];
     const date = (sub.date || "").trim();
     const due = ISO.test(date) ? date : ISO.test(sub.timelineTo || "") ? sub.timelineTo : null;
-    const a = recentlyAssigned(sub, userId);
-    const soon = due !== null && due <= horizon;
-    if (!a && !soon) return [];
+    const a = mine ? recentlyAssigned(sub, userId) : null;
+    const soon = mine && due !== null && due <= horizon;
+    if (!a && !soon && !parentMine) return [];
     return [{
       b: board.key,
       cat: CAT_ALIAS[rec.group] || rec.group,
@@ -363,6 +372,9 @@ function subitemTasks(rec, board, userId) {
       sub: true,
       p: sub.parent,
       ...(soon ? { soon: true } : {}),
+      pid: rec.id,
+      ...(sub.owners ? { o: sub.owners } : {}),
+      ...(mine ? { me: true } : {}),
     }];
   });
 }

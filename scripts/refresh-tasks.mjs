@@ -60,7 +60,8 @@ function render(tasks, eol) {
       lines.push(
         `      { b:${js(t.b)}, cat:${js(t.cat)}, n:${js(t.n)}, s:${js(t.s)}, ` +
           `due:${t.due ? js(t.due) : "null"}, id:${js(t.id)}${t.shared ? ", shared:true" : ""}` +
-          `${t.a ? `, a:${js(t.a)}` : ""}${t.sub ? `, sub:true, p:${js(t.p || "")}` : ""}${t.soon ? ", soon:true" : ""} },`
+          `${t.a ? `, a:${js(t.a)}` : ""}${t.sub ? `, sub:true, p:${js(t.p || "")}` : ""}${t.soon ? ", soon:true" : ""}` +
+          `${t.pid ? `, pid:${js(t.pid)}` : ""}${t.o ? `, o:${js(t.o)}` : ""}${t.me ? ", me:true" : ""} },`
       );
     }
   }
@@ -84,7 +85,7 @@ function readBlock(html, htmlPath) {
 
 function parseBlock(body) {
   const out = new Map();
-  const line = /\{\s*b:"([^"]+)",\s*cat:"((?:[^"\\]|\\.)*)",\s*n:"((?:[^"\\]|\\.)*)",\s*s:"(\w+)",\s*due:(null|"[\d-]+"),\s*id:"(\d+)"(,\s*shared:true)?(?:,\s*a:"([\d-]+)")?(?:,\s*sub:true,\s*p:"((?:[^"\\]|\\.)*)")?(,\s*soon:true)?\s*\}/g;
+  const line = /\{\s*b:"([^"]+)",\s*cat:"((?:[^"\\]|\\.)*)",\s*n:"((?:[^"\\]|\\.)*)",\s*s:"(\w+)",\s*due:(null|"[\d-]+"),\s*id:"(\d+)"(,\s*shared:true)?(?:,\s*a:"([\d-]+)")?(?:,\s*sub:true,\s*p:"((?:[^"\\]|\\.)*)")?(,\s*soon:true)?(?:,\s*pid:"(\d+)")?(?:,\s*o:"((?:[^"\\]|\\.)*)")?(,\s*me:true)?\s*\}/g;
   for (const m of body.matchAll(line)) {
     out.set(m[6], {
       b: m[1],
@@ -97,6 +98,9 @@ function parseBlock(body) {
       ...(m[8] ? { a: m[8] } : {}),
       ...(m[9] !== undefined ? { sub: true, p: JSON.parse(`"${m[9]}"`) } : {}),
       ...(m[10] ? { soon: true } : {}),
+      ...(m[11] ? { pid: m[11] } : {}),
+      ...(m[12] !== undefined ? { o: JSON.parse(`"${m[12]}"`) } : {}),
+      ...(m[13] ? { me: true } : {}),
     });
   }
   return out;
@@ -107,7 +111,7 @@ function summarize(before, after) {
   for (const t of after) {
     const old = before.get(t.id);
     if (!old) { added.push(t); continue; }
-    const deltas = ["cat", "n", "s", "due", "shared", "b", "a", "p", "soon"]
+    const deltas = ["cat", "n", "s", "due", "shared", "b", "a", "p", "soon", "pid", "o", "me"]
       .filter((k) => (old[k] ?? null) !== (t[k] ?? null))
       .map((k) => `${k}: ${JSON.stringify(old[k] ?? null)} -> ${JSON.stringify(t[k] ?? null)}`);
     if (deltas.length) changed.push({ t, deltas });
