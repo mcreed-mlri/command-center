@@ -2857,6 +2857,10 @@
     renderPins();
     renderTodos();
     pull();
+    /* Tasks saved before subitems carried pid can't fold out a milestone's
+       steps, and the baked snapshot only catches up overnight. Pull once,
+       quietly, so the steps show without anyone pressing refresh. */
+    if (TASKS.some(t => t.sub) && !TASKS.some(t => t.pid)) loadFreshTasks({ quiet: true });
     // A pending debounce would otherwise be lost when the tab closes.
     addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden" && pushTimer) { clearTimeout(pushTimer); push(); }
