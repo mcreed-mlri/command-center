@@ -424,15 +424,22 @@
     /* Steps: a milestone's open subitems, folded away until asked for. */
     /* The toggle and open list sit in a tray tucked under the row's text
        column, so they read as part of that milestone, not a loose line. */
-    .ms-steps-wrap { margin:-4px 14px 12px 80px; }
+    /* Closed, the toggle is a compact line just under the area chip, sized to
+       the meta text; open, it becomes a tab and the list hangs off it as one
+       tray. Both sit in the row's text column so they belong to the milestone. */
+    .ms-steps-wrap { margin:-10px 14px 10px 80px; }
     .ms-steps-toggle {
-      display:inline-flex; align-items:center; gap:6px; margin:0; padding:4px 10px;
-      border:1px solid var(--line); border-radius:6px; background:var(--paper-2);
-      font:inherit; font-size:12.5px; font-weight:600; color:var(--muted);
+      display:inline-flex; align-items:center; gap:5px; margin:0 0 0 -6px; padding:2px 6px;
+      border:1px solid transparent; border-radius:6px; background:none;
+      font:inherit; font-size:12px; font-weight:600; line-height:1.4; color:var(--muted);
       cursor:pointer; transition:background .13s, color .13s;
     }
-    .ms-steps-toggle:hover { color:var(--brand); background:var(--hover-tint, var(--paper-2)); }
-    .ms-steps-toggle[aria-expanded="true"] { border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom-color:transparent; }
+    .ms-steps-toggle .chev { font-size:9px; }
+    .ms-steps-toggle:hover { color:var(--brand); background:var(--paper-2); }
+    .ms-steps-toggle[aria-expanded="true"] {
+      margin-left:0; padding:3px 10px; background:var(--paper-2); border-color:var(--line);
+      border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom-color:transparent;
+    }
     .ms-steps-toggle:focus-visible { outline:2px solid var(--brand); outline-offset:-2px; border-radius:6px; }
     .ms-steps-toggle .chev { display:inline-block; transition:transform .15s; }
     .ms-steps-toggle[aria-expanded="true"] .chev { transform:rotate(90deg); }
