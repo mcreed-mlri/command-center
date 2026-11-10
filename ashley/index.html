@@ -422,17 +422,25 @@
     .ms-when.is-od { color:var(--od-ink); }
     .ms-when.is-soon { color:var(--warm-deep); }
     /* Steps: a milestone's open subitems, folded away until asked for. */
+    /* The toggle and open list sit in a tray tucked under the row's text
+       column, so they read as part of that milestone, not a loose line. */
+    .ms-steps-wrap { margin:-4px 14px 12px 80px; }
     .ms-steps-toggle {
-      display:flex; align-items:center; gap:6px; width:100%; margin:0; padding:0 14px 10px 80px;
-      border:0; background:none; font:inherit; font-size:12.5px; font-weight:600; color:var(--muted);
-      text-align:left; cursor:pointer;
+      display:inline-flex; align-items:center; gap:6px; margin:0; padding:4px 10px;
+      border:1px solid var(--line); border-radius:6px; background:var(--paper-2);
+      font:inherit; font-size:12.5px; font-weight:600; color:var(--muted);
+      cursor:pointer; transition:background .13s, color .13s;
     }
-    .ms-steps-toggle:hover { color:var(--brand); }
+    .ms-steps-toggle:hover { color:var(--brand); background:var(--hover-tint, var(--paper-2)); }
+    .ms-steps-toggle[aria-expanded="true"] { border-bottom-left-radius:0; border-bottom-right-radius:0; border-bottom-color:transparent; }
     .ms-steps-toggle:focus-visible { outline:2px solid var(--brand); outline-offset:-2px; border-radius:6px; }
     .ms-steps-toggle .chev { display:inline-block; transition:transform .15s; }
     .ms-steps-toggle[aria-expanded="true"] .chev { transform:rotate(90deg); }
-    .ms-steps { list-style:none; margin:0; padding:0 14px 12px 80px; }
-    .ms-steps li + li { border-top:1px solid var(--line-soft); }
+    .ms-steps {
+      list-style:none; margin:0; padding:2px 12px;
+      background:var(--paper-2); border:1px solid var(--line); border-radius:0 10px 10px 10px;
+    }
+    .ms-steps li + li { border-top:1px solid var(--line); }
     .ms-steps a {
       display:grid; grid-template-columns:minmax(0,1fr) auto; gap:2px 12px; align-items:baseline;
       padding:7px 0; color:var(--ink); text-decoration:none; font-size:13.5px;
@@ -451,8 +459,7 @@
       .ms-date span { font-size:9.5px; margin-top:3px; }
       .ms-side { grid-column:2; gap:10px; }
       .ms-when { min-width:0; text-align:left; }
-      .ms-steps-toggle { padding-left:70px; }
-      .ms-steps { padding-left:70px; }
+      .ms-steps-wrap { margin-left:70px; }
     }
 
     /* Later: a month-by-month count, with the full list one press away */
