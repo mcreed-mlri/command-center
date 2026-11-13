@@ -1039,7 +1039,7 @@
        To shorten a task name or a category label, or to teach it a new
        Monday status, edit the maps at the top of the script instead.
        ===================================================================== */
-    const SNAPSHOT_DATE = "2026-11-12";
+    const SNAPSHOT_DATE = "2026-11-13";
     let snapshotDate = SNAPSHOT_DATE;
     let snapshotLive = false;
     const pageSlug = location.pathname.replace(/^\/|\/$/g, "").split("/")[0] || "ashley";
@@ -1109,14 +1109,15 @@
       { b:"content", cat:"Faculty", n:"Write holiday card to contributors", s:"idle", due:null, id:"13479688845", sub:true, p:"Follow up with original faculty team", pid:"12339880105" },
       // ---- Pre-Trial & Trial Skills ----
       { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Draft Sequence", s:"done", due:"2026-10-23", id:"13347680298" },
-      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Complete Draft of the Demographic Survey", s:"work", due:"2026-10-30", id:"13340332599" },
       { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Make comments", s:"work", due:"2026-11-03", id:"13347620499", shared:true, sub:true, p:"Draft Sequence", pid:"13347680298", o:"Carolina Silva Portero, Olivia Carini, Marlie Creed" },
       { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Make comments to the Draft", s:"idle", due:"2026-11-03", id:"13340379844", shared:true, sub:true, p:"Complete Draft of the Demographic Survey", pid:"13340332599", o:"Carolina Silva Portero, Olivia Carini, Marlie Creed" },
       { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Second draft of dem survey", s:"idle", due:"2026-11-04", id:"13420104313" },
-      { b:"trial", cat:"Pre-phase: Recruitment", n:"Draft content expert intro/recruitment email to EDs", s:"idle", due:"2026-11-05", id:"13419654078" },
-      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Draft CTA Checklist", s:"idle", due:"2026-11-06", id:"13456628915" },
-      { b:"trial", cat:"Pre-phase: Recruitment", n:"Send content expert intro/recruitment email to EDs", s:"idle", due:"2026-11-12", id:"13419588255" },
-      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Send out survey", s:"idle", due:"2026-12-03", id:"13420124302", shared:true },
+      { b:"trial", cat:"Pre-phase: Recruitment", n:"Complete 1 pager", s:"idle", due:"2026-11-18", id:"13537541140", sub:true, p:"Draft & send content expert intro/recruitment follow-up email to EDs", pid:"13419654078" },
+      { b:"trial", cat:"Pre-phase: Recruitment", n:"Complete email draft", s:"idle", due:"2026-11-18", id:"13537539892", sub:true, p:"Draft & send content expert intro/recruitment follow-up email to EDs", pid:"13419654078" },
+      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Complete Draft of the Demographic Survey", s:"work", due:"2026-11-20", id:"13340332599" },
+      { b:"trial", cat:"Pre-phase: Recruitment", n:"Draft & send content expert intro/recruitment follow-up email to EDs", s:"idle", due:"2026-11-20", id:"13419654078" },
+      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Send out Dem survey", s:"idle", due:"2026-12-08", id:"13420124302", shared:true },
+      { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Draft CTA Checklist", s:"idle", due:"2026-12-15", id:"13456628915" },
       { b:"trial", cat:"Phase 1: Trial Process Sequence + Demographic Survey", n:"Develop quality control checklist for content and tech for content publishing system", s:"wait", due:null, id:"12530354428", shared:true },
       { b:"trial", cat:"Research & Planning", n:"Draft CTA for Pretrial & Trial Skills", s:"done", due:null, id:"13346473743" },
       // <<< TASKS-END
