@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Training Hub design wiki: a page of notes. -->
+  <rect width="512" height="512" rx="96" fill="#2b7f86"/>
+  <path d="M150 96 H306 L372 162 V400 a20 20 0 0 1 -20 20 H160 a20 20 0 0 1 -20 -20 V116 a20 20 0 0 1 20 -20 Z" fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M300 100 V168 H368" fill="none" stroke="#ffffff" stroke-width="28" stroke-linejoin="round"/>
+  <path d="M196 236 H316 M196 292 H316 M196 348 H272" stroke="#ffffff" stroke-width="28" stroke-linecap="round"/>
+</svg>
