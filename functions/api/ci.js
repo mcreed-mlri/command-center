@@ -6,7 +6,7 @@
  * Uses GITHUB_TOKEN (or GH_TOKEN) when set for higher rate limits; both
  * repos are public so the endpoint works without it.
  *
- * Learning Hub and Brightspace Manager both run CI on a Monday cron
+ * Training Hub and Brightspace Manager both run CI on a Monday cron
  * (`event=schedule`). Manager also runs CodeQL (including a Sunday scan).
  *
  * The unfiltered CI rows are pinned to `main`: a green run on a PR branch says
@@ -20,7 +20,7 @@
 const PROJECTS = [
   {
     repo: "mcreed-mlri/lms-discovery",
-    label: "Learning Hub",
+    label: "Training Hub",
     workflows: [
       { file: "ci.yml", label: "CI", branch: "main" },
       { file: "ci.yml", label: "Weekly", event: "schedule" },

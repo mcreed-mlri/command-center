@@ -20,8 +20,8 @@ Plain HTML/CSS/JS — **no build step, no dependencies**. Three files matter:
 | `index.html` | The whole app: styles, the link list, and the render logic. **This is the only file you normally edit.** |
 | `sw.js` | Service worker — caches the app so it loads instantly and works offline. |
 | `manifest.webmanifest` | PWA settings (name, icons, colors). Rarely touched. |
-| `functions/api/status.js` | Live prod probe for Learning Hub + Brightspace Manager. |
-| `functions/api/ci.js` | Latest GitHub Actions runs for Learning Hub + Brightspace Manager. |
+| `functions/api/status.js` | Live prod probe for Training Hub + Brightspace Manager. |
+| `functions/api/ci.js` | Latest GitHub Actions runs for Training Hub + Brightspace Manager. |
 
 Everything you edit day-to-day lives in the **`EDIT HERE`** block near the
 bottom of `index.html` (search the file for `EDIT HERE`).
@@ -57,13 +57,13 @@ After editing, **bump the cache** (see below) so everyone gets the change.
 
 Under the LMS panel, a collapsed **Health & deploys** strip monitors:
 
-1. **Live** — are Learning Hub and Brightspace Manager reachable?
-   - Learning Hub: public homepage probe
+1. **Live** — are Training Hub and Brightspace Manager reachable?
+   - Training Hub: public homepage probe
    - Brightspace Manager: `GET /api/health/` (includes Supabase `db`
      status: ok / fail / unconfigured). Falls back to homepage if that
      route is missing.
 2. **CI** — GitHub Actions for both LMS apps:
-   - **Learning Hub** (`mcreed-mlri/lms-discovery`): **CI**, **Weekly**
+   - **Training Hub** (`mcreed-mlri/lms-discovery`): **CI**, **Weekly**
      (Monday cron on `ci.yml`)
    - **Brightspace Manager** (`mcreed-mlri/brightspace-manager`): **CI**,
      **Weekly** (Monday cron on `ci.yml`), **CodeQL** (incl. Sunday scan)

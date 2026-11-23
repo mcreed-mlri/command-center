@@ -1304,8 +1304,8 @@
       { section: "Quick Links", name: "Zotero", desc: "Citation manager", quick: true,
         url: "https://www.zotero.org/mylibrary", icon: "icons/zotero.png", fill: true, mono: "Z", accent: "#cc2936", keywords: "zotero citations references bibliography research papers library collections" },
 
-      { section: "LMS", name: "Learning Hub", desc: "Learner-facing portal",
-        url: "https://lms-discovery.vercel.app/", icon: "icons/learning-hub.svg", fill: true, mono: "L", accent: "#171713", keywords: "lace learning hub training hub courses learners brightspace lms discovery" },
+      { section: "LMS", name: "Training Hub", desc: "Learner-facing portal",
+        url: "https://lms-discovery.vercel.app/", icon: "icons/learning-hub.svg", fill: true, mono: "T", accent: "#171713", keywords: "lace learning hub training hub courses learners brightspace lms discovery" },
       { section: "LMS", name: "Hub Demo", desc: "Public demo, no login",
         url: "https://learning-hub-demo-tan.vercel.app/", icon: "icons/hub-demo.svg", fill: true, mono: "D", accent: "#2f6f8f", keywords: "training hub learning hub demo mock preview cviad design firm personas" },
       { section: "LMS", name: "Design Wiki", desc: "Hub decisions and screens",
@@ -1629,14 +1629,14 @@
        Collapsed under the LMS panel. Live probes prefer GET /api/status
        (Pages function). CI prefers GET /api/ci, with a public GitHub API
        fallback for local static serving. Cached 5 minutes. */
-    const STATUS_CACHE_KEY = "tu-lms-status-cache-v6";
+    const STATUS_CACHE_KEY = "tu-lms-status-cache-v7";
     const STATUS_TTL_MS = 5 * 60 * 1000;
-    /* Shared by Learning Hub and Brightspace Manager. */
+    /* Shared by Training Hub and Brightspace Manager. */
     const LMS_DB_URL = "https://supabase.com/dashboard/project/yvcwzlukvcfhlyyvkrre";
     const LIVE_SITES = [
       {
         id: "learning-hub",
-        label: "Learning Hub",
+        label: "Training Hub",
         healthUrl: "https://lms-discovery.vercel.app/",
         fallbackUrl: "https://lms-discovery.vercel.app/",
         kind: "homepage",
@@ -1651,7 +1651,7 @@
     const CI_PUBLIC_PROJECTS = [
       {
         repo: "mcreed-mlri/lms-discovery",
-        label: "Learning Hub",
+        label: "Training Hub",
         workflows: [
           // Pinned to main: a green run on a PR branch says nothing about
           // production, and this row is also the reference that tells a live
@@ -1921,7 +1921,7 @@
         '<li class="ci-block ci-block--live">' +
           '<div class="ci-live-head">' +
             '<span class="ci-group-label">Live</span>' +
-            '<a class="ci-db-link" href="' + escapeHtml(LMS_DB_URL) + '" target="_blank" rel="noopener noreferrer" title="Learning Hub &amp; Brightspace Manager database">Database</a>' +
+            '<a class="ci-db-link" href="' + escapeHtml(LMS_DB_URL) + '" target="_blank" rel="noopener noreferrer" title="Training Hub &amp; Brightspace Manager database">Database</a>' +
           "</div>" +
           '<ul class="ci-live-grid">' + liveItems + "</ul>" +
         "</li>";

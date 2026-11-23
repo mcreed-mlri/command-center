@@ -8,7 +8,7 @@
 const SITES = [
   {
     id: "learning-hub",
-    label: "Learning Hub",
+    label: "Training Hub",
     healthUrl: "https://lms-discovery.vercel.app/",
     fallbackUrl: "https://lms-discovery.vercel.app/",
     kind: "homepage",
