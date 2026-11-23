@@ -172,7 +172,7 @@ components:
 
 **Creative North Star: "The Studio"**
 
-Warm, precise, unhurried — the same studio as the LACE Learning Hub. The page is a
+Warm, precise, unhurried — the same studio as the LACE Training Hub. The page is a
 warm paper field, lit by a soft steel-blue wash at the top edge, and everything on
 it is an object pinned to that field rather than a region carved out of a screen.
 Tiles, task rows, and pin links all rest one tonal step below their container, lift
@@ -192,7 +192,7 @@ layout.
 
 Structure is carried by hairline rules and a three-step tonal ladder working
 together, never by heavy containers. Type is Geist sans throughout — the same
-typeface as the Learning Hub — with tight tracking on display sizes. Small labels
+typeface as the Training Hub — with tight tracking on display sizes. Small labels
 are uppercase and tracked out. Every number is tabular. Depth is real but almost
 inaudible — the shadow token is a 4%-alpha whisper, and the only genuinely floating
 element in the entire product is one dropdown menu.
@@ -216,7 +216,7 @@ salt-washed paper — re-syncing it wholesale would put the mud back.
 
 ## Colors
 
-A warm paper-and-ink palette shared with the LACE Learning Hub: three near-neutral
+A warm paper-and-ink palette shared with the LACE Training Hub: three near-neutral
 cream surfaces, a warm graphite ink family, steel blue as the interactive brand
 signal, and status pigments aligned with LACE lifecycle colours.
 
@@ -304,7 +304,7 @@ writing twice, it is a token.
 **Body Font:** Geist (same stack)
 **Label/Mono Font:** none — numeric alignment is handled by `font-variant-numeric: tabular-nums` on the sans, not by a mono family.
 
-**Character:** The same Geist sans as the LACE Learning Hub — clean, institutional,
+**Character:** The same Geist sans as the LACE Training Hub — clean, institutional,
 and readable over long sessions. Display sizes use tight negative tracking. Because
 Geist loads from Google Fonts with system fallbacks, text stays crisp before the
 font arrives.
@@ -489,7 +489,7 @@ The one element that appears on every surface and defines the wall. A 40px squar
 `10px` radius (36px at `9px` on mobile, 24px circular in the dropdown, 17px at `5px`
 in legacy quick links), filled with the item's own accent at 12–16% over the card
 colour, holding either a sans capital at 700 or a 24px vendor logo. Logos are
-individually size-corrected against their own padding — Learning Hub trims to 22px,
+individually size-corrected against their own padding — Training Hub trims to 22px,
 Brightspace's PNG grows to 28px, the D2L circle to 32px — so that every mark reads at
 the same optical weight regardless of how its source file was cut. That correction,
 per asset, is the level of care this system expects.
